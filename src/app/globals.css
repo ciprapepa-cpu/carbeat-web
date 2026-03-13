@@ -134,6 +134,18 @@ a {
 }
 
 /* ============================================================
+   Logo dark mode — invert text to white, preserve blue EKG
+   ============================================================ */
+
+.logo-img {
+  transition: filter 0.25s ease;
+}
+
+.dark .logo-img {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+/* ============================================================
    Car Card Spec Icons (SVG pseudo-elements)
    ============================================================ */
 

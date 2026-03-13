@@ -24,9 +24,8 @@ export const metadata: Metadata = {
 const darkModeScript = `
 (function() {
   var theme = localStorage.getItem('cb-theme');
-  if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-    document.documentElement.classList.add('dark');
-  }
+  if (theme === 'light') return;
+  document.documentElement.classList.add('dark');
 })();
 `;
 

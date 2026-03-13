@@ -28,7 +28,7 @@ export default function MobileNav({ isOpen, onClose }: MobileNavProps) {
           alt="CarBeat"
           width={104}
           height={52}
-          className="h-[52px] w-auto dark:invert dark:hue-rotate-180"
+          className="h-[52px] w-auto logo-img"
         />
         <button
           onClick={onClose}
