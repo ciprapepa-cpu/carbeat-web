@@ -1,5 +1,4 @@
 import Hero from "@/components/home/Hero";
-import TrustBar from "@/components/home/TrustBar";
 import Vehicles from "@/components/home/Vehicles";
 import Segments from "@/components/home/Segments";
 import HowItWorks from "@/components/home/HowItWorks";
@@ -12,7 +11,6 @@ export default function Home() {
   return (
     <>
       <Hero />
-      <TrustBar />
       <Vehicles />
       <Segments />
       <HowItWorks />
