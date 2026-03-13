@@ -100,7 +100,7 @@ export default function Hero() {
             <div className="flex gap-3.5 flex-wrap mb-13 max-md:flex-col">
               <Link
                 href="/nabidka"
-                className="inline-flex items-center gap-2 px-9 py-[18px] rounded-[8px] text-base font-semibold bg-blue text-white border-2 border-blue transition-all duration-[250ms] hover:bg-blue-hover hover:border-blue-hover hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(28,138,201,0.35)] max-md:justify-center"
+                className="inline-flex items-center gap-2 px-9 py-[18px] rounded-[8px] text-base font-semibold bg-blue !text-white border-2 border-blue transition-all duration-[250ms] hover:bg-blue-hover hover:border-blue-hover hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(28,138,201,0.35)] max-md:justify-center"
               >
                 <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                   <rect x="3" y="3" width="18" height="18" rx="2" />
