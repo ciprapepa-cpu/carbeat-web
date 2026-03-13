@@ -54,7 +54,7 @@ export default function Filters({ filters, onChange }: FiltersProps) {
               onClick={() => update({ fuel: opt })}
               className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors duration-200 border ${
                 filters.fuel === opt
-                  ? "bg-blue text-white border-blue"
+                  ? "bg-blue !text-white border-blue"
                   : "bg-surface text-text-muted border-border hover:border-blue hover:text-blue"
               }`}
             >
@@ -76,7 +76,7 @@ export default function Filters({ filters, onChange }: FiltersProps) {
               onClick={() => update({ trans: opt })}
               className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors duration-200 border ${
                 filters.trans === opt
-                  ? "bg-blue text-white border-blue"
+                  ? "bg-blue !text-white border-blue"
                   : "bg-surface text-text-muted border-border hover:border-blue hover:text-blue"
               }`}
             >
@@ -149,7 +149,7 @@ export default function Filters({ filters, onChange }: FiltersProps) {
       <div className="flex flex-col gap-2 pt-2">
         <button
           onClick={() => onChange(filters)}
-          className="w-full py-2.5 rounded-[8px] text-sm font-semibold bg-blue text-white border-2 border-blue transition-all duration-[250ms] hover:bg-blue-hover hover:border-blue-hover"
+          className="w-full py-2.5 rounded-[8px] text-sm font-semibold bg-blue !text-white border-2 border-blue transition-all duration-[250ms] hover:bg-blue-hover hover:border-blue-hover"
         >
           Použít filtry
         </button>

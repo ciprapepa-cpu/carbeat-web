@@ -12,18 +12,15 @@ interface SpecsGridProps {
 
 export default function SpecsGrid({ specs }: SpecsGridProps) {
   return (
-    <div className="grid grid-cols-4 border border-border rounded-[20px] overflow-hidden max-xl:grid-cols-2 max-md:grid-cols-1">
+    <div className="detail-specs-grid">
       {specs.map((spec, index) => (
-        <div
-          key={index}
-          className="flex items-center gap-3 py-4 px-[18px] border-b border-r border-border last:border-r-0 max-xl:[&:nth-child(2n)]:border-r-0 max-md:border-r-0"
-        >
+        <div key={index} className="detail-specs-grid__item">
           <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[8px] bg-blue-light text-blue">
             {spec.icon}
           </span>
           <div>
-            <p className="text-xs text-text-muted">{spec.label}</p>
-            <p className="text-sm font-semibold text-text">{spec.value}</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.5px] text-text-muted">{spec.label}</p>
+            <p className="text-[15px] font-semibold text-text">{spec.value}</p>
           </div>
         </div>
       ))}

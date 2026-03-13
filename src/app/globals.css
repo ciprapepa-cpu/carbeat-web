@@ -170,6 +170,70 @@ a {
 }
 
 /* ============================================================
+   Detail Specs Grid (matching original detail page CSS)
+   ============================================================ */
+
+.detail-specs-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg, 20px);
+  overflow: hidden;
+  margin-bottom: 32px;
+}
+
+.detail-specs-grid__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+}
+
+.detail-specs-grid__item:nth-child(4n) {
+  border-right: none;
+}
+
+.detail-specs-grid__item:nth-last-child(-n+4) {
+  border-bottom: none;
+}
+
+@media (max-width: 900px) {
+  .detail-specs-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .detail-specs-grid__item:nth-child(4n) {
+    border-right: 1px solid var(--border);
+  }
+  .detail-specs-grid__item:nth-child(2n) {
+    border-right: none;
+  }
+  .detail-specs-grid__item:nth-last-child(-n+4) {
+    border-bottom: 1px solid var(--border);
+  }
+  .detail-specs-grid__item:nth-last-child(-n+2) {
+    border-bottom: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .detail-specs-grid {
+    grid-template-columns: 1fr;
+  }
+  .detail-specs-grid__item {
+    border-right: none !important;
+  }
+  .detail-specs-grid__item:nth-last-child(-n+2) {
+    border-bottom: 1px solid var(--border);
+  }
+  .detail-specs-grid__item:last-child {
+    border-bottom: none;
+  }
+}
+
+/* ============================================================
    Dual-Range Slider (nabidka filters)
    ============================================================ */
 
