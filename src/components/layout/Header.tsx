@@ -30,8 +30,8 @@ export default function Header({ onMenuOpen }: HeaderProps) {
       className={`fixed left-0 right-0 z-[1000] overflow-visible transition-all duration-[250ms]
         top-[36px] md:top-[36px] max-md:top-0
         ${scrolled
-          ? "border-b border-border shadow-sm bg-white/97 dark:bg-surface/95 dark:border-border"
-          : "border-b border-transparent bg-white/97 dark:bg-surface/95"
+          ? "border-b border-border shadow-sm bg-surface dark:bg-[rgba(15,30,44,0.95)] dark:border-border"
+          : "border-b border-transparent bg-surface dark:bg-[rgba(15,30,44,0.95)]"
         }
         backdrop-blur-[12px]`}
     >
@@ -44,7 +44,7 @@ export default function Header({ onMenuOpen }: HeaderProps) {
               alt="CarBeat"
               width={192}
               height={96}
-              className="h-[96px] w-auto max-md:h-[48px] mix-blend-multiply dark:mix-blend-normal dark:invert dark:hue-rotate-180"
+              className="h-[82px] w-auto max-md:h-[48px] dark:invert dark:hue-rotate-180"
               priority
             />
           </Link>
@@ -66,7 +66,7 @@ export default function Header({ onMenuOpen }: HeaderProps) {
           {/* Desktop CTA */}
           <Link
             href="/nabidka"
-            className="hidden md:inline-flex items-center gap-2 px-5 py-2.5 rounded-[8px] text-sm font-semibold bg-blue text-white border-2 border-blue shrink-0 transition-all duration-[250ms] hover:bg-blue-hover hover:border-blue-hover hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(28,138,201,0.35)]"
+            className="hidden md:inline-flex items-center gap-2 px-5 py-2.5 rounded-[8px] text-sm font-semibold bg-blue !text-white border-2 border-blue shrink-0 transition-all duration-[250ms] hover:bg-blue-hover hover:border-blue-hover hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(28,138,201,0.35)]"
           >
             Nabídka vozů
           </Link>

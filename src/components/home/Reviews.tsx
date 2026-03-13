@@ -84,7 +84,7 @@ export default function Reviews() {
         <div className="text-center mt-10">
           <a
             href="https://www.google.com/maps/place/CarBeat+s.r.o./@50.38,15.9,17z/"
-            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-[8px] text-[15px] font-semibold bg-transparent text-blue border-2 border-blue transition-all duration-[250ms] hover:bg-blue hover:text-white"
+            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-[8px] text-[15px] font-semibold bg-transparent text-blue border-2 border-blue transition-all duration-[250ms] hover:bg-blue hover:!text-white"
             target="_blank"
             rel="noopener"
           >

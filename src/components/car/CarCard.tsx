@@ -47,7 +47,7 @@ export default function CarCard({
               key={badge}
               className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold ${
                 badge === "Cebia"
-                  ? "bg-green-light text-green dark:bg-[#dcfce7] dark:text-[#16a34a]"
+                  ? "!bg-[#dcfce7] !text-[#16a34a]"
                   : "bg-blue text-white"
               }`}
             >

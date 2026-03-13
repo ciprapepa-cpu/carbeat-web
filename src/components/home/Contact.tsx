@@ -78,7 +78,7 @@ export default function Contact() {
               </a>
               <a
                 href="https://www.google.com/maps/dir/?api=1&destination=Svini%C5%A1%C5%A5any+63%2C+Dolany+552+04"
-                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-[8px] text-[15px] font-semibold bg-blue text-white border-2 border-blue transition-all duration-[250ms] hover:bg-blue-hover hover:border-blue-hover hover:-translate-y-0.5"
+                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-[8px] text-[15px] font-semibold bg-transparent text-blue border-2 border-blue transition-all duration-[250ms] hover:bg-blue hover:!text-white hover:-translate-y-0.5"
                 target="_blank"
                 rel="noopener"
               >

@@ -110,7 +110,7 @@ export default function Hero() {
               </Link>
               <a
                 href="tel:+420777027809"
-                className="inline-flex items-center gap-2 px-9 py-[18px] rounded-[8px] text-base font-semibold bg-transparent text-white border-2 border-white/60 transition-all duration-[250ms] hover:bg-white/12 hover:border-white max-md:justify-center"
+                className="inline-flex items-center gap-2 px-9 py-[18px] rounded-[8px] text-base font-semibold bg-transparent !text-white border-2 border-white/60 transition-all duration-[250ms] hover:bg-white/12 hover:border-white max-md:justify-center"
               >
                 <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                   <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.09 9.06a19.79 19.79 0 01-3.07-8.64A2 2 0 012 .04h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
