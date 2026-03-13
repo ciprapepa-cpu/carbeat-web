@@ -26,12 +26,15 @@ const segments = [
     title: "Seat / Cupra",
     brands: "Leon · Ibiza · Arona · Cupra Formentor · Born",
     graphic: (
-      <Image
-        src="/images/logo-cupra.png"
-        alt=""
-        fill
-        className="object-contain opacity-[0.12] scale-[1.08] p-[0%_15%] pointer-events-none"
-      />
+      <div className="absolute top-[3%] left-[10%] right-[10%] w-[80%] h-[46%] pointer-events-none">
+        <Image
+          src="/images/logo-cupra.png"
+          alt=""
+          fill
+          className="object-contain opacity-[0.12] scale-[1.08]"
+          sizes="200px"
+        />
+      </div>
     ),
   },
   {

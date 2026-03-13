@@ -32,18 +32,18 @@ const items: WhyItem[] = [
 
 export default function WhyCarBeat() {
   return (
-    <section className="py-24 bg-surface" id="proc-carbeat">
+    <section className="py-24 bg-bg" id="proc-carbeat">
       <div className="max-w-[1200px] mx-auto px-6">
-        <div className="grid grid-cols-[1fr_1.2fr] gap-16 items-center max-lg:grid-cols-1 max-lg:gap-12">
+        <div className="grid grid-cols-2 gap-20 items-stretch max-lg:grid-cols-1 max-lg:gap-12">
           {/* Image */}
-          <div className="relative">
-            <div className="rounded-[20px] overflow-hidden bg-bg dark:bg-bg">
+          <div className="flex flex-col">
+            <div className="flex-1 rounded-[20px] overflow-hidden bg-bg dark:bg-bg">
               <Image
                 src="/images/josef-cipra.png"
                 alt="Josef Cipra – CarBeat"
                 width={600}
                 height={600}
-                className="w-full h-auto object-cover"
+                className="w-full h-full object-cover"
               />
             </div>
           </div>
@@ -51,7 +51,7 @@ export default function WhyCarBeat() {
           {/* Content */}
           <div>
             <span className="inline-block text-xs font-bold tracking-[2px] uppercase text-blue mb-3">
-              Proč auto od CarBeatu
+              Proč auto od Carbeat
             </span>
             <h2 className="text-[clamp(28px,4vw,42px)] font-extrabold leading-[1.15] text-text mb-3">
               Carbeat.<br />Nadšenci, ne <span className="text-blue">autobazar</span>.
@@ -64,7 +64,7 @@ export default function WhyCarBeat() {
               {items.map((item) => (
                 <div
                   key={item.title}
-                  className="flex gap-4 p-5 rounded-[12px] border border-border bg-surface transition-colors duration-[250ms] hover:bg-blue-xlight dark:border-border dark:bg-surface dark:hover:bg-blue-xlight"
+                  className="flex gap-4 p-5 rounded-[12px] border border-border bg-surface transition-colors duration-[250ms] hover:bg-blue-xlight dark:bg-[#0f1e2c] dark:border-[#1e3348] dark:hover:border-blue"
                 >
                   <div className="w-10 h-10 bg-blue-light rounded-[8px] flex items-center justify-center shrink-0 text-blue">
                     <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">

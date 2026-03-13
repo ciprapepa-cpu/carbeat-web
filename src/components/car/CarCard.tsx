@@ -58,28 +58,28 @@ export default function CarCard({
       </div>
 
       {/* Body */}
-      <div className="p-5 flex flex-col flex-1">
-        <p className="text-xs font-semibold text-blue uppercase tracking-wide mb-1">{category}</p>
-        <h3 className="text-base font-bold text-text mb-3 leading-snug">{name}</h3>
+      <div className="p-5 px-[22px] flex flex-col flex-1">
+        <p className="text-[11px] font-semibold text-blue uppercase tracking-[1.5px] mb-[6px]">{category}</p>
+        <h3 className="text-xl font-bold text-text mb-[10px] leading-snug min-h-[2.5em] line-clamp-2">{name}</h3>
 
         {/* Spec row 1 */}
-        <div className="flex flex-wrap gap-x-4 gap-y-1 mb-1.5 text-[13px] text-text-muted">
+        <div className="flex flex-wrap gap-4 mb-2 text-[15px] text-text-muted">
           <span className="spec-icon spec-icon--year">{year}</span>
           <span className="spec-icon spec-icon--km">{km}</span>
           <span className="spec-icon spec-icon--power">{powerKw}</span>
         </div>
         {/* Spec row 2 */}
-        <div className="flex flex-wrap gap-x-4 gap-y-1 mb-4 text-[13px] text-text-muted">
+        <div className="flex flex-wrap gap-4 mb-4 text-[15px] text-text-muted">
           <span className="spec-icon spec-icon--trans">{transmission}</span>
           <span className="spec-icon spec-icon--fuel">{fuel}</span>
         </div>
 
         {/* Footer */}
         <div className="mt-auto flex items-center justify-between pt-4 border-t border-border">
-          <div className="text-xl font-extrabold text-text">{price}</div>
+          <div className="text-[26px] font-extrabold text-text">{price}</div>
           <Link
             href={`/auto/${slug}`}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[8px] text-sm font-semibold bg-blue text-white border-2 border-blue transition-all duration-[250ms] hover:bg-blue-hover hover:border-blue-hover hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(28,138,201,0.35)]"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[8px] text-sm font-semibold bg-blue text-white dark:text-white border-2 border-blue transition-all duration-[250ms] hover:bg-blue-hover hover:border-blue-hover hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(28,138,201,0.35)]"
           >
             Detail →
           </Link>

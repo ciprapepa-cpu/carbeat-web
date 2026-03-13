@@ -31,7 +31,7 @@ const contactItems: ContactItem[] = [
 
 export default function Contact() {
   return (
-    <section className="py-24 bg-bg" id="kontakt">
+    <section className="py-24 bg-surface" id="kontakt">
       <div className="max-w-[1200px] mx-auto px-6">
         <div className="grid grid-cols-[1fr_1fr] gap-12 max-lg:grid-cols-1">
           {/* Left */}
@@ -56,8 +56,8 @@ export default function Contact() {
                     </svg>
                   </div>
                   <div>
-                    <p className="text-xs font-semibold text-text-muted uppercase tracking-wide mb-0.5">{item.label}</p>
-                    <p className="text-sm text-text leading-relaxed">{item.value}</p>
+                    <p className="text-xs font-semibold text-blue uppercase tracking-wide mb-0.5">{item.label}</p>
+                    <p className="text-base font-semibold text-text leading-relaxed">{item.value}</p>
                   </div>
                 </div>
               ))}
@@ -67,7 +67,7 @@ export default function Contact() {
             <div className="flex gap-3 flex-wrap">
               <a
                 href="https://wa.me/420777027809"
-                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-[8px] text-[15px] font-semibold bg-[#25D366] text-white border-2 border-[#25D366] transition-all duration-[250ms] hover:bg-[#1da851] hover:border-[#1da851] hover:-translate-y-0.5"
+                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-[8px] text-[15px] font-semibold bg-[#25D366] text-white dark:text-white border-2 border-[#25D366] transition-all duration-[250ms] hover:bg-[#1da851] hover:border-[#1da851] hover:-translate-y-0.5"
                 target="_blank"
                 rel="noopener"
               >
@@ -78,7 +78,7 @@ export default function Contact() {
               </a>
               <a
                 href="https://www.google.com/maps/dir/?api=1&destination=Svini%C5%A1%C5%A5any+63%2C+Dolany+552+04"
-                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-[8px] text-[15px] font-semibold bg-transparent text-blue border-2 border-blue transition-all duration-[250ms] hover:bg-blue hover:text-white"
+                className="inline-flex items-center gap-2 px-7 py-3.5 rounded-[8px] text-[15px] font-semibold bg-blue text-white border-2 border-blue transition-all duration-[250ms] hover:bg-blue-hover hover:border-blue-hover hover:-translate-y-0.5"
                 target="_blank"
                 rel="noopener"
               >

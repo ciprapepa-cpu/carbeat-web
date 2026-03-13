@@ -44,7 +44,7 @@ export default function Header({ onMenuOpen }: HeaderProps) {
               alt="CarBeat"
               width={192}
               height={96}
-              className="h-[96px] w-auto max-md:h-[48px] dark:invert dark:hue-rotate-180"
+              className="h-[96px] w-auto max-md:h-[48px] mix-blend-multiply dark:mix-blend-normal dark:invert dark:hue-rotate-180"
               priority
             />
           </Link>

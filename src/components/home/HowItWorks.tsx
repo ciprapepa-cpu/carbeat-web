@@ -30,13 +30,13 @@ const steps: Step[] = [
 
 export default function HowItWorks() {
   return (
-    <section className="py-24 bg-dark text-white">
+    <section className="py-24 bg-surface">
       <div className="max-w-[1200px] mx-auto px-6">
         <div className="text-center mb-12">
           <span className="inline-block text-xs font-bold tracking-[2px] uppercase text-blue mb-3">
             Jednoduchý proces
           </span>
-          <h2 className="text-[clamp(28px,4vw,42px)] font-extrabold leading-[1.15]">
+          <h2 className="text-[clamp(28px,4vw,42px)] font-extrabold leading-[1.15] text-text">
             Koupě auta<br /><span className="text-blue">bez komplikací</span>
           </h2>
         </div>
@@ -45,18 +45,18 @@ export default function HowItWorks() {
           {steps.map((step) => (
             <div
               key={step.number}
-              className="relative bg-dark-2 rounded-[20px] p-8 border border-white/8 transition-all duration-[250ms] hover:-translate-y-1 hover:border-blue/30"
+              className="bg-bg rounded-[20px] p-8 border border-border transition-all duration-[250ms] hover:-translate-y-1 hover:border-blue hover:shadow-[0_4px_16px_rgba(28,138,201,0.10)]"
             >
-              <div className="text-[48px] font-black text-white/8 absolute top-4 right-6 leading-none">
+              <div className="text-[64px] font-black text-blue-light leading-none mb-5">
                 {step.number}
               </div>
-              <div className="w-12 h-12 bg-blue/15 rounded-[8px] flex items-center justify-center text-blue mb-5">
+              <div className="w-12 h-12 bg-blue-light rounded-[8px] flex items-center justify-center text-blue mb-5">
                 <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                   {step.icon}
                 </svg>
               </div>
-              <h3 className="text-lg font-bold text-white mb-3">{step.title}</h3>
-              <p className="text-sm text-white/55 leading-relaxed">{step.desc}</p>
+              <h3 className="text-xl font-bold text-text dark:text-white mb-3">{step.title}</h3>
+              <p className="text-[15px] text-text-muted leading-relaxed">{step.desc}</p>
             </div>
           ))}
         </div>
