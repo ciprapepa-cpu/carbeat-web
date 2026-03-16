@@ -11,6 +11,7 @@ interface HeaderProps {
 
 const navLinks = [
   { href: "/#proc-carbeat", label: "Proč CarBeat" },
+  { href: "/aviloo", label: "Aviloo" },
   { href: "/#sluzby", label: "Služby" },
   { href: "/#kontakt", label: "Kontakt" },
 ] as const;

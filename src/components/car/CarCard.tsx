@@ -41,11 +41,11 @@ export default function CarCard({
           className="object-cover transition-transform duration-500 hover:scale-105"
           sizes="(max-width: 900px) 100vw, 50vw"
         />
-        <div className="absolute top-3 left-3 flex gap-1.5">
+        <div className="absolute bottom-3 left-3 flex gap-1.5">
           {badges.map((badge) => (
             <span
               key={badge}
-              className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold ${
+              className={`inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full text-sm font-bold ${
                 badge === "Cebia"
                   ? "!bg-[#dcfce7] !text-[#16a34a]"
                   : "bg-blue text-white"
@@ -81,7 +81,7 @@ export default function CarCard({
             href={`/auto/${slug}`}
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[8px] text-sm font-semibold bg-blue !text-white border-2 border-blue transition-all duration-[250ms] hover:bg-blue-hover hover:border-blue-hover hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(28,138,201,0.35)]"
           >
-            Detail →
+            Prohlédnout vůz →
           </Link>
         </div>
       </div>
