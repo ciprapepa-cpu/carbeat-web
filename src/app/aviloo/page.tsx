@@ -185,21 +185,23 @@ export default function AvilooPage() {
 
           <div className="grid sm:grid-cols-2 gap-8 max-w-[800px] mx-auto">
             {certificates.map((cert, i) => (
-              <button
+              <div
                 key={i}
                 onClick={() => setLightbox(cert.src)}
-                className="group bg-bg border border-border rounded-[20px] overflow-hidden transition-all duration-[250ms] hover:border-blue hover:shadow-lg hover:-translate-y-1 cursor-pointer p-0"
+                className="group bg-bg border border-border rounded-[20px] overflow-hidden transition-all duration-[250ms] hover:border-blue hover:shadow-lg hover:-translate-y-1 cursor-pointer"
               >
-                <div className="aspect-[3/4] flex items-center justify-center p-8 bg-white dark:bg-[#1a2a3a]">
-                  <div className="text-center">
-                    <svg className="w-16 h-16 text-blue mx-auto mb-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-                    </svg>
-                    <p className="font-bold text-text text-sm mb-1">Certifikát AVILOO {i + 1}</p>
-                    <p className="text-xs text-text-muted">Klikněte pro zobrazení</p>
-                  </div>
+                <div className="relative aspect-[3/4] overflow-hidden bg-white pointer-events-none">
+                  <embed
+                    src={`${cert.src}#toolbar=0&navpanes=0&scrollbar=0`}
+                    type="application/pdf"
+                    className="w-full h-full"
+                  />
                 </div>
-              </button>
+                <div className="p-4 text-center border-t border-border">
+                  <p className="font-bold text-text text-sm">Certifikát AVILOO {i + 1}</p>
+                  <p className="text-xs text-text-muted mt-1">Klikněte pro zvětšení</p>
+                </div>
+              </div>
             ))}
           </div>
         </div>
