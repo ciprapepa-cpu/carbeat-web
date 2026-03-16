@@ -22,10 +22,11 @@ No test framework is configured yet.
 - `/` — Homepage (server component composing ~10 home sections)
 - `/nabidka` — Vehicle listing with client-side filtering/sorting (`"use client"`)
 - `/auto/[slug]` — Vehicle detail, statically generated via `generateStaticParams()`
+- `/aviloo` — AVILOO battery diagnostics page (Flash Test, Premium Test, certificates)
 
 ### Data Layer (transitional)
 
-Cars are **hardcoded** in `src/data/cars.ts` with `getCarBySlug()` and `getAllSlugs()`. Supabase clients exist in `src/lib/supabase/` (client + server) but the frontend doesn't query them yet. Types are in `src/types/car.ts`. The plan is to replace hardcoded data with Supabase queries and add an admin panel.
+Cars are **hardcoded** in `src/data/cars.ts` with `getCarBySlug()` and `getAllSlugs()`. The same car data is duplicated in `src/app/nabidka/page.tsx` and `src/components/home/Vehicles.tsx` — when updating prices/photos/details, **update all three places**. Supabase clients exist in `src/lib/supabase/` (client + server) but the frontend doesn't query them yet. Types are in `src/types/car.ts`. The plan is to replace hardcoded data with Supabase queries and add an admin panel.
 
 ### Component Organization
 
@@ -56,6 +57,27 @@ Custom CSS in `globals.css` handles: EKG keyframe animations (`drawPulse`, `trav
 ## Hero Video Slideshow
 
 6 background videos cycle via EKG pulse animation. The SVG `.pulse-travel` path fires `animationiteration` every 5s which triggers `nextSlide()`. No JS timers — the animation is the sole trigger. Videos play/pause via refs on slide change.
+
+## Adding a New Car
+
+1. Create folder in `public/images/cars/{slug}/` with all photos (JPG)
+2. **Run image optimization:** `node scripts/optimize-images.mjs {slug}` — resizes to max 1920px width, JPG 92% quality (mozjpeg). This is mandatory before committing.
+3. Add car data to all three places:
+   - `src/data/cars.ts` — full detail (photos array, equipment, description, YouTube URL)
+   - `src/app/nabidka/page.tsx` — listing card data
+   - `src/components/home/Vehicles.tsx` — homepage card data
+4. Source materials (photos, .docx context) live in `../Input/Inzeraty/{Značka Model}/`
+5. Car card badges: position bottom-left, 50% larger than default. CTA button text: "Prohlédnout vůz →"
+
+### Image Optimization Script
+
+```bash
+node scripts/optimize-images.mjs              # all car folders
+node scripts/optimize-images.mjs seat-leon    # specific car
+node scripts/optimize-images.mjs audi merc    # multiple (partial match)
+```
+
+Located at `scripts/optimize-images.mjs`. Uses sharp (bundled with Next.js). Settings: max 1920px width, 92% JPG quality, mozjpeg compression. Only overwrites if result is smaller than original. **Always run after copying new photos into public/images/cars/.**
 
 ## Vehicle Filtering (nabidka)
 

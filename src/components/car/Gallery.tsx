@@ -167,6 +167,7 @@ export default function Gallery({ photos, alt }: GalleryProps) {
                 fill
                 className="object-cover"
                 sizes="80px"
+                loading={index < 6 ? "eager" : "lazy"}
               />
             </button>
           ))}
