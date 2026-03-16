@@ -38,8 +38,8 @@ const cars: readonly Car[] = [
     powerKw: 270,
     transmission: "9G Automat · 4MATIC",
     fuelLabel: "Benzín V6 biturbo",
-    price: 699900,
-    imageSrc: "/images/cars/mercedes-c43.jpg",
+    price: 749900,
+    imageSrc: "/images/cars/mercedes-c43/IMG_E5736.jpg",
     badges: ["Cebia"],
   },
   {
@@ -54,8 +54,8 @@ const cars: readonly Car[] = [
     powerKw: 200,
     transmission: "S tronic 6st. · Quattro",
     fuelLabel: "Benzín",
-    price: 279900,
-    imageSrc: "/images/cars/audi-tts.jpg",
+    price: 320000,
+    imageSrc: "/images/cars/audi-tts/IMG_E6479.jpg",
     badges: ["Cebia"],
   },
   {
@@ -70,8 +70,8 @@ const cars: readonly Car[] = [
     powerKw: 96,
     transmission: "Manuál 6st.",
     fuelLabel: "Benzín",
-    price: 459900,
-    imageSrc: "/images/cars/seat-leon.jpg",
+    price: 394000,
+    imageSrc: "/images/cars/seat-leon/IMG_E6803.jpg",
     badges: ["Cebia", "Po servisu"],
   },
   {
@@ -86,8 +86,8 @@ const cars: readonly Car[] = [
     powerKw: 85,
     transmission: "Manuál 6st.",
     fuelLabel: "Nafta",
-    price: 249900,
-    imageSrc: "/images/cars/renault-trafic.jpg",
+    price: 229900,
+    imageSrc: "/images/cars/renault-trafic/IMG_E6838.jpg",
     badges: ["Cebia", "Po velkém servisu"],
   },
 ] as const;
