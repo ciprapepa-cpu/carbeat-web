@@ -1,4 +1,5 @@
 import { type ReactNode } from "react";
+import ContactForm from "./ContactForm";
 
 interface ContactItem {
   icon: ReactNode;
@@ -91,15 +92,25 @@ export default function Contact() {
             </div>
           </div>
 
-          {/* Map */}
-          <div className="rounded-[20px] overflow-hidden bg-bg dark:bg-bg min-h-[400px]">
-            <iframe
-              src="https://maps.google.com/maps?q=CarBeat+s.r.o.+Svini%C5%A1%C5%A5any+63+Dolany&t=&z=15&ie=UTF8&iwloc=&output=embed"
-              className="w-full h-full min-h-[400px] border-0"
-              allowFullScreen
-              loading="lazy"
-              title="CarBeat s.r.o. - Svinišťany 63, Dolany"
-            />
+          {/* Form + Map */}
+          <div className="flex flex-col gap-8">
+            <div className="p-6 rounded-[20px] bg-bg dark:bg-bg">
+              <h3 className="text-lg font-bold text-text mb-1">Napište nám</h3>
+              <p className="text-sm text-text-muted mb-5">
+                Popište, co hledáte, a my se Vám ozveme.
+              </p>
+              <ContactForm />
+            </div>
+
+            <div className="rounded-[20px] overflow-hidden bg-bg dark:bg-bg min-h-[300px]">
+              <iframe
+                src="https://maps.google.com/maps?q=CarBeat+s.r.o.+Svini%C5%A1%C5%A5any+63+Dolany&t=&z=15&ie=UTF8&iwloc=&output=embed"
+                className="w-full h-full min-h-[300px] border-0"
+                allowFullScreen
+                loading="lazy"
+                title="CarBeat s.r.o. - Svinišťany 63, Dolany"
+              />
+            </div>
           </div>
         </div>
       </div>

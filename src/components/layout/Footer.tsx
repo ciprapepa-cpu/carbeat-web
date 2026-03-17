@@ -78,12 +78,7 @@ export default function Footer() {
 
         {/* Bottom */}
         <div className="flex justify-between items-center text-[13px] flex-wrap gap-3">
-          <span>
-            © {new Date().getFullYear()} CarBeat s.r.o. ·{" "}
-            <Link href="#" className="text-blue">
-              Ochrana osobních údajů
-            </Link>
-          </span>
+          <span>© {new Date().getFullYear()} CarBeat s.r.o.</span>
           <span>Svinišťany · 5 min od D11 u Jaroměře</span>
         </div>
       </div>

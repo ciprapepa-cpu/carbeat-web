@@ -3,6 +3,7 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { CAR_STATUSES } from "@/lib/validations/car";
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 
 const statusSchema = z.object({
   status: z.enum(CAR_STATUSES),
@@ -20,6 +21,12 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const ip = getClientIp(request);
+  const { allowed } = checkRateLimit(ip, { limit: 30, windowSeconds: 60 });
+  if (!allowed) {
+    return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });
+  }
+
   const user = await requireAuth();
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

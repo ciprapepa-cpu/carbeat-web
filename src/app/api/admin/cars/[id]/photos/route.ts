@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { photoReorderSchema } from "@/lib/validations/car";
+import { checkRateLimit, getClientIp } from "@/lib/rate-limit";
 
 async function requireAuth() {
   const supabase = await createClient();
@@ -15,6 +16,12 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const ip = getClientIp(request);
+  const { allowed } = checkRateLimit(ip, { limit: 20, windowSeconds: 60 });
+  if (!allowed) {
+    return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });
+  }
+
   const user = await requireAuth();
   if (!user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
