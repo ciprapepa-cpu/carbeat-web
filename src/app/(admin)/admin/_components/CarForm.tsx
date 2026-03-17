@@ -146,53 +146,112 @@ export function CarForm({ car, mode }: CarFormProps) {
     });
   }
 
-  // Photos — upload
+  // Photos — resize on client before upload (max 1920px, JPEG 85%)
   const [uploadStatus, setUploadStatus] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
+
+  function resizeImage(file: File, maxWidth: number, quality: number): Promise<File> {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        // Skip resize if already small enough
+        if (img.width <= maxWidth && file.size < 2 * 1024 * 1024) {
+          resolve(file);
+          return;
+        }
+
+        const scale = Math.min(1, maxWidth / img.width);
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+
+        const ctx = canvas.getContext("2d")!;
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              const resized = new File([blob], file.name.replace(/\.\w+$/, ".jpg"), {
+                type: "image/jpeg",
+              });
+              resolve(resized);
+            } else {
+              resolve(file);
+            }
+          },
+          "image/jpeg",
+          quality
+        );
+      };
+      img.onerror = () => resolve(file);
+      img.src = URL.createObjectURL(file);
+    });
+  }
 
   async function handlePhotoUpload(files: FileList | null) {
     if (!files || files.length === 0 || !car?.id) return;
 
+    const fileArray = Array.from(files);
     setUploading(true);
     setUploadError(null);
-    setUploadStatus(`Nahrávám ${files.length} ${files.length === 1 ? "fotku" : files.length <= 4 ? "fotky" : "fotek"}...`);
 
-    const formData = new FormData();
-    Array.from(files).forEach((file) => formData.append("photos", file));
+    let uploaded = 0;
+    const errors: string[] = [];
 
-    try {
-      const res = await fetch(`/api/admin/cars/${car.id}/photos`, {
-        method: "POST",
-        body: formData,
-      });
+    for (let i = 0; i < fileArray.length; i++) {
+      setUploadStatus(`Nahrávám ${i + 1}/${fileArray.length}...`);
 
-      if (res.ok) {
-        const result = await res.json();
-        if (result.errors && result.errors.length > 0) {
-          setUploadError(result.errors.join("\n"));
+      try {
+        // Resize on client — max 1920px, 85% JPEG quality
+        const resized = await resizeImage(fileArray[i], 1920, 0.85);
+
+        const formData = new FormData();
+        formData.append("photos", resized);
+
+        const res = await fetch(`/api/admin/cars/${car.id}/photos`, {
+          method: "POST",
+          body: formData,
+        });
+
+        if (res.ok) {
+          const result = await res.json();
+          if (result.errors?.length > 0) {
+            errors.push(...result.errors);
+          } else {
+            uploaded++;
+          }
+        } else {
+          let errMsg = `${fileArray[i].name}: chyba (${res.status})`;
+          try {
+            const errData = await res.json();
+            errMsg = errData.error || errMsg;
+          } catch { /* not JSON */ }
+          errors.push(errMsg);
         }
-        // Refresh photos
-        const carRes = await fetch(`/api/admin/cars/${car.id}`);
-        if (carRes.ok) {
-          const updatedCar = await carRes.json();
-          setPhotos(
-            (updatedCar.car_photos as CarPhoto[]).sort((a, b) => a.position - b.position)
-          );
-        }
-        const count = result.uploaded?.length ?? 0;
-        setUploadStatus(count > 0 ? `Nahráno ${count} ${count === 1 ? "fotka" : count <= 4 ? "fotky" : "fotek"}` : null);
-        setTimeout(() => setUploadStatus(null), 3000);
-      } else {
-        let errMsg = `Chyba při nahrávání (${res.status})`;
-        try {
-          const errData = await res.json();
-          errMsg = errData.error || errMsg;
-        } catch { /* response wasn't JSON */ }
-        setUploadError(errMsg);
-        setUploadStatus(null);
+      } catch (err) {
+        errors.push(`${fileArray[i].name}: ${err instanceof Error ? err.message : "chyba"}`);
       }
-    } catch (err) {
-      setUploadError(`Chyba: ${err instanceof Error ? err.message : "Neznámá chyba"}`);
+    }
+
+    // Refresh photos from server
+    try {
+      const carRes = await fetch(`/api/admin/cars/${car.id}`);
+      if (carRes.ok) {
+        const updatedCar = await carRes.json();
+        setPhotos(
+          (updatedCar.car_photos as CarPhoto[]).sort((a, b) => a.position - b.position)
+        );
+      }
+    } catch { /* ignore refresh error */ }
+
+    if (errors.length > 0) {
+      setUploadError(errors.join("\n"));
+    }
+
+    if (uploaded > 0) {
+      setUploadStatus(`Nahráno ${uploaded} ${uploaded === 1 ? "fotka" : uploaded <= 4 ? "fotky" : "fotek"}`);
+      setTimeout(() => setUploadStatus(null), 3000);
+    } else {
       setUploadStatus(null);
     }
 
