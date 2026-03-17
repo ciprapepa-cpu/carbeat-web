@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { supabaseAdmin } from "@/lib/supabase/admin";
+import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { carSchema } from "@/lib/validations/car";
 
 async function requireAuth() {
@@ -22,7 +22,7 @@ export async function GET(
 
   const { id } = await params;
 
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await getSupabaseAdmin()
     .from("cars")
     .select("*, car_photos(id, storage_path, position, alt_text)")
     .eq("id", id)
@@ -56,7 +56,7 @@ export async function PUT(
     );
   }
 
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await getSupabaseAdmin()
     .from("cars")
     .update(parsed.data)
     .eq("id", id)
@@ -89,17 +89,17 @@ export async function DELETE(
   const { id } = await params;
 
   // Delete photos from storage first
-  const { data: photos } = await supabaseAdmin
+  const { data: photos } = await getSupabaseAdmin()
     .from("car_photos")
     .select("storage_path")
     .eq("car_id", id);
 
   if (photos && photos.length > 0) {
     const paths = photos.map((p) => p.storage_path);
-    await supabaseAdmin.storage.from("car-photos").remove(paths);
+    await getSupabaseAdmin().storage.from("car-photos").remove(paths);
   }
 
-  const { error } = await supabaseAdmin
+  const { error } = await getSupabaseAdmin()
     .from("cars")
     .delete()
     .eq("id", id);

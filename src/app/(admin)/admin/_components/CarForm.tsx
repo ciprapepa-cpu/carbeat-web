@@ -147,27 +147,51 @@ export function CarForm({ car, mode }: CarFormProps) {
   }
 
   // Photos — upload
+  const [uploadStatus, setUploadStatus] = useState<string | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+
   async function handlePhotoUpload(files: FileList | null) {
     if (!files || files.length === 0 || !car?.id) return;
 
     setUploading(true);
+    setUploadError(null);
+    setUploadStatus(`Nahrávám ${files.length} ${files.length === 1 ? "fotku" : files.length <= 4 ? "fotky" : "fotek"}...`);
+
     const formData = new FormData();
     Array.from(files).forEach((file) => formData.append("photos", file));
 
-    const res = await fetch(`/api/admin/cars/${car.id}/photos`, {
-      method: "POST",
-      body: formData,
-    });
+    try {
+      const res = await fetch(`/api/admin/cars/${car.id}/photos`, {
+        method: "POST",
+        body: formData,
+      });
 
-    if (res.ok) {
-      const carRes = await fetch(`/api/admin/cars/${car.id}`);
-      if (carRes.ok) {
-        const updatedCar = await carRes.json();
-        setPhotos(
-          (updatedCar.car_photos as CarPhoto[]).sort((a, b) => a.position - b.position)
-        );
+      if (res.ok) {
+        const result = await res.json();
+        if (result.errors && result.errors.length > 0) {
+          setUploadError(result.errors.join("\n"));
+        }
+        // Refresh photos
+        const carRes = await fetch(`/api/admin/cars/${car.id}`);
+        if (carRes.ok) {
+          const updatedCar = await carRes.json();
+          setPhotos(
+            (updatedCar.car_photos as CarPhoto[]).sort((a, b) => a.position - b.position)
+          );
+        }
+        const count = result.uploaded?.length ?? 0;
+        setUploadStatus(count > 0 ? `Nahráno ${count} ${count === 1 ? "fotka" : count <= 4 ? "fotky" : "fotek"}` : null);
+        setTimeout(() => setUploadStatus(null), 3000);
+      } else {
+        const errData = await res.json();
+        setUploadError(errData.error || "Chyba při nahrávání");
+        setUploadStatus(null);
       }
+    } catch {
+      setUploadError("Chyba připojení k serveru");
+      setUploadStatus(null);
     }
+
     setUploading(false);
   }
 
@@ -560,48 +584,78 @@ export function CarForm({ car, mode }: CarFormProps) {
       </Section>
 
       {/* Section: Fotografie */}
-      <Section title="Fotografie">
+      <Section title={`Fotografie${photos.length > 0 ? ` (${photos.length})` : ""}`}>
         {mode === "create" ? (
           <p className="text-sm text-text-muted">
             Fotky lze nahrát po uložení vozu. Nejdříve vyplňte formulář a klikněte na „Vytvořit vůz".
           </p>
         ) : (
           <>
-            <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 mb-4">
-              {photos.map((photo, index) => (
-                <div
-                  key={photo.id}
-                  draggable
-                  onDragStart={() => handleDragStart(index)}
-                  onDragOver={(e) => handleDragOver(e, index)}
-                  onDrop={() => handleDrop(index)}
-                  onDragEnd={() => setDragOverIndex(null)}
-                  className={`relative group aspect-[4/3] rounded-[8px] overflow-hidden bg-bg border-2 cursor-grab active:cursor-grabbing transition-all ${
-                    dragOverIndex === index
-                      ? "border-blue scale-105"
-                      : "border-transparent"
-                  }`}
-                >
-                  <img
-                    src={`${supabaseUrl}/storage/v1/object/public/car-photos/${photo.storage_path}`}
-                    alt={photo.alt_text || `Foto ${index + 1}`}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center">
-                    <button
-                      type="button"
-                      onClick={() => deletePhoto(photo.id)}
-                      className="opacity-0 group-hover:opacity-100 px-2 py-1 bg-red-500 text-white rounded text-xs font-medium transition-opacity"
-                    >
-                      Smazat
-                    </button>
+            {photos.length > 0 && (
+              <p className="text-xs text-text-muted mb-3">
+                Přetáhněte fotky pro změnu pořadí. První fotka = hlavní foto na kartě vozu.
+              </p>
+            )}
+
+            {photos.length > 0 ? (
+              <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 mb-4">
+                {photos.map((photo, index) => (
+                  <div
+                    key={photo.id}
+                    draggable
+                    onDragStart={() => handleDragStart(index)}
+                    onDragOver={(e) => handleDragOver(e, index)}
+                    onDrop={() => handleDrop(index)}
+                    onDragEnd={() => setDragOverIndex(null)}
+                    className={`relative group aspect-[4/3] rounded-[8px] overflow-hidden bg-bg cursor-grab active:cursor-grabbing transition-all ${
+                      dragOverIndex === index
+                        ? "ring-2 ring-blue scale-105"
+                        : index === 0
+                          ? "ring-2 ring-green"
+                          : "border-2 border-transparent hover:border-border"
+                    }`}
+                  >
+                    <img
+                      src={`${supabaseUrl}/storage/v1/object/public/car-photos/${photo.storage_path}`}
+                      alt={photo.alt_text || `Foto ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center">
+                      <button
+                        type="button"
+                        onClick={() => deletePhoto(photo.id)}
+                        className="opacity-0 group-hover:opacity-100 px-2 py-1 bg-red-500 text-white rounded text-xs font-medium transition-opacity"
+                      >
+                        Smazat
+                      </button>
+                    </div>
+                    {index === 0 ? (
+                      <span className="absolute top-1 left-1 bg-green text-white text-[10px] px-1.5 py-0.5 rounded font-semibold">
+                        Hlavní
+                      </span>
+                    ) : (
+                      <span className="absolute top-1 left-1 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded">
+                        {index + 1}
+                      </span>
+                    )}
                   </div>
-                  <span className="absolute top-1 left-1 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded">
-                    {index + 1}
-                  </span>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="border-2 border-dashed border-border rounded-[12px] p-8 text-center mb-4">
+                <p className="text-text-muted text-sm">Zatím žádné fotky</p>
+              </div>
+            )}
+
+            {/* Upload status */}
+            {uploadStatus && (
+              <p className="text-sm text-blue font-medium mb-2">{uploadStatus}</p>
+            )}
+            {uploadError && (
+              <div className="bg-red-500/10 border border-red-500/20 rounded-[8px] px-3 py-2 text-red-500 text-xs mb-2 whitespace-pre-line">
+                {uploadError}
+              </div>
+            )}
 
             <input
               ref={fileInputRef}
@@ -615,9 +669,9 @@ export function CarForm({ car, mode }: CarFormProps) {
               type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={uploading}
-              className={btnSecondary}
+              className={`${btnSecondary} ${uploading ? "animate-pulse" : ""}`}
             >
-              {uploading ? "Nahrávám..." : "Nahrát fotky"}
+              {uploading ? "Nahrávám..." : "+ Nahrát fotky"}
             </button>
           </>
         )}

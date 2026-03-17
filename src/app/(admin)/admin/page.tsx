@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { CarListTable } from "./_components/CarListTable";
 import type { CarWithPhotos } from "@/types/car";
-import { supabaseAdmin } from "@/lib/supabase/admin";
+import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { logout } from "./_actions/auth";
 
 export default async function AdminDashboard() {
@@ -13,7 +13,7 @@ export default async function AdminDashboard() {
     redirect("/admin/prihlaseni");
   }
 
-  const { data: cars, error } = await supabaseAdmin
+  const { data: cars, error } = await getSupabaseAdmin()
     .from("cars")
     .select("*, car_photos(id, storage_path, position, alt_text)")
     .order("sort_order", { ascending: true })

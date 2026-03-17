@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { supabaseAdmin } from "@/lib/supabase/admin";
+import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { redirect, notFound } from "next/navigation";
 import { CarForm } from "../../../_components/CarForm";
 import type { CarWithPhotos } from "@/types/car";
@@ -18,7 +18,7 @@ export default async function EditCarPage({ params }: EditCarPageProps) {
 
   const { id } = await params;
 
-  const { data: car, error } = await supabaseAdmin
+  const { data: car, error } = await getSupabaseAdmin()
     .from("cars")
     .select("*, car_photos(id, car_id, storage_path, position, alt_text, created_at)")
     .eq("id", id)

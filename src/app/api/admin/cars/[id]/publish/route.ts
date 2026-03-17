@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { supabaseAdmin } from "@/lib/supabase/admin";
+import { getSupabaseAdmin } from "@/lib/supabase/admin";
 
 async function requireAuth() {
   const supabase = await createClient();
@@ -22,7 +22,7 @@ export async function PATCH(
   const { id } = await params;
 
   // Get current state
-  const { data: car, error: fetchError } = await supabaseAdmin
+  const { data: car, error: fetchError } = await getSupabaseAdmin()
     .from("cars")
     .select("is_published")
     .eq("id", id)
@@ -33,7 +33,7 @@ export async function PATCH(
   }
 
   // Toggle
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await getSupabaseAdmin()
     .from("cars")
     .update({ is_published: !car.is_published })
     .eq("id", id)

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { supabaseAdmin } from "@/lib/supabase/admin";
+import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { carSchema } from "@/lib/validations/car";
 
 async function requireAuth() {
@@ -19,7 +19,7 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await getSupabaseAdmin()
     .from("cars")
     .select("*, car_photos(id, storage_path, position, alt_text)")
     .order("sort_order", { ascending: true })
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await getSupabaseAdmin()
     .from("cars")
     .insert(parsed.data)
     .select()

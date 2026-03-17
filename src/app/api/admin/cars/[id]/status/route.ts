@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
-import { supabaseAdmin } from "@/lib/supabase/admin";
+import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { CAR_STATUSES } from "@/lib/validations/car";
 
 const statusSchema = z.object({
@@ -35,7 +35,7 @@ export async function PATCH(
 
   const isPublished = parsed.data.status === "v_nabidce";
 
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await getSupabaseAdmin()
     .from("cars")
     .update({
       status: parsed.data.status,
