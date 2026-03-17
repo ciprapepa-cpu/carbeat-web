@@ -41,7 +41,8 @@ export function CarForm({ car, mode }: CarFormProps) {
   // Basic info
   const [name, setName] = useState(car?.name ?? "");
   const [slug, setSlug] = useState(car?.slug ?? "");
-  const [price, setPrice] = useState(car?.price ?? 0);
+  const [price, setPrice] = useState(car?.price === -1 ? 0 : (car?.price ?? 0));
+  const [priceOnRequest, setPriceOnRequest] = useState(car?.price === -1);
   const [description, setDescription] = useState(car?.description ?? "");
 
   // Params
@@ -410,7 +411,7 @@ export function CarForm({ car, mode }: CarFormProps) {
       transmission_type: transmissionType,
       drive,
       body_type: bodyType,
-      price,
+      price: priceOnRequest ? -1 : price,
       description: description || null,
       defects,
       badges,
@@ -473,13 +474,26 @@ export function CarForm({ car, mode }: CarFormProps) {
           />
         </Field>
         <Field label="Cena (Kč)">
-          <input
-            type="number"
-            value={price || ""}
-            onChange={(e) => setPrice(Number(e.target.value))}
-            className={inputClass}
-            placeholder="749900"
-          />
+          <div className="space-y-2">
+            <label className="flex items-center gap-2 text-sm text-text-muted cursor-pointer">
+              <input
+                type="checkbox"
+                checked={priceOnRequest}
+                onChange={(e) => setPriceOnRequest(e.target.checked)}
+                className="rounded border-border"
+              />
+              Cena na dotaz
+            </label>
+            {!priceOnRequest && (
+              <input
+                type="number"
+                value={price || ""}
+                onChange={(e) => setPrice(Number(e.target.value))}
+                className={inputClass}
+                placeholder="749900"
+              />
+            )}
+          </div>
         </Field>
         <Field label="Popis">
           <textarea

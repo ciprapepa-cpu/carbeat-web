@@ -54,7 +54,7 @@ export default async function Vehicles() {
                 powerKw={`${car.power_kw} kW`}
                 transmission={car.transmission_type}
                 fuel={car.fuel}
-                price={`${czNumber.format(car.price)} Kč`}
+                price={car.price === -1 ? "Cena na dotaz" : `${czNumber.format(car.price)} Kč`}
                 imageSrc={imageSrc}
                 imageAlt={car.name}
                 badges={car.badges ?? ["Cebia"]}

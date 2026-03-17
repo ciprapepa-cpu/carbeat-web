@@ -52,6 +52,7 @@ function formatKm(km: number): string {
 }
 
 function formatPrice(price: number): string {
+  if (price === -1) return "Cena na dotaz";
   return `${czNumber.format(price)} Kč`;
 }
 
@@ -109,8 +110,8 @@ function NabidkaContent({ cars }: NabidkaClientProps) {
         result = result.filter((c) => c.year <= (filters.yearTo as number));
       }
 
-      // Price filter
-      result = result.filter((c) => c.price >= filters.priceMin && c.price <= filters.priceMax);
+      // Price filter (skip cars with price on request = -1)
+      result = result.filter((c) => c.price === -1 || (c.price >= filters.priceMin && c.price <= filters.priceMax));
 
       // KM filter
       result = result.filter((c) => c.km >= filters.kmMin && c.km <= filters.kmMax);

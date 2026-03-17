@@ -159,7 +159,7 @@ export default async function CarDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  const formattedPrice = car.price.toLocaleString("cs-CZ");
+  const formattedPrice = car.price === -1 ? "Cena na dotaz" : `${car.price.toLocaleString("cs-CZ")} Kč`;
   const formattedKm = car.km.toLocaleString("cs-CZ");
 
   // Build photo URLs from car_photos
@@ -206,7 +206,7 @@ export default async function CarDetailPage({ params }: PageProps) {
             {car.name}
           </h1>
           <p className="text-[36px] font-extrabold text-text max-md:text-[30px]">
-            {formattedPrice} Kč
+            {formattedPrice}
           </p>
         </div>
 
