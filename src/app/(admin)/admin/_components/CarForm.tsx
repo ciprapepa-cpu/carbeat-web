@@ -183,12 +183,16 @@ export function CarForm({ car, mode }: CarFormProps) {
         setUploadStatus(count > 0 ? `Nahráno ${count} ${count === 1 ? "fotka" : count <= 4 ? "fotky" : "fotek"}` : null);
         setTimeout(() => setUploadStatus(null), 3000);
       } else {
-        const errData = await res.json();
-        setUploadError(errData.error || "Chyba při nahrávání");
+        let errMsg = `Chyba při nahrávání (${res.status})`;
+        try {
+          const errData = await res.json();
+          errMsg = errData.error || errMsg;
+        } catch { /* response wasn't JSON */ }
+        setUploadError(errMsg);
         setUploadStatus(null);
       }
-    } catch {
-      setUploadError("Chyba připojení k serveru");
+    } catch (err) {
+      setUploadError(`Chyba: ${err instanceof Error ? err.message : "Neznámá chyba"}`);
       setUploadStatus(null);
     }
 

@@ -5,8 +5,10 @@ import { createServerClient } from "@supabase/ssr";
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Only protect /admin routes (except login page)
-  if (!pathname.startsWith("/admin") || pathname === "/admin/prihlaseni") {
+  // Only protect /admin and /api/admin routes (except login page)
+  const isAdminPage = pathname.startsWith("/admin") && pathname !== "/admin/prihlaseni";
+  const isAdminApi = pathname.startsWith("/api/admin");
+  if (!isAdminPage && !isAdminApi) {
     return NextResponse.next();
   }
 
@@ -34,6 +36,9 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   if (!user) {
+    if (isAdminApi) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     const loginUrl = new URL("/admin/prihlaseni", request.url);
     return NextResponse.redirect(loginUrl);
   }
@@ -42,5 +47,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admin/:path*", "/api/admin/:path*"],
 };
