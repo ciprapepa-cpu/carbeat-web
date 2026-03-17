@@ -13,10 +13,11 @@ export default async function NabidkaPage() {
     const firstPhoto = sortedPhotos[0];
     const imageSrc = firstPhoto ? getPhotoUrl(firstPhoto.storage_path) : "/images/placeholder-car.jpg";
 
-    // Build transmission label from transmission + drive
+    // Build transmission label from transmission name (or type as fallback) + drive
+    const transName = car.transmission || car.transmission_type;
     const transLabel = car.drive && car.drive !== "Předních kol"
-      ? `${car.transmission} · ${car.drive}`
-      : car.transmission;
+      ? `${transName} · ${car.drive}`
+      : transName;
 
     return {
       slug: car.slug,
