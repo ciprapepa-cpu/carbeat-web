@@ -13,24 +13,18 @@ export default async function NabidkaPage() {
     const firstPhoto = sortedPhotos[0];
     const imageSrc = firstPhoto ? getPhotoUrl(firstPhoto.storage_path) : "/images/placeholder-car.jpg";
 
-    // Build transmission label from transmission name (or type as fallback) + drive
-    const transName = car.transmission || car.transmission_type;
-    const transLabel = car.drive && car.drive !== "Předních kol"
-      ? `${transName} · ${car.drive}`
-      : transName;
-
     return {
       slug: car.slug,
       name: car.name,
       category: car.category_label,
       segment: car.segment,
-      fuel: car.fuel.toLowerCase(),
-      trans: car.transmission_type === "Automatická" ? "automat" : "manuál",
+      fuel: car.fuel,
+      transmissionType: car.transmission_type,
+      drive: car.drive,
+      bodyType: car.body_type,
       year: car.year,
       km: car.km,
       powerKw: car.power_kw,
-      transmission: transLabel,
-      fuelLabel: car.engine ? `${car.fuel} ${car.engine}` : car.fuel,
       price: car.price,
       imageSrc,
       badges: car.badges ?? ["Cebia"],

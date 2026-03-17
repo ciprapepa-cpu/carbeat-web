@@ -2,29 +2,39 @@
 
 import DualRangeSlider from "./DualRangeSlider";
 
-const fuelOptions = ["Vše", "Benzín", "Diesel", "Hybrid", "Elektro"] as const;
-const transOptions = ["Vše", "Automat", "Manuál"] as const;
+const fuelOptions = ["Vše", "Benzín", "Nafta", "Hybrid", "Elektro", "CNG", "LPG"] as const;
+const transOptions = ["Vše", "Manuální", "Automatická"] as const;
+const driveOptions = ["Vše", "Předních kol", "Zadních kol", "4x4"] as const;
+const bodyTypeOptions = ["Vše", "Kombi", "SUV", "Hatchback", "Sedan / limuzína", "Liftback", "Kabrio", "MPV", "Kupé", "VAN", "Ostatní"] as const;
 
 export interface FiltersState {
   fuel: string;
   trans: string;
+  drive: string;
+  bodyType: string;
   yearFrom: number | null;
   yearTo: number | null;
   priceMin: number;
   priceMax: number;
   kmMin: number;
   kmMax: number;
+  powerMin: number;
+  powerMax: number;
 }
 
 export const defaultFilters: FiltersState = {
   fuel: "Vše",
   trans: "Vše",
+  drive: "Vše",
+  bodyType: "Vše",
   yearFrom: null,
   yearTo: null,
   priceMin: 0,
   priceMax: 1500000,
   kmMin: 0,
-  kmMax: 200000,
+  kmMax: 300000,
+  powerMin: 0,
+  powerMax: 400,
 };
 
 interface FiltersProps {
@@ -35,6 +45,41 @@ interface FiltersProps {
 const czPrice = new Intl.NumberFormat("cs", { style: "decimal" });
 const czKm = new Intl.NumberFormat("cs", { style: "decimal" });
 
+function PillGroup({
+  label,
+  options,
+  value,
+  onChange,
+}: {
+  label: string;
+  options: readonly string[];
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  return (
+    <div>
+      <h4 className="text-xs font-bold uppercase tracking-[1.5px] text-text-muted mb-3">
+        {label}
+      </h4>
+      <div className="flex flex-wrap gap-2">
+        {options.map((opt) => (
+          <button
+            key={opt}
+            onClick={() => onChange(opt)}
+            className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors duration-200 border ${
+              value === opt
+                ? "bg-blue !text-white border-blue"
+                : "bg-surface text-text-muted border-border hover:border-blue hover:text-blue"
+            }`}
+          >
+            {opt}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function Filters({ filters, onChange }: FiltersProps) {
   const update = (patch: Partial<FiltersState>) => {
     onChange({ ...filters, ...patch });
@@ -42,49 +87,10 @@ export default function Filters({ filters, onChange }: FiltersProps) {
 
   return (
     <aside className="space-y-6">
-      {/* Fuel */}
-      <div>
-        <h4 className="text-xs font-bold uppercase tracking-[1.5px] text-text-muted mb-3">
-          Palivo
-        </h4>
-        <div className="flex flex-wrap gap-2">
-          {fuelOptions.map((opt) => (
-            <button
-              key={opt}
-              onClick={() => update({ fuel: opt })}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors duration-200 border ${
-                filters.fuel === opt
-                  ? "bg-blue !text-white border-blue"
-                  : "bg-surface text-text-muted border-border hover:border-blue hover:text-blue"
-              }`}
-            >
-              {opt}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Transmission */}
-      <div>
-        <h4 className="text-xs font-bold uppercase tracking-[1.5px] text-text-muted mb-3">
-          Převodovka
-        </h4>
-        <div className="flex flex-wrap gap-2">
-          {transOptions.map((opt) => (
-            <button
-              key={opt}
-              onClick={() => update({ trans: opt })}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors duration-200 border ${
-                filters.trans === opt
-                  ? "bg-blue !text-white border-blue"
-                  : "bg-surface text-text-muted border-border hover:border-blue hover:text-blue"
-              }`}
-            >
-              {opt}
-            </button>
-          ))}
-        </div>
-      </div>
+      <PillGroup label="Palivo" options={fuelOptions} value={filters.fuel} onChange={(fuel) => update({ fuel })} />
+      <PillGroup label="Převodovka" options={transOptions} value={filters.trans} onChange={(trans) => update({ trans })} />
+      <PillGroup label="Pohon" options={driveOptions} value={filters.drive} onChange={(drive) => update({ drive })} />
+      <PillGroup label="Karoserie" options={bodyTypeOptions} value={filters.bodyType} onChange={(bodyType) => update({ bodyType })} />
 
       {/* Year */}
       <div>
@@ -129,6 +135,22 @@ export default function Filters({ filters, onChange }: FiltersProps) {
         />
       </div>
 
+      {/* Power range */}
+      <div>
+        <h4 className="text-xs font-bold uppercase tracking-[1.5px] text-text-muted mb-3">
+          Výkon
+        </h4>
+        <DualRangeSlider
+          min={0}
+          max={400}
+          step={10}
+          valueMin={filters.powerMin}
+          valueMax={filters.powerMax}
+          onChange={(powerMin, powerMax) => update({ powerMin, powerMax })}
+          formatValue={(v) => `${v} kW`}
+        />
+      </div>
+
       {/* KM range */}
       <div>
         <h4 className="text-xs font-bold uppercase tracking-[1.5px] text-text-muted mb-3">
@@ -136,7 +158,7 @@ export default function Filters({ filters, onChange }: FiltersProps) {
         </h4>
         <DualRangeSlider
           min={0}
-          max={200000}
+          max={300000}
           step={5000}
           valueMin={filters.kmMin}
           valueMax={filters.kmMax}

@@ -15,12 +15,12 @@ interface MappedCar {
   category: string;
   segment: string;
   fuel: string;
-  trans: string;
+  transmissionType: string;
+  drive: string;
+  bodyType: string;
   year: number;
   km: number;
   powerKw: number;
-  transmission: string;
-  fuelLabel: string;
   price: number;
   imageSrc: string;
   badges: string[];
@@ -83,29 +83,22 @@ function NabidkaContent({ cars }: NabidkaClientProps) {
 
       // Fuel filter
       if (filters.fuel !== "Vše") {
-        const fuelMap: Record<string, string> = {
-          "Benzín": "benzín",
-          "Diesel": "diesel",
-          "Nafta": "nafta",
-          "Hybrid": "hybrid",
-          "Elektro": "elektro",
-        };
-        const target = fuelMap[filters.fuel];
-        if (target) {
-          result = result.filter((c) => c.fuel === target);
-        }
+        result = result.filter((c) => c.fuel === filters.fuel);
       }
 
       // Transmission filter
       if (filters.trans !== "Vše") {
-        const transMap: Record<string, string> = {
-          "Automat": "automat",
-          "Manuál": "manuál",
-        };
-        const target = transMap[filters.trans];
-        if (target) {
-          result = result.filter((c) => c.trans === target);
-        }
+        result = result.filter((c) => c.transmissionType === filters.trans);
+      }
+
+      // Drive filter
+      if (filters.drive !== "Vše") {
+        result = result.filter((c) => c.drive === filters.drive);
+      }
+
+      // Body type filter
+      if (filters.bodyType !== "Vše") {
+        result = result.filter((c) => c.bodyType === filters.bodyType);
       }
 
       // Year filter
@@ -121,6 +114,9 @@ function NabidkaContent({ cars }: NabidkaClientProps) {
 
       // KM filter
       result = result.filter((c) => c.km >= filters.kmMin && c.km <= filters.kmMax);
+
+      // Power filter
+      result = result.filter((c) => c.powerKw >= filters.powerMin && c.powerKw <= filters.powerMax);
 
       // Sort
       switch (sort) {
@@ -178,6 +174,27 @@ function NabidkaContent({ cars }: NabidkaClientProps) {
     }
   }
 
+  function renderCarCard(car: MappedCar) {
+    return (
+      <CarCard
+        key={car.slug}
+        slug={car.slug}
+        name={car.name}
+        category={car.category}
+        year={car.year}
+        km={formatKm(car.km)}
+        powerKw={formatPower(car.powerKw)}
+        transmission={car.transmissionType}
+        fuel={car.fuel}
+        price={formatPrice(car.price)}
+        imageSrc={car.imageSrc}
+        imageAlt={car.name}
+        badges={car.badges}
+        status={car.status}
+      />
+    );
+  }
+
   return (
     <>
       {/* Page Hero */}
@@ -206,6 +223,9 @@ function NabidkaContent({ cars }: NabidkaClientProps) {
       {/* Status filter */}
       <section className="bg-bg pt-8 pb-0">
         <div className="max-w-[1200px] mx-auto px-6">
+          <h4 className="text-xs font-bold uppercase tracking-[1.5px] text-text-muted mb-3">
+            Stav
+          </h4>
           <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={toggleAll}
@@ -274,24 +294,7 @@ function NabidkaContent({ cars }: NabidkaClientProps) {
                     <h3 className="text-lg font-bold text-text mb-4">V nabídce</h3>
                   )}
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {vNabidce.map((car) => (
-                      <CarCard
-                        key={car.slug}
-                        slug={car.slug}
-                        name={car.name}
-                        category={car.category}
-                        year={car.year}
-                        km={formatKm(car.km)}
-                        powerKw={formatPower(car.powerKw)}
-                        transmission={car.transmission}
-                        fuel={car.fuelLabel}
-                        price={formatPrice(car.price)}
-                        imageSrc={car.imageSrc}
-                        imageAlt={car.name}
-                        badges={car.badges}
-                        status="v_nabidce"
-                      />
-                    ))}
+                    {vNabidce.map(renderCarCard)}
                   </div>
                 </div>
               )}
@@ -301,24 +304,7 @@ function NabidkaContent({ cars }: NabidkaClientProps) {
                 <div className="mb-12">
                   <h3 className="text-lg font-bold text-text mb-4">Připravujeme</h3>
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {pripravujeme.map((car) => (
-                      <CarCard
-                        key={car.slug}
-                        slug={car.slug}
-                        name={car.name}
-                        category={car.category}
-                        year={car.year}
-                        km={formatKm(car.km)}
-                        powerKw={formatPower(car.powerKw)}
-                        transmission={car.transmission}
-                        fuel={car.fuelLabel}
-                        price={formatPrice(car.price)}
-                        imageSrc={car.imageSrc}
-                        imageAlt={car.name}
-                        badges={car.badges}
-                        status="pripravujeme"
-                      />
-                    ))}
+                    {pripravujeme.map(renderCarCard)}
                   </div>
                 </div>
               )}
@@ -328,24 +314,7 @@ function NabidkaContent({ cars }: NabidkaClientProps) {
                 <div className="mb-12">
                   <h3 className="text-lg font-bold text-text mb-4">Prodáno</h3>
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {prodano.map((car) => (
-                      <CarCard
-                        key={car.slug}
-                        slug={car.slug}
-                        name={car.name}
-                        category={car.category}
-                        year={car.year}
-                        km={formatKm(car.km)}
-                        powerKw={formatPower(car.powerKw)}
-                        transmission={car.transmission}
-                        fuel={car.fuelLabel}
-                        price={formatPrice(car.price)}
-                        imageSrc={car.imageSrc}
-                        imageAlt={car.name}
-                        badges={car.badges}
-                        status="prodano"
-                      />
-                    ))}
+                    {prodano.map(renderCarCard)}
                   </div>
                 </div>
               )}

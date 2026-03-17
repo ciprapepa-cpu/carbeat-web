@@ -43,11 +43,6 @@ export default async function Vehicles() {
             const firstPhoto = sortedPhotos[0];
             const imageSrc = firstPhoto ? getPhotoUrl(firstPhoto.storage_path) : "/images/placeholder-car.jpg";
 
-            const transName = car.transmission || car.transmission_type;
-            const transLabel = car.drive && car.drive !== "Předních kol"
-              ? `${transName} · ${car.drive}`
-              : transName;
-
             return (
               <CarCard
                 key={car.slug}
@@ -57,8 +52,8 @@ export default async function Vehicles() {
                 year={car.year}
                 km={`${czNumber.format(car.km)} km`}
                 powerKw={`${car.power_kw} kW`}
-                transmission={transLabel}
-                fuel={car.engine ? `${car.fuel} ${car.engine}` : car.fuel}
+                transmission={car.transmission_type}
+                fuel={car.fuel}
                 price={`${czNumber.format(car.price)} Kč`}
                 imageSrc={imageSrc}
                 imageAlt={car.name}
