@@ -454,7 +454,7 @@ export function CarForm({ car, mode }: CarFormProps) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8 max-w-3xl">
+    <form onSubmit={handleSubmit} noValidate className="space-y-8 max-w-3xl">
       {error && (
         <div className="bg-red-500/10 border border-red-500/20 rounded-[8px] px-4 py-3 text-red-500 text-sm">
           {error}
