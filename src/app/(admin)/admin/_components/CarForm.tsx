@@ -14,7 +14,7 @@ const SEGMENT_LABELS: Record<string, string> = {
   ostatni: "Ostatní",
 };
 
-const EQUIPMENT_CATEGORIES = ["Komfort", "Bezpečnost", "Exteriér", "Interiér"];
+const EQUIPMENT_CATEGORIES = ["Komfort", "Bezpečnost", "Exteriér", "Interiér", "Ostatní"];
 
 const STATUS_LABELS: Record<CarStatus, string> = {
   koncept: "Koncept — skryté",
@@ -22,6 +22,11 @@ const STATUS_LABELS: Record<CarStatus, string> = {
   v_nabidce: "V nabídce — plně viditelné",
   prodano: "Prodáno — v sekci prodané",
 };
+
+const FUEL_OPTIONS = ["Benzín", "Nafta", "Hybrid", "Elektro", "CNG", "LPG"];
+const BODY_TYPE_OPTIONS = ["Kombi", "SUV", "Hatchback", "Sedan / limuzína", "Liftback", "Kabrio", "MPV", "Kupé", "VAN", "Ostatní"];
+const DRIVE_OPTIONS = ["Předních kol", "Zadních kol", "4x4"];
+const TRANSMISSION_OPTIONS = ["Manuální", "Automatická"];
 
 interface CarFormProps {
   car?: CarWithPhotos;
@@ -35,7 +40,6 @@ export function CarForm({ car, mode }: CarFormProps) {
   // Basic info
   const [name, setName] = useState(car?.name ?? "");
   const [slug, setSlug] = useState(car?.slug ?? "");
-  const [autoSlug, setAutoSlug] = useState(!car);
   const [price, setPrice] = useState(car?.price ?? 0);
   const [description, setDescription] = useState(car?.description ?? "");
 
@@ -43,12 +47,12 @@ export function CarForm({ car, mode }: CarFormProps) {
   const [year, setYear] = useState(car?.year ?? new Date().getFullYear());
   const [km, setKm] = useState(car?.km ?? 0);
   const [powerKw, setPowerKw] = useState(car?.power_kw ?? 0);
-  const [fuel, setFuel] = useState(car?.fuel ?? "");
+  const [fuel, setFuel] = useState(car?.fuel ?? "Benzín");
   const [engine, setEngine] = useState(car?.engine ?? "");
   const [transmission, setTransmission] = useState(car?.transmission ?? "");
-  const [transmissionType, setTransmissionType] = useState(car?.transmission_type ?? "");
-  const [drive, setDrive] = useState(car?.drive ?? "");
-  const [bodyType, setBodyType] = useState(car?.body_type ?? "");
+  const [transmissionType, setTransmissionType] = useState(car?.transmission_type ?? "Manuální");
+  const [drive, setDrive] = useState(car?.drive ?? "Předních kol");
+  const [bodyType, setBodyType] = useState(car?.body_type ?? "Sedan / limuzína");
 
   // Category
   const [segment, setSegment] = useState<CarSegment>(car?.segment ?? "ostatni");
@@ -64,7 +68,7 @@ export function CarForm({ car, mode }: CarFormProps) {
   const [equipment, setEquipment] = useState<Record<string, string[]>>(
     car?.equipment ?? Object.fromEntries(EQUIPMENT_CATEGORIES.map((c) => [c, []]))
   );
-  const [newEquipmentItem, setNewEquipmentItem] = useState<Record<string, string>>({});
+  const [equipmentText, setEquipmentText] = useState<Record<string, string>>({});
 
   // Photos
   const [photos, setPhotos] = useState<CarPhoto[]>(
@@ -74,10 +78,8 @@ export function CarForm({ car, mode }: CarFormProps) {
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const dragItemRef = useRef<number | null>(null);
 
-  // YouTube & SEO
+  // YouTube
   const [youtubeUrl, setYoutubeUrl] = useState(car?.youtube_url ?? "");
-  const [metaTitle, setMetaTitle] = useState(car?.meta_title ?? "");
-  const [metaDescription, setMetaDescription] = useState(car?.meta_description ?? "");
 
   // Publish
   const [status, setStatus] = useState<CarStatus>(car?.status ?? "koncept");
@@ -90,7 +92,7 @@ export function CarForm({ car, mode }: CarFormProps) {
   // Auto-slug from name
   function handleNameChange(value: string) {
     setName(value);
-    if (autoSlug) {
+    if (!car) {
       setSlug(slugify(value));
     }
   }
@@ -121,15 +123,20 @@ export function CarForm({ car, mode }: CarFormProps) {
     setDefects(defects.filter((d) => d !== defect));
   }
 
-  // Equipment
-  function addEquipmentItem(category: string) {
-    const item = newEquipmentItem[category]?.trim();
-    if (!item) return;
+  // Equipment — parse semicolons and add all items at once
+  function addEquipmentItems(category: string) {
+    const text = equipmentText[category]?.trim();
+    if (!text) return;
+    const items = text
+      .split(";")
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
     const existing = equipment[category] ?? [];
-    if (!existing.includes(item)) {
-      setEquipment({ ...equipment, [category]: [...existing, item] });
+    const newItems = items.filter((item) => !existing.includes(item));
+    if (newItems.length > 0) {
+      setEquipment({ ...equipment, [category]: [...existing, ...newItems] });
     }
-    setNewEquipmentItem({ ...newEquipmentItem, [category]: "" });
+    setEquipmentText({ ...equipmentText, [category]: "" });
   }
 
   function removeEquipmentItem(category: string, item: string) {
@@ -153,7 +160,6 @@ export function CarForm({ car, mode }: CarFormProps) {
     });
 
     if (res.ok) {
-      // Refresh to get updated photos
       const carRes = await fetch(`/api/admin/cars/${car.id}`);
       if (carRes.ok) {
         const updatedCar = await carRes.json();
@@ -198,13 +204,11 @@ export function CarForm({ car, mode }: CarFormProps) {
       const [moved] = updated.splice(fromIndex, 1);
       updated.splice(index, 0, moved);
 
-      // Update positions
       const reordered = updated.map((p, i) => ({ ...p, position: i }));
       setPhotos(reordered);
       setDragOverIndex(null);
       dragItemRef.current = null;
 
-      // Save to API
       if (car?.id) {
         await fetch(`/api/admin/cars/${car.id}/photos`, {
           method: "PUT",
@@ -218,11 +222,33 @@ export function CarForm({ car, mode }: CarFormProps) {
     [photos, car?.id]
   );
 
+  // Auto-generate SEO
+  function generateMeta() {
+    const metaTitle = `${name} | CarBeat`;
+    const metaDesc = [
+      name,
+      year ? `rok ${year}` : "",
+      km ? `${km.toLocaleString("cs-CZ")} km` : "",
+      powerKw ? `${powerKw} kW` : "",
+      fuel,
+      transmissionType,
+      price ? `${price.toLocaleString("cs-CZ")} Kč` : "",
+    ]
+      .filter(Boolean)
+      .join(", ");
+    return {
+      meta_title: metaTitle,
+      meta_description: `${metaDesc}. Prověřený vůz dovezený z Německa s Cebia certifikátem.`,
+    };
+  }
+
   // Submit
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
     setError(null);
+
+    const seo = generateMeta();
 
     const body = {
       name,
@@ -247,8 +273,8 @@ export function CarForm({ car, mode }: CarFormProps) {
       status,
       is_published: status === "v_nabidce",
       sort_order: sortOrder,
-      meta_title: metaTitle || null,
-      meta_description: metaDescription || null,
+      meta_title: seo.meta_title,
+      meta_description: seo.meta_description,
     };
 
     const url =
@@ -271,7 +297,6 @@ export function CarForm({ car, mode }: CarFormProps) {
     const savedCar = await res.json();
 
     if (mode === "create") {
-      // Redirect to edit page so user can upload photos
       router.push(`/admin/auta/${savedCar.id}/upravit`);
     } else {
       router.refresh();
@@ -300,33 +325,6 @@ export function CarForm({ car, mode }: CarFormProps) {
             className={inputClass}
             placeholder="Mercedes-Benz C43 AMG"
           />
-        </Field>
-        <Field label="Slug (URL)">
-          <div className="flex gap-2 items-center">
-            <input
-              type="text"
-              required
-              value={slug}
-              onChange={(e) => {
-                setAutoSlug(false);
-                setSlug(e.target.value);
-              }}
-              className={inputClass}
-              placeholder="mercedes-benz-c43-amg"
-            />
-            {!autoSlug && mode === "create" && (
-              <button
-                type="button"
-                onClick={() => {
-                  setAutoSlug(true);
-                  setSlug(slugify(name));
-                }}
-                className="text-xs text-blue hover:underline whitespace-nowrap"
-              >
-                Auto
-              </button>
-            )}
-          </div>
         </Field>
         <Field label="Cena (Kč)">
           <input
@@ -361,22 +359,38 @@ export function CarForm({ car, mode }: CarFormProps) {
             <input type="number" required value={powerKw || ""} onChange={(e) => setPowerKw(Number(e.target.value))} className={inputClass} />
           </Field>
           <Field label="Palivo">
-            <input type="text" required value={fuel} onChange={(e) => setFuel(e.target.value)} className={inputClass} placeholder="Benzín" />
+            <select value={fuel} onChange={(e) => setFuel(e.target.value)} className={inputClass}>
+              {FUEL_OPTIONS.map((f) => (
+                <option key={f} value={f}>{f}</option>
+              ))}
+            </select>
           </Field>
           <Field label="Motor">
             <input type="text" value={engine} onChange={(e) => setEngine(e.target.value)} className={inputClass} placeholder="3.0 V6 Biturbo" />
           </Field>
-          <Field label="Převodovka">
+          <Field label="Převodovka (název)">
             <input type="text" value={transmission} onChange={(e) => setTransmission(e.target.value)} className={inputClass} placeholder="9G-Tronic" />
           </Field>
           <Field label="Typ převodovky">
-            <input type="text" value={transmissionType} onChange={(e) => setTransmissionType(e.target.value)} className={inputClass} placeholder="Automat" />
+            <select value={transmissionType} onChange={(e) => setTransmissionType(e.target.value)} className={inputClass}>
+              {TRANSMISSION_OPTIONS.map((t) => (
+                <option key={t} value={t}>{t}</option>
+              ))}
+            </select>
           </Field>
           <Field label="Pohon">
-            <input type="text" value={drive} onChange={(e) => setDrive(e.target.value)} className={inputClass} placeholder="4×4" />
+            <select value={drive} onChange={(e) => setDrive(e.target.value)} className={inputClass}>
+              {DRIVE_OPTIONS.map((d) => (
+                <option key={d} value={d}>{d}</option>
+              ))}
+            </select>
           </Field>
           <Field label="Karoserie">
-            <input type="text" value={bodyType} onChange={(e) => setBodyType(e.target.value)} className={inputClass} placeholder="Sedan" />
+            <select value={bodyType} onChange={(e) => setBodyType(e.target.value)} className={inputClass}>
+              {BODY_TYPE_OPTIONS.map((b) => (
+                <option key={b} value={b}>{b}</option>
+              ))}
+            </select>
           </Field>
         </div>
       </Section>
@@ -491,6 +505,9 @@ export function CarForm({ car, mode }: CarFormProps) {
 
       {/* Section: Výbava */}
       <Section title="Výbava">
+        <p className="text-xs text-text-muted mb-4">
+          Položky oddělujte středníkem (;). Např.: Kožené sedačky; Vyhřívaná sedadla; Tempomat
+        </p>
         {EQUIPMENT_CATEGORIES.map((category) => (
           <div key={category} className="mb-6 last:mb-0">
             <h4 className="text-sm font-semibold text-text mb-2">{category}</h4>
@@ -514,28 +531,28 @@ export function CarForm({ car, mode }: CarFormProps) {
             <div className="flex gap-2">
               <input
                 type="text"
-                value={newEquipmentItem[category] ?? ""}
+                value={equipmentText[category] ?? ""}
                 onChange={(e) =>
-                  setNewEquipmentItem({
-                    ...newEquipmentItem,
+                  setEquipmentText({
+                    ...equipmentText,
                     [category]: e.target.value,
                   })
                 }
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     e.preventDefault();
-                    addEquipmentItem(category);
+                    addEquipmentItems(category);
                   }
                 }}
                 className={`${inputClass} text-sm`}
-                placeholder={`Přidat do ${category}...`}
+                placeholder={`Položky oddělené středníkem...`}
               />
               <button
                 type="button"
-                onClick={() => addEquipmentItem(category)}
+                onClick={() => addEquipmentItems(category)}
                 className={btnSecondary}
               >
-                +
+                Přidat
               </button>
             </div>
           </div>
@@ -546,7 +563,7 @@ export function CarForm({ car, mode }: CarFormProps) {
       <Section title="Fotografie">
         {mode === "create" ? (
           <p className="text-sm text-text-muted">
-            Fotky lze nahrát po uložení vozu. Nejdříve vyplňte formulář a klikněte na „Uložit".
+            Fotky lze nahrát po uložení vozu. Nejdříve vyplňte formulář a klikněte na „Vytvořit vůz".
           </p>
         ) : (
           <>
@@ -615,27 +632,6 @@ export function CarForm({ car, mode }: CarFormProps) {
             onChange={(e) => setYoutubeUrl(e.target.value)}
             className={inputClass}
             placeholder="https://www.youtube.com/watch?v=..."
-          />
-        </Field>
-      </Section>
-
-      {/* Section: SEO */}
-      <Section title="SEO">
-        <Field label="Meta title">
-          <input
-            type="text"
-            value={metaTitle}
-            onChange={(e) => setMetaTitle(e.target.value)}
-            className={inputClass}
-            placeholder="Automaticky z názvu vozu"
-          />
-        </Field>
-        <Field label="Meta description">
-          <textarea
-            value={metaDescription}
-            onChange={(e) => setMetaDescription(e.target.value)}
-            className={`${inputClass} min-h-[80px] resize-y`}
-            placeholder="Popis pro vyhledávače..."
           />
         </Field>
       </Section>
