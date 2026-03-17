@@ -6,6 +6,7 @@ import Gallery from "@/components/car/Gallery";
 import SpecsGrid from "@/components/car/SpecsGrid";
 import EquipmentSection from "@/components/car/EquipmentSection";
 import DefectsBox from "@/components/car/DefectsBox";
+import { CarProductJsonLd, BreadcrumbJsonLd } from "@/components/seo/JsonLd";
 
 // Revalidate every 60s so new/updated cars appear without redeploy
 export const revalidate = 60;
@@ -180,8 +181,28 @@ export default async function CarDetailPage({ params }: PageProps) {
     { icon: <DriveIcon />, label: "Pohon", value: car.drive },
   ];
 
+  const firstPhotoUrl = photos[0] ?? undefined;
+
   return (
     <section className="pt-[calc(36px+68px+24px)] pb-16 max-md:pt-[calc(64px+16px)]">
+      <CarProductJsonLd
+        name={car.name}
+        description={car.description ?? `${car.name}, ${car.year}, ${formattedKm} km, ${car.power_kw} kW`}
+        image={firstPhotoUrl}
+        url={`https://carbeat.cz/auto/${slug}`}
+        price={car.price}
+        year={car.year}
+        km={car.km}
+        fuel={car.fuel}
+        transmission={car.transmission}
+      />
+      <BreadcrumbJsonLd
+        items={[
+          { name: "Domů", url: "https://carbeat.cz" },
+          { name: "Nabídka", url: "https://carbeat.cz/nabidka" },
+          { name: car.name, url: `https://carbeat.cz/auto/${slug}` },
+        ]}
+      />
       <div className="mx-auto max-w-[1200px] px-6">
         {/* Back link */}
         <Link

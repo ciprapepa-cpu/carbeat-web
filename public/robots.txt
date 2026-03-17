@@ -1,0 +1,7 @@
+# CarBeat.cz — robots.txt
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api/
+
+Sitemap: https://carbeat.cz/sitemap.xml

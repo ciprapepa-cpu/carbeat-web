@@ -4,6 +4,7 @@ import Topbar from "@/components/layout/Topbar";
 import Navigation from "@/components/layout/Navigation";
 import Footer from "@/components/layout/Footer";
 import WhatsAppFloat from "@/components/layout/WhatsAppFloat";
+import { OrganizationJsonLd } from "@/components/seo/JsonLd";
 
 export const metadata: Metadata = {
   title: {
@@ -52,6 +53,7 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-surface text-text antialiased">
+        <OrganizationJsonLd />
         <Topbar />
         <Navigation />
         <main>{children}</main>
