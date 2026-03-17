@@ -1,0 +1,731 @@
+"use client";
+
+import { useState, useRef, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import { slugify } from "@/lib/utils/slugify";
+import { CAR_SEGMENTS, CAR_STATUSES } from "@/lib/validations/car";
+import type { CarWithPhotos, CarPhoto, CarSegment, CarStatus } from "@/types/car";
+
+const SEGMENT_LABELS: Record<string, string> = {
+  japonska: "Japonská",
+  "seat-cupra": "Seat / Cupra",
+  elektro: "Elektro",
+  sportovni: "Sportovní",
+  ostatni: "Ostatní",
+};
+
+const EQUIPMENT_CATEGORIES = ["Komfort", "Bezpečnost", "Exteriér", "Interiér"];
+
+const STATUS_LABELS: Record<CarStatus, string> = {
+  koncept: "Koncept — skryté",
+  pripravujeme: "Připravujeme — zjednodušená karta",
+  v_nabidce: "V nabídce — plně viditelné",
+  prodano: "Prodáno — v sekci prodané",
+};
+
+interface CarFormProps {
+  car?: CarWithPhotos;
+  mode: "create" | "edit";
+}
+
+export function CarForm({ car, mode }: CarFormProps) {
+  const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Basic info
+  const [name, setName] = useState(car?.name ?? "");
+  const [slug, setSlug] = useState(car?.slug ?? "");
+  const [autoSlug, setAutoSlug] = useState(!car);
+  const [price, setPrice] = useState(car?.price ?? 0);
+  const [description, setDescription] = useState(car?.description ?? "");
+
+  // Params
+  const [year, setYear] = useState(car?.year ?? new Date().getFullYear());
+  const [km, setKm] = useState(car?.km ?? 0);
+  const [powerKw, setPowerKw] = useState(car?.power_kw ?? 0);
+  const [fuel, setFuel] = useState(car?.fuel ?? "");
+  const [engine, setEngine] = useState(car?.engine ?? "");
+  const [transmission, setTransmission] = useState(car?.transmission ?? "");
+  const [transmissionType, setTransmissionType] = useState(car?.transmission_type ?? "");
+  const [drive, setDrive] = useState(car?.drive ?? "");
+  const [bodyType, setBodyType] = useState(car?.body_type ?? "");
+
+  // Category
+  const [segment, setSegment] = useState<CarSegment>(car?.segment ?? "ostatni");
+  const [categoryLabel, setCategoryLabel] = useState(car?.category_label ?? "");
+
+  // Badges & Defects
+  const [badges, setBadges] = useState<string[]>(car?.badges ?? ["Cebia"]);
+  const [newBadge, setNewBadge] = useState("");
+  const [defects, setDefects] = useState<string[]>(car?.defects ?? []);
+  const [newDefect, setNewDefect] = useState("");
+
+  // Equipment
+  const [equipment, setEquipment] = useState<Record<string, string[]>>(
+    car?.equipment ?? Object.fromEntries(EQUIPMENT_CATEGORIES.map((c) => [c, []]))
+  );
+  const [newEquipmentItem, setNewEquipmentItem] = useState<Record<string, string>>({});
+
+  // Photos
+  const [photos, setPhotos] = useState<CarPhoto[]>(
+    car?.car_photos?.sort((a, b) => a.position - b.position) ?? []
+  );
+  const [uploading, setUploading] = useState(false);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  const dragItemRef = useRef<number | null>(null);
+
+  // YouTube & SEO
+  const [youtubeUrl, setYoutubeUrl] = useState(car?.youtube_url ?? "");
+  const [metaTitle, setMetaTitle] = useState(car?.meta_title ?? "");
+  const [metaDescription, setMetaDescription] = useState(car?.meta_description ?? "");
+
+  // Publish
+  const [status, setStatus] = useState<CarStatus>(car?.status ?? "koncept");
+  const [sortOrder, setSortOrder] = useState(car?.sort_order ?? 0);
+
+  // Form state
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Auto-slug from name
+  function handleNameChange(value: string) {
+    setName(value);
+    if (autoSlug) {
+      setSlug(slugify(value));
+    }
+  }
+
+  // Badges
+  function addBadge() {
+    const trimmed = newBadge.trim();
+    if (trimmed && !badges.includes(trimmed)) {
+      setBadges([...badges, trimmed]);
+      setNewBadge("");
+    }
+  }
+
+  function removeBadge(badge: string) {
+    setBadges(badges.filter((b) => b !== badge));
+  }
+
+  // Defects
+  function addDefect() {
+    const trimmed = newDefect.trim();
+    if (trimmed && !defects.includes(trimmed)) {
+      setDefects([...defects, trimmed]);
+      setNewDefect("");
+    }
+  }
+
+  function removeDefect(defect: string) {
+    setDefects(defects.filter((d) => d !== defect));
+  }
+
+  // Equipment
+  function addEquipmentItem(category: string) {
+    const item = newEquipmentItem[category]?.trim();
+    if (!item) return;
+    const existing = equipment[category] ?? [];
+    if (!existing.includes(item)) {
+      setEquipment({ ...equipment, [category]: [...existing, item] });
+    }
+    setNewEquipmentItem({ ...newEquipmentItem, [category]: "" });
+  }
+
+  function removeEquipmentItem(category: string, item: string) {
+    setEquipment({
+      ...equipment,
+      [category]: (equipment[category] ?? []).filter((i) => i !== item),
+    });
+  }
+
+  // Photos — upload
+  async function handlePhotoUpload(files: FileList | null) {
+    if (!files || files.length === 0 || !car?.id) return;
+
+    setUploading(true);
+    const formData = new FormData();
+    Array.from(files).forEach((file) => formData.append("photos", file));
+
+    const res = await fetch(`/api/admin/cars/${car.id}/photos`, {
+      method: "POST",
+      body: formData,
+    });
+
+    if (res.ok) {
+      // Refresh to get updated photos
+      const carRes = await fetch(`/api/admin/cars/${car.id}`);
+      if (carRes.ok) {
+        const updatedCar = await carRes.json();
+        setPhotos(
+          (updatedCar.car_photos as CarPhoto[]).sort((a, b) => a.position - b.position)
+        );
+      }
+    }
+    setUploading(false);
+  }
+
+  // Photos — delete
+  async function deletePhoto(photoId: string) {
+    if (!car?.id) return;
+    const res = await fetch(`/api/admin/cars/${car.id}/photos?photoId=${photoId}`, {
+      method: "DELETE",
+    });
+    if (res.ok) {
+      setPhotos(photos.filter((p) => p.id !== photoId));
+    }
+  }
+
+  // Photos — drag reorder
+  const handleDragStart = useCallback((index: number) => {
+    dragItemRef.current = index;
+  }, []);
+
+  const handleDragOver = useCallback((e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    setDragOverIndex(index);
+  }, []);
+
+  const handleDrop = useCallback(
+    async (index: number) => {
+      const fromIndex = dragItemRef.current;
+      if (fromIndex === null || fromIndex === index) {
+        setDragOverIndex(null);
+        return;
+      }
+
+      const updated = [...photos];
+      const [moved] = updated.splice(fromIndex, 1);
+      updated.splice(index, 0, moved);
+
+      // Update positions
+      const reordered = updated.map((p, i) => ({ ...p, position: i }));
+      setPhotos(reordered);
+      setDragOverIndex(null);
+      dragItemRef.current = null;
+
+      // Save to API
+      if (car?.id) {
+        await fetch(`/api/admin/cars/${car.id}/photos`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            photos: reordered.map((p) => ({ id: p.id, position: p.position })),
+          }),
+        });
+      }
+    },
+    [photos, car?.id]
+  );
+
+  // Submit
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setSaving(true);
+    setError(null);
+
+    const body = {
+      name,
+      slug,
+      segment,
+      category_label: categoryLabel,
+      year,
+      km,
+      power_kw: powerKw,
+      fuel,
+      engine,
+      transmission,
+      transmission_type: transmissionType,
+      drive,
+      body_type: bodyType,
+      price,
+      description: description || null,
+      defects,
+      badges,
+      youtube_url: youtubeUrl || null,
+      equipment,
+      status,
+      is_published: status === "v_nabidce",
+      sort_order: sortOrder,
+      meta_title: metaTitle || null,
+      meta_description: metaDescription || null,
+    };
+
+    const url =
+      mode === "create" ? "/api/admin/cars" : `/api/admin/cars/${car!.id}`;
+    const method = mode === "create" ? "POST" : "PUT";
+
+    const res = await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      setError(data.error || "Nastala chyba při ukládání");
+      setSaving(false);
+      return;
+    }
+
+    const savedCar = await res.json();
+
+    if (mode === "create") {
+      // Redirect to edit page so user can upload photos
+      router.push(`/admin/auta/${savedCar.id}/upravit`);
+    } else {
+      router.refresh();
+      setSaving(false);
+    }
+  }
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-8 max-w-3xl">
+      {error && (
+        <div className="bg-red-500/10 border border-red-500/20 rounded-[8px] px-4 py-3 text-red-500 text-sm">
+          {error}
+        </div>
+      )}
+
+      {/* Section: Základní info */}
+      <Section title="Základní info">
+        <Field label="Název vozu">
+          <input
+            type="text"
+            required
+            value={name}
+            onChange={(e) => handleNameChange(e.target.value)}
+            className={inputClass}
+            placeholder="Mercedes-Benz C43 AMG"
+          />
+        </Field>
+        <Field label="Slug (URL)">
+          <div className="flex gap-2 items-center">
+            <input
+              type="text"
+              required
+              value={slug}
+              onChange={(e) => {
+                setAutoSlug(false);
+                setSlug(e.target.value);
+              }}
+              className={inputClass}
+              placeholder="mercedes-benz-c43-amg"
+            />
+            {!autoSlug && mode === "create" && (
+              <button
+                type="button"
+                onClick={() => {
+                  setAutoSlug(true);
+                  setSlug(slugify(name));
+                }}
+                className="text-xs text-blue hover:underline whitespace-nowrap"
+              >
+                Auto
+              </button>
+            )}
+          </div>
+        </Field>
+        <Field label="Cena (Kč)">
+          <input
+            type="number"
+            required
+            value={price || ""}
+            onChange={(e) => setPrice(Number(e.target.value))}
+            className={inputClass}
+            placeholder="749900"
+          />
+        </Field>
+        <Field label="Popis">
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className={`${inputClass} min-h-[120px] resize-y`}
+            placeholder="Detailní popis vozu..."
+          />
+        </Field>
+      </Section>
+
+      {/* Section: Parametry */}
+      <Section title="Parametry">
+        <div className="grid grid-cols-2 gap-4">
+          <Field label="Rok">
+            <input type="number" required value={year} onChange={(e) => setYear(Number(e.target.value))} className={inputClass} />
+          </Field>
+          <Field label="Najeto (km)">
+            <input type="number" required value={km || ""} onChange={(e) => setKm(Number(e.target.value))} className={inputClass} />
+          </Field>
+          <Field label="Výkon (kW)">
+            <input type="number" required value={powerKw || ""} onChange={(e) => setPowerKw(Number(e.target.value))} className={inputClass} />
+          </Field>
+          <Field label="Palivo">
+            <input type="text" required value={fuel} onChange={(e) => setFuel(e.target.value)} className={inputClass} placeholder="Benzín" />
+          </Field>
+          <Field label="Motor">
+            <input type="text" value={engine} onChange={(e) => setEngine(e.target.value)} className={inputClass} placeholder="3.0 V6 Biturbo" />
+          </Field>
+          <Field label="Převodovka">
+            <input type="text" value={transmission} onChange={(e) => setTransmission(e.target.value)} className={inputClass} placeholder="9G-Tronic" />
+          </Field>
+          <Field label="Typ převodovky">
+            <input type="text" value={transmissionType} onChange={(e) => setTransmissionType(e.target.value)} className={inputClass} placeholder="Automat" />
+          </Field>
+          <Field label="Pohon">
+            <input type="text" value={drive} onChange={(e) => setDrive(e.target.value)} className={inputClass} placeholder="4×4" />
+          </Field>
+          <Field label="Karoserie">
+            <input type="text" value={bodyType} onChange={(e) => setBodyType(e.target.value)} className={inputClass} placeholder="Sedan" />
+          </Field>
+        </div>
+      </Section>
+
+      {/* Section: Kategorie */}
+      <Section title="Kategorie">
+        <Field label="Segment">
+          <select
+            value={segment}
+            onChange={(e) => setSegment(e.target.value as CarSegment)}
+            className={inputClass}
+          >
+            {CAR_SEGMENTS.map((s) => (
+              <option key={s} value={s}>
+                {SEGMENT_LABELS[s]}
+              </option>
+            ))}
+          </select>
+        </Field>
+        <Field label="Kategorie (štítek)">
+          <input
+            type="text"
+            value={categoryLabel}
+            onChange={(e) => setCategoryLabel(e.target.value)}
+            className={inputClass}
+            placeholder="Sportovní sedan"
+          />
+        </Field>
+      </Section>
+
+      {/* Section: Odznaky */}
+      <Section title="Odznaky (badges)">
+        <div className="flex flex-wrap gap-2 mb-3">
+          {badges.map((badge) => (
+            <span
+              key={badge}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium ${
+                badge === "Cebia"
+                  ? "bg-[#dcfce7] text-[#16a34a]"
+                  : "bg-blue/10 text-blue"
+              }`}
+            >
+              {badge}
+              <button
+                type="button"
+                onClick={() => removeBadge(badge)}
+                className="ml-1 text-current opacity-60 hover:opacity-100"
+              >
+                ×
+              </button>
+            </span>
+          ))}
+        </div>
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={newBadge}
+            onChange={(e) => setNewBadge(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                addBadge();
+              }
+            }}
+            className={inputClass}
+            placeholder="Nový odznak..."
+          />
+          <button type="button" onClick={addBadge} className={btnSecondary}>
+            Přidat
+          </button>
+        </div>
+      </Section>
+
+      {/* Section: Závady */}
+      <Section title="Závady">
+        <div className="flex flex-wrap gap-2 mb-3">
+          {defects.map((defect) => (
+            <span
+              key={defect}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-red-500/10 text-red-500"
+            >
+              {defect}
+              <button
+                type="button"
+                onClick={() => removeDefect(defect)}
+                className="ml-1 text-current opacity-60 hover:opacity-100"
+              >
+                ×
+              </button>
+            </span>
+          ))}
+        </div>
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={newDefect}
+            onChange={(e) => setNewDefect(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                addDefect();
+              }
+            }}
+            className={inputClass}
+            placeholder="Nová závada..."
+          />
+          <button type="button" onClick={addDefect} className={btnSecondary}>
+            Přidat
+          </button>
+        </div>
+      </Section>
+
+      {/* Section: Výbava */}
+      <Section title="Výbava">
+        {EQUIPMENT_CATEGORIES.map((category) => (
+          <div key={category} className="mb-6 last:mb-0">
+            <h4 className="text-sm font-semibold text-text mb-2">{category}</h4>
+            <div className="flex flex-wrap gap-1.5 mb-2">
+              {(equipment[category] ?? []).map((item) => (
+                <span
+                  key={item}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs bg-bg text-text-muted"
+                >
+                  {item}
+                  <button
+                    type="button"
+                    onClick={() => removeEquipmentItem(category, item)}
+                    className="ml-0.5 opacity-60 hover:opacity-100"
+                  >
+                    ×
+                  </button>
+                </span>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={newEquipmentItem[category] ?? ""}
+                onChange={(e) =>
+                  setNewEquipmentItem({
+                    ...newEquipmentItem,
+                    [category]: e.target.value,
+                  })
+                }
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    addEquipmentItem(category);
+                  }
+                }}
+                className={`${inputClass} text-sm`}
+                placeholder={`Přidat do ${category}...`}
+              />
+              <button
+                type="button"
+                onClick={() => addEquipmentItem(category)}
+                className={btnSecondary}
+              >
+                +
+              </button>
+            </div>
+          </div>
+        ))}
+      </Section>
+
+      {/* Section: Fotografie */}
+      <Section title="Fotografie">
+        {mode === "create" ? (
+          <p className="text-sm text-text-muted">
+            Fotky lze nahrát po uložení vozu. Nejdříve vyplňte formulář a klikněte na „Uložit".
+          </p>
+        ) : (
+          <>
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 mb-4">
+              {photos.map((photo, index) => (
+                <div
+                  key={photo.id}
+                  draggable
+                  onDragStart={() => handleDragStart(index)}
+                  onDragOver={(e) => handleDragOver(e, index)}
+                  onDrop={() => handleDrop(index)}
+                  onDragEnd={() => setDragOverIndex(null)}
+                  className={`relative group aspect-[4/3] rounded-[8px] overflow-hidden bg-bg border-2 cursor-grab active:cursor-grabbing transition-all ${
+                    dragOverIndex === index
+                      ? "border-blue scale-105"
+                      : "border-transparent"
+                  }`}
+                >
+                  <img
+                    src={`${supabaseUrl}/storage/v1/object/public/car-photos/${photo.storage_path}`}
+                    alt={photo.alt_text || `Foto ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center">
+                    <button
+                      type="button"
+                      onClick={() => deletePhoto(photo.id)}
+                      className="opacity-0 group-hover:opacity-100 px-2 py-1 bg-red-500 text-white rounded text-xs font-medium transition-opacity"
+                    >
+                      Smazat
+                    </button>
+                  </div>
+                  <span className="absolute top-1 left-1 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded">
+                    {index + 1}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              accept="image/jpeg,image/png,image/webp"
+              className="hidden"
+              onChange={(e) => handlePhotoUpload(e.target.files)}
+            />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              className={btnSecondary}
+            >
+              {uploading ? "Nahrávám..." : "Nahrát fotky"}
+            </button>
+          </>
+        )}
+      </Section>
+
+      {/* Section: YouTube */}
+      <Section title="YouTube">
+        <Field label="URL videa">
+          <input
+            type="text"
+            value={youtubeUrl}
+            onChange={(e) => setYoutubeUrl(e.target.value)}
+            className={inputClass}
+            placeholder="https://www.youtube.com/watch?v=..."
+          />
+        </Field>
+      </Section>
+
+      {/* Section: SEO */}
+      <Section title="SEO">
+        <Field label="Meta title">
+          <input
+            type="text"
+            value={metaTitle}
+            onChange={(e) => setMetaTitle(e.target.value)}
+            className={inputClass}
+            placeholder="Automaticky z názvu vozu"
+          />
+        </Field>
+        <Field label="Meta description">
+          <textarea
+            value={metaDescription}
+            onChange={(e) => setMetaDescription(e.target.value)}
+            className={`${inputClass} min-h-[80px] resize-y`}
+            placeholder="Popis pro vyhledávače..."
+          />
+        </Field>
+      </Section>
+
+      {/* Section: Stav & Publikace */}
+      <Section title="Stav & Publikace">
+        <Field label="Stav vozu">
+          <select
+            value={status}
+            onChange={(e) => setStatus(e.target.value as CarStatus)}
+            className={inputClass}
+          >
+            {CAR_STATUSES.map((s) => (
+              <option key={s} value={s}>
+                {STATUS_LABELS[s]}
+              </option>
+            ))}
+          </select>
+        </Field>
+        <Field label="Pořadí řazení">
+          <input
+            type="number"
+            value={sortOrder}
+            onChange={(e) => setSortOrder(Number(e.target.value))}
+            className={`${inputClass} max-w-[120px]`}
+          />
+        </Field>
+      </Section>
+
+      {/* Actions */}
+      <div className="flex items-center gap-4 pt-4 border-t border-border">
+        <button
+          type="submit"
+          disabled={saving}
+          className="px-6 py-2.5 rounded-[8px] text-sm font-semibold bg-blue !text-white border-2 border-blue transition-all duration-[250ms] hover:bg-blue-hover hover:border-blue-hover disabled:opacity-50"
+        >
+          {saving ? "Ukládám..." : mode === "create" ? "Vytvořit vůz" : "Uložit změny"}
+        </button>
+        <a
+          href="/admin"
+          className="px-4 py-2.5 text-sm font-medium text-text-muted hover:text-text transition-colors"
+        >
+          Zpět
+        </a>
+        {mode === "edit" && saving === false && (
+          <span className="text-xs text-text-muted ml-auto">
+            Uloženo
+          </span>
+        )}
+      </div>
+    </form>
+  );
+}
+
+// Shared styles
+const inputClass =
+  "w-full px-3 py-2 rounded-[8px] border border-border bg-bg text-text placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-blue/40 transition-colors";
+
+const btnSecondary =
+  "px-4 py-2 rounded-[8px] text-sm font-medium bg-bg border border-border text-text hover:bg-blue-light transition-colors whitespace-nowrap";
+
+// Helper components
+function Section({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="bg-surface border border-border rounded-[12px] p-6">
+      <h3 className="text-base font-semibold text-text mb-4">{title}</h3>
+      {children}
+    </section>
+  );
+}
+
+function Field({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="mb-4 last:mb-0">
+      <label className="block text-sm font-medium text-text-muted mb-1.5">
+        {label}
+      </label>
+      {children}
+    </div>
+  );
+}

@@ -1,4 +1,5 @@
 export type CarSegment = "japonska" | "seat-cupra" | "elektro" | "sportovni" | "ostatni";
+export type CarStatus = "koncept" | "pripravujeme" | "v_nabidce" | "prodano";
 
 export interface Car {
   id: string;
@@ -21,6 +22,7 @@ export interface Car {
   badges: string[];
   youtube_url: string | null;
   equipment: Record<string, string[]>;
+  status: CarStatus;
   is_published: boolean;
   sort_order: number;
   meta_title: string | null;

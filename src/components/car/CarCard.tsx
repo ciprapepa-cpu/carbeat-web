@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { CarStatus } from "@/types/car";
 
 interface CarCardProps {
   slug: string;
@@ -14,6 +15,7 @@ interface CarCardProps {
   imageSrc: string;
   imageAlt: string;
   badges?: readonly string[];
+  status?: CarStatus;
 }
 
 export default function CarCard({
@@ -29,38 +31,79 @@ export default function CarCard({
   imageSrc,
   imageAlt,
   badges = ["Cebia"],
+  status = "v_nabidce",
 }: CarCardProps) {
-  return (
-    <article className="border border-border rounded-[20px] overflow-hidden transition-all duration-[250ms] bg-surface flex flex-col hover:shadow-lg hover:-translate-y-1 dark:border-border">
+  const isPripravujeme = status === "pripravujeme";
+  const isProdano = status === "prodano";
+  const isClickable = status === "v_nabidce";
+
+  const card = (
+    <article
+      className={`border border-border rounded-[20px] overflow-hidden transition-all duration-[250ms] bg-surface flex flex-col dark:border-border ${
+        isClickable
+          ? "hover:shadow-lg hover:-translate-y-1"
+          : isProdano
+            ? "opacity-75"
+            : ""
+      }`}
+    >
       {/* Image */}
       <div className="relative aspect-[16/10] bg-bg overflow-hidden dark:bg-bg">
         <Image
           src={imageSrc}
           alt={imageAlt}
           fill
-          className="object-cover transition-transform duration-500 hover:scale-105"
+          className={`object-cover ${isClickable ? "transition-transform duration-500 hover:scale-105" : ""}`}
           sizes="(max-width: 900px) 100vw, 50vw"
         />
-        <div className="absolute bottom-3 left-3 flex gap-1.5">
-          {badges.map((badge) => (
-            <span
-              key={badge}
-              className={`inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full text-sm font-bold ${
-                badge === "Cebia"
-                  ? "!bg-[#dcfce7] !text-[#16a34a]"
-                  : "bg-blue text-white"
-              }`}
-            >
-              {badge === "Cebia" ? `✓ ${badge}` : badge}
+
+        {/* Status badge — top */}
+        {isPripravujeme && (
+          <div className="absolute top-3 left-3">
+            <span className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full text-sm font-bold !bg-[#dcfce7] !text-[#16a34a]">
+              Připravujeme
             </span>
-          ))}
-        </div>
+          </div>
+        )}
+        {isProdano && (
+          <div className="absolute top-3 left-3">
+            <span className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full text-sm font-bold bg-bg text-text-muted">
+              Prodáno
+            </span>
+          </div>
+        )}
+
+        {/* Badges — bottom */}
+        {!isProdano && (
+          <div className="absolute bottom-3 left-3 flex gap-1.5">
+            {badges.map((badge) => (
+              <span
+                key={badge}
+                className={`inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full text-sm font-bold ${
+                  badge === "Cebia"
+                    ? "!bg-[#dcfce7] !text-[#16a34a]"
+                    : "bg-blue text-white"
+                }`}
+              >
+                {badge === "Cebia" ? `✓ ${badge}` : badge}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Body */}
       <div className="p-5 px-[22px] flex flex-col flex-1">
-        <p className="text-[11px] font-semibold text-blue uppercase tracking-[1.5px] mb-[6px]">{category}</p>
-        <h3 className="text-xl font-bold text-text mb-[10px] leading-snug min-h-[2.5em] line-clamp-2">{name}</h3>
+        <p
+          className={`text-[11px] font-semibold uppercase tracking-[1.5px] mb-[6px] ${
+            isPripravujeme ? "text-green" : "text-blue"
+          }`}
+        >
+          {category}
+        </p>
+        <h3 className="text-xl font-bold text-text mb-[10px] leading-snug min-h-[2.5em] line-clamp-2">
+          {name}
+        </h3>
 
         {/* Spec row 1 */}
         <div className="flex flex-wrap gap-4 mb-2 text-[15px] text-text-muted">
@@ -77,14 +120,32 @@ export default function CarCard({
         {/* Footer */}
         <div className="mt-auto flex items-center justify-between pt-4 border-t border-border">
           <div className="text-[26px] font-extrabold text-text">{price}</div>
-          <Link
-            href={`/auto/${slug}`}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[8px] text-sm font-semibold bg-blue !text-white border-2 border-blue transition-all duration-[250ms] hover:bg-blue-hover hover:border-blue-hover hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(28,138,201,0.35)]"
-          >
-            Prohlédnout vůz →
-          </Link>
+
+          {isClickable && (
+            <Link
+              href={`/auto/${slug}`}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[8px] text-sm font-semibold bg-blue !text-white border-2 border-blue transition-all duration-[250ms] hover:bg-blue-hover hover:border-blue-hover hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(28,138,201,0.35)]"
+            >
+              Prohlédnout vůz →
+            </Link>
+          )}
+
+          {isPripravujeme && (
+            <a
+              href="tel:+420777027809"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[8px] text-sm font-semibold !bg-[#16a34a] !text-white border-2 !border-[#16a34a] transition-all duration-[250ms] hover:!bg-[#15803d] hover:!border-[#15803d] hover:-translate-y-0.5"
+            >
+              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
+              </svg>
+              Pro info volejte
+            </a>
+          )}
         </div>
       </div>
     </article>
   );
+
+  // Prodáno cards are not clickable at all
+  return card;
 }
