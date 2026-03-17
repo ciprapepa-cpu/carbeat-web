@@ -77,6 +77,8 @@ export function CarForm({ car, mode }: CarFormProps) {
   const [uploading, setUploading] = useState(false);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const dragItemRef = useRef<number | null>(null);
+  const [selectedPhotos, setSelectedPhotos] = useState<Set<string>>(new Set());
+  const [deletingBatch, setDeletingBatch] = useState(false);
 
   // YouTube
   const [youtubeUrl, setYoutubeUrl] = useState(car?.youtube_url ?? "");
@@ -258,7 +260,7 @@ export function CarForm({ car, mode }: CarFormProps) {
     setUploading(false);
   }
 
-  // Photos — delete
+  // Photos — delete single
   async function deletePhoto(photoId: string) {
     if (!car?.id) return;
     const res = await fetch(`/api/admin/cars/${car.id}/photos?photoId=${photoId}`, {
@@ -266,6 +268,48 @@ export function CarForm({ car, mode }: CarFormProps) {
     });
     if (res.ok) {
       setPhotos(photos.filter((p) => p.id !== photoId));
+      setSelectedPhotos((prev) => {
+        const next = new Set(prev);
+        next.delete(photoId);
+        return next;
+      });
+    }
+  }
+
+  // Photos — batch delete
+  async function deleteSelectedPhotos() {
+    if (!car?.id || selectedPhotos.size === 0) return;
+    if (!confirm(`Smazat ${selectedPhotos.size} ${selectedPhotos.size === 1 ? "fotku" : selectedPhotos.size <= 4 ? "fotky" : "fotek"}?`)) return;
+
+    setDeletingBatch(true);
+    const ids = Array.from(selectedPhotos).join(",");
+    const res = await fetch(`/api/admin/cars/${car.id}/photos?photoIds=${ids}`, {
+      method: "DELETE",
+    });
+    if (res.ok) {
+      setPhotos(photos.filter((p) => !selectedPhotos.has(p.id)));
+      setSelectedPhotos(new Set());
+    }
+    setDeletingBatch(false);
+  }
+
+  function togglePhotoSelection(photoId: string) {
+    setSelectedPhotos((prev) => {
+      const next = new Set(prev);
+      if (next.has(photoId)) {
+        next.delete(photoId);
+      } else {
+        next.add(photoId);
+      }
+      return next;
+    });
+  }
+
+  function selectAllPhotos() {
+    if (selectedPhotos.size === photos.length) {
+      setSelectedPhotos(new Set());
+    } else {
+      setSelectedPhotos(new Set(photos.map((p) => p.id)));
     }
   }
 
@@ -655,54 +699,95 @@ export function CarForm({ car, mode }: CarFormProps) {
         ) : (
           <>
             {photos.length > 0 && (
-              <p className="text-xs text-text-muted mb-3">
-                Přetáhněte fotky pro změnu pořadí. První fotka = hlavní foto na kartě vozu.
-              </p>
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-xs text-text-muted">
+                  Přetáhněte fotky pro změnu pořadí. Kliknutím na checkbox označte ke smazání.
+                </p>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={selectAllPhotos}
+                    className="text-xs text-text-muted hover:text-text transition-colors"
+                  >
+                    {selectedPhotos.size === photos.length ? "Zrušit výběr" : "Vybrat vše"}
+                  </button>
+                  {selectedPhotos.size > 0 && (
+                    <button
+                      type="button"
+                      onClick={deleteSelectedPhotos}
+                      disabled={deletingBatch}
+                      className="px-3 py-1 rounded-[6px] text-xs font-medium bg-red-500 !text-white hover:bg-red-600 transition-colors disabled:opacity-50"
+                    >
+                      {deletingBatch ? "Mažu..." : `Smazat označené (${selectedPhotos.size})`}
+                    </button>
+                  )}
+                </div>
+              </div>
             )}
 
             {photos.length > 0 ? (
               <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 mb-4">
-                {photos.map((photo, index) => (
-                  <div
-                    key={photo.id}
-                    draggable
-                    onDragStart={() => handleDragStart(index)}
-                    onDragOver={(e) => handleDragOver(e, index)}
-                    onDrop={() => handleDrop(index)}
-                    onDragEnd={() => setDragOverIndex(null)}
-                    className={`relative group aspect-[4/3] rounded-[8px] overflow-hidden bg-bg cursor-grab active:cursor-grabbing transition-all ${
-                      dragOverIndex === index
-                        ? "ring-2 ring-blue scale-105"
-                        : index === 0
-                          ? "ring-2 ring-green"
-                          : "border-2 border-transparent hover:border-border"
-                    }`}
-                  >
-                    <img
-                      src={`${supabaseUrl}/storage/v1/object/public/car-photos/${photo.storage_path}`}
-                      alt={photo.alt_text || `Foto ${index + 1}`}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center">
+                {photos.map((photo, index) => {
+                  const isSelected = selectedPhotos.has(photo.id);
+                  const photoSrc = photo.storage_path.startsWith("/images/")
+                    ? photo.storage_path
+                    : `${supabaseUrl}/storage/v1/object/public/car-photos/${photo.storage_path}`;
+
+                  return (
+                    <div
+                      key={photo.id}
+                      draggable
+                      onDragStart={() => handleDragStart(index)}
+                      onDragOver={(e) => handleDragOver(e, index)}
+                      onDrop={() => handleDrop(index)}
+                      onDragEnd={() => setDragOverIndex(null)}
+                      className={`relative group aspect-[4/3] rounded-[8px] overflow-hidden bg-bg cursor-grab active:cursor-grabbing transition-all ${
+                        isSelected
+                          ? "ring-2 ring-red-500"
+                          : dragOverIndex === index
+                            ? "ring-2 ring-blue scale-105"
+                            : index === 0
+                              ? "ring-2 ring-green"
+                              : "border-2 border-transparent hover:border-border"
+                      }`}
+                    >
+                      <img
+                        src={photoSrc}
+                        alt={photo.alt_text || `Foto ${index + 1}`}
+                        className={`w-full h-full object-cover transition-opacity ${isSelected ? "opacity-50" : ""}`}
+                      />
+                      {/* Checkbox */}
                       <button
                         type="button"
-                        onClick={() => deletePhoto(photo.id)}
-                        className="opacity-0 group-hover:opacity-100 px-2 py-1 bg-red-500 text-white rounded text-xs font-medium transition-opacity"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          togglePhotoSelection(photo.id);
+                        }}
+                        className={`absolute top-1 right-1 w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
+                          isSelected
+                            ? "bg-red-500 border-red-500"
+                            : "border-white/70 bg-black/30 opacity-0 group-hover:opacity-100"
+                        }`}
                       >
-                        Smazat
+                        {isSelected && (
+                          <svg width="12" height="12" fill="none" stroke="white" strokeWidth="3" viewBox="0 0 24 24">
+                            <path d="M20 6L9 17l-5-5" />
+                          </svg>
+                        )}
                       </button>
+                      {/* Position / Main badge */}
+                      {index === 0 ? (
+                        <span className="absolute top-1 left-1 bg-green text-white text-[10px] px-1.5 py-0.5 rounded font-semibold">
+                          Hlavní
+                        </span>
+                      ) : (
+                        <span className="absolute top-1 left-1 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded">
+                          {index + 1}
+                        </span>
+                      )}
                     </div>
-                    {index === 0 ? (
-                      <span className="absolute top-1 left-1 bg-green text-white text-[10px] px-1.5 py-0.5 rounded font-semibold">
-                        Hlavní
-                      </span>
-                    ) : (
-                      <span className="absolute top-1 left-1 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded">
-                        {index + 1}
-                      </span>
-                    )}
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             ) : (
               <div className="border-2 border-dashed border-border rounded-[12px] p-8 text-center mb-4">

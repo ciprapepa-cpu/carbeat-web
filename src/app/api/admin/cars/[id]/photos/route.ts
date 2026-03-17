@@ -141,7 +141,8 @@ export async function PUT(
   return NextResponse.json({ success: true });
 }
 
-// DELETE /api/admin/cars/[id]/photos — delete a photo
+// DELETE /api/admin/cars/[id]/photos — delete one or multiple photos
+// Single: ?photoId=xxx  |  Batch: ?photoIds=id1,id2,id3
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -155,32 +156,46 @@ export async function DELETE(
   const { id } = await params;
   const { searchParams } = new URL(request.url);
   const photoId = searchParams.get("photoId");
+  const photoIds = searchParams.get("photoIds");
 
-  if (!photoId) {
-    return NextResponse.json({ error: "photoId je povinný" }, { status: 400 });
+  // Collect IDs to delete
+  const idsToDelete: string[] = [];
+  if (photoIds) {
+    idsToDelete.push(...photoIds.split(",").filter(Boolean));
+  } else if (photoId) {
+    idsToDelete.push(photoId);
+  } else {
+    return NextResponse.json({ error: "photoId nebo photoIds je povinný" }, { status: 400 });
   }
 
-  const { data: photo, error: fetchError } = await admin
+  // Fetch all photos to get storage paths
+  const { data: photos, error: fetchError } = await admin
     .from("car_photos")
-    .select("storage_path")
-    .eq("id", photoId)
-    .eq("car_id", id)
-    .single();
+    .select("id, storage_path")
+    .in("id", idsToDelete)
+    .eq("car_id", id);
 
-  if (fetchError) {
-    return NextResponse.json({ error: "Foto nenalezeno" }, { status: 404 });
+  if (fetchError || !photos || photos.length === 0) {
+    return NextResponse.json({ error: "Fotky nenalezeny" }, { status: 404 });
   }
 
-  await admin.storage.from("car-photos").remove([photo.storage_path]);
+  // Delete from storage (batch) — skip local /images/ paths
+  const storagePaths = photos
+    .map((p) => p.storage_path)
+    .filter((path) => !path.startsWith("/images/"));
+  if (storagePaths.length > 0) {
+    await admin.storage.from("car-photos").remove(storagePaths);
+  }
 
+  // Delete from DB
   const { error } = await admin
     .from("car_photos")
     .delete()
-    .eq("id", photoId);
+    .in("id", photos.map((p) => p.id));
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json({ success: true });
+  return NextResponse.json({ success: true, deleted: photos.length });
 }
