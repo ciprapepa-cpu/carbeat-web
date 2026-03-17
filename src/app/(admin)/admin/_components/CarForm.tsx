@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import heic2any from "heic2any";
 import { slugify } from "@/lib/utils/slugify";
 import { CAR_SEGMENTS, CAR_STATUSES } from "@/lib/validations/car";
 import type { CarWithPhotos, CarPhoto, CarSegment, CarStatus } from "@/types/car";
@@ -152,6 +153,19 @@ export function CarForm({ car, mode }: CarFormProps) {
   const [uploadStatus, setUploadStatus] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
 
+  async function convertHeicIfNeeded(file: File): Promise<File> {
+    const nameLC = file.name.toLowerCase();
+    const isHeic = file.type === "image/heic" || file.type === "image/heif" ||
+      nameLC.endsWith(".heic") || nameLC.endsWith(".heif");
+    if (!isHeic) return file;
+
+    setUploadStatus(`Konvertuji ${file.name} z HEIC...`);
+    const blob = await heic2any({ blob: file, toType: "image/jpeg", quality: 0.92 });
+    const result = Array.isArray(blob) ? blob[0] : blob;
+    const newName = file.name.replace(/\.heic$/i, ".jpg").replace(/\.heif$/i, ".jpg");
+    return new File([result], newName, { type: "image/jpeg" });
+  }
+
   function resizeImage(file: File, maxWidth: number, quality: number): Promise<File> {
     return new Promise((resolve) => {
       const img = new Image();
@@ -204,8 +218,9 @@ export function CarForm({ car, mode }: CarFormProps) {
       setUploadStatus(`Nahrávám ${i + 1}/${fileArray.length}...`);
 
       try {
-        // Resize on client — max 1920px, 85% JPEG quality
-        const resized = await resizeImage(fileArray[i], 1920, 0.85);
+        // Convert HEIC to JPEG if needed, then resize
+        const converted = await convertHeicIfNeeded(fileArray[i]);
+        const resized = await resizeImage(converted, 1920, 0.85);
 
         const formData = new FormData();
         formData.append("photos", resized);
@@ -809,7 +824,7 @@ export function CarForm({ car, mode }: CarFormProps) {
               ref={fileInputRef}
               type="file"
               multiple
-              accept="image/jpeg,image/png,image/webp"
+              accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.heic,.heif"
               className="hidden"
               onChange={(e) => handlePhotoUpload(e.target.files)}
             />

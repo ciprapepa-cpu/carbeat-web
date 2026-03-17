@@ -55,8 +55,11 @@ export async function POST(
   const errors: string[] = [];
 
   for (const file of files) {
+    const nameLC = file.name.toLowerCase();
+    const isHeic = nameLC.endsWith(".heic") || nameLC.endsWith(".heif");
     const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
-    if (!allowedTypes.includes(file.type)) {
+    // Accept HEIC/HEIF files (browser may report as application/octet-stream)
+    if (!allowedTypes.includes(file.type) && !isHeic) {
       errors.push(`${file.name}: nepodporovaný formát (${file.type})`);
       continue;
     }
@@ -67,13 +70,15 @@ export async function POST(
       continue;
     }
 
-    const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+    // For HEIC files that weren't converted client-side, store as-is with jpeg content type
+    const contentType = isHeic ? "image/jpeg" : file.type;
+    const ext = isHeic ? "jpg" : (file.name.split(".").pop()?.toLowerCase() || "jpg");
     const storagePath = `${id}/${Date.now()}-${nextPosition}.${ext}`;
 
     const { error: uploadError } = await admin.storage
       .from("car-photos")
       .upload(storagePath, file, {
-        contentType: file.type,
+        contentType,
         upsert: false,
       });
 
