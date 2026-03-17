@@ -7,6 +7,7 @@ import CarCard from "@/components/car/CarCard";
 import SegmentTabs from "@/components/nabidka/SegmentTabs";
 import Filters, { type FiltersState, defaultFilters } from "@/components/nabidka/Filters";
 import TrustBar from "@/components/home/TrustBar";
+import type { CarStatus } from "@/types/car";
 
 interface Car {
   slug: string;
@@ -23,6 +24,7 @@ interface Car {
   price: number;
   imageSrc: string;
   badges: readonly string[];
+  status: CarStatus;
 }
 
 const cars: readonly Car[] = [
@@ -41,6 +43,7 @@ const cars: readonly Car[] = [
     price: 749900,
     imageSrc: "/images/cars/mercedes-c43/IMG_E5736.jpg",
     badges: ["Cebia"],
+    status: "v_nabidce",
   },
   {
     slug: "audi-tts",
@@ -57,6 +60,7 @@ const cars: readonly Car[] = [
     price: 320000,
     imageSrc: "/images/cars/audi-tts/IMG_E6479.jpg",
     badges: ["Cebia"],
+    status: "v_nabidce",
   },
   {
     slug: "seat-leon",
@@ -73,6 +77,7 @@ const cars: readonly Car[] = [
     price: 394000,
     imageSrc: "/images/cars/seat-leon/IMG_E6803.jpg",
     badges: ["Cebia", "Po servisu"],
+    status: "v_nabidce",
   },
   {
     slug: "renault-trafic",
@@ -89,16 +94,25 @@ const cars: readonly Car[] = [
     price: 229900,
     imageSrc: "/images/cars/renault-trafic/IMG_E6838.jpg",
     badges: ["Cebia", "Po velkém servisu"],
+    status: "v_nabidce",
   },
 ] as const;
 
 type SortOption = "newest" | "price-asc" | "price-desc" | "km-asc";
+type StatusFilter = "vse" | "v_nabidce" | "pripravujeme" | "prodano";
 
 const sortOptions: { value: SortOption; label: string }[] = [
   { value: "newest", label: "Nejnovější" },
   { value: "price-asc", label: "Cena od nejnižší" },
   { value: "price-desc", label: "Cena od nejvyšší" },
   { value: "km-asc", label: "Nájezd od nejnižšího" },
+];
+
+const statusFilters: { value: StatusFilter; label: string }[] = [
+  { value: "vse", label: "Vše" },
+  { value: "v_nabidce", label: "V nabídce" },
+  { value: "pripravujeme", label: "Připravujeme" },
+  { value: "prodano", label: "Prodáno" },
 ];
 
 const czNumber = new Intl.NumberFormat("cs");
@@ -122,73 +136,90 @@ function NabidkaContent() {
   const [activeSegment, setActiveSegment] = useState(segmentParam);
   const [filters, setFilters] = useState<FiltersState>(defaultFilters);
   const [sort, setSort] = useState<SortOption>("newest");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("vse");
 
-  const filtered = useMemo(() => {
-    let result = [...cars];
+  const applyFilters = useMemo(() => {
+    return (carsToFilter: readonly Car[]) => {
+      let result = [...carsToFilter];
 
-    // Segment filter
-    if (activeSegment !== "vse") {
-      result = result.filter((c) => c.segment === activeSegment);
-    }
-
-    // Fuel filter
-    if (filters.fuel !== "Vše") {
-      const fuelMap: Record<string, string> = {
-        "Benzín": "benzín",
-        "Diesel": "diesel",
-        "Hybrid": "hybrid",
-        "Elektro": "elektro",
-      };
-      const target = fuelMap[filters.fuel];
-      if (target) {
-        result = result.filter((c) => c.fuel === target);
+      // Segment filter
+      if (activeSegment !== "vse") {
+        result = result.filter((c) => c.segment === activeSegment);
       }
-    }
 
-    // Transmission filter
-    if (filters.trans !== "Vše") {
-      const transMap: Record<string, string> = {
-        "Automat": "automat",
-        "Manuál": "manuál",
-      };
-      const target = transMap[filters.trans];
-      if (target) {
-        result = result.filter((c) => c.trans === target);
+      // Fuel filter
+      if (filters.fuel !== "Vše") {
+        const fuelMap: Record<string, string> = {
+          "Benzín": "benzín",
+          "Diesel": "diesel",
+          "Hybrid": "hybrid",
+          "Elektro": "elektro",
+        };
+        const target = fuelMap[filters.fuel];
+        if (target) {
+          result = result.filter((c) => c.fuel === target);
+        }
       }
-    }
 
-    // Year filter
-    if (filters.yearFrom !== null) {
-      result = result.filter((c) => c.year >= (filters.yearFrom as number));
-    }
-    if (filters.yearTo !== null) {
-      result = result.filter((c) => c.year <= (filters.yearTo as number));
-    }
+      // Transmission filter
+      if (filters.trans !== "Vše") {
+        const transMap: Record<string, string> = {
+          "Automat": "automat",
+          "Manuál": "manuál",
+        };
+        const target = transMap[filters.trans];
+        if (target) {
+          result = result.filter((c) => c.trans === target);
+        }
+      }
 
-    // Price filter
-    result = result.filter((c) => c.price >= filters.priceMin && c.price <= filters.priceMax);
+      // Year filter
+      if (filters.yearFrom !== null) {
+        result = result.filter((c) => c.year >= (filters.yearFrom as number));
+      }
+      if (filters.yearTo !== null) {
+        result = result.filter((c) => c.year <= (filters.yearTo as number));
+      }
 
-    // KM filter
-    result = result.filter((c) => c.km >= filters.kmMin && c.km <= filters.kmMax);
+      // Price filter
+      result = result.filter((c) => c.price >= filters.priceMin && c.price <= filters.priceMax);
 
-    // Sort
-    switch (sort) {
-      case "newest":
-        result.sort((a, b) => b.year - a.year);
-        break;
-      case "price-asc":
-        result.sort((a, b) => a.price - b.price);
-        break;
-      case "price-desc":
-        result.sort((a, b) => b.price - a.price);
-        break;
-      case "km-asc":
-        result.sort((a, b) => a.km - b.km);
-        break;
-    }
+      // KM filter
+      result = result.filter((c) => c.km >= filters.kmMin && c.km <= filters.kmMax);
 
-    return result;
+      // Sort
+      switch (sort) {
+        case "newest":
+          result.sort((a, b) => b.year - a.year);
+          break;
+        case "price-asc":
+          result.sort((a, b) => a.price - b.price);
+          break;
+        case "price-desc":
+          result.sort((a, b) => b.price - a.price);
+          break;
+        case "km-asc":
+          result.sort((a, b) => a.km - b.km);
+          break;
+      }
+
+      return result;
+    };
   }, [activeSegment, filters, sort]);
+
+  // Split cars by status
+  const vNabidce = useMemo(() => applyFilters(cars.filter((c) => c.status === "v_nabidce")), [applyFilters]);
+  const pripravujeme = useMemo(() => applyFilters(cars.filter((c) => c.status === "pripravujeme")), [applyFilters]);
+  const prodano = useMemo(() => applyFilters(cars.filter((c) => c.status === "prodano")), [applyFilters]);
+
+  // What to show based on status filter
+  const showVNabidce = statusFilter === "vse" || statusFilter === "v_nabidce";
+  const showPripravujeme = statusFilter === "vse" || statusFilter === "pripravujeme";
+  const showProdano = statusFilter === "vse" || statusFilter === "prodano";
+
+  const totalCount = (showVNabidce ? vNabidce.length : 0) +
+    (showPripravujeme ? pripravujeme.length : 0) +
+    (showProdano ? prodano.length : 0);
 
   return (
     <>
@@ -220,18 +251,40 @@ function NabidkaContent() {
         <div className="max-w-[1200px] mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-[280px_1fr] gap-8">
             {/* Sidebar */}
-            <Filters filters={filters} onChange={setFilters} />
+            <div>
+              <Filters filters={filters} onChange={setFilters} />
+
+              {/* Status filter */}
+              <div className="mt-6 bg-surface border border-border rounded-[12px] p-5">
+                <h3 className="text-sm font-semibold text-text mb-3">Stav</h3>
+                <div className="flex flex-wrap gap-2">
+                  {statusFilters.map((sf) => (
+                    <button
+                      key={sf.value}
+                      onClick={() => setStatusFilter(sf.value)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                        statusFilter === sf.value
+                          ? "bg-blue !text-white"
+                          : "bg-bg text-text-muted hover:text-text"
+                      }`}
+                    >
+                      {sf.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
 
             {/* Main content */}
             <div>
               {/* Toolbar */}
               <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
                 <p className="text-sm text-text-muted">
-                  {filtered.length === 1
+                  {totalCount === 1
                     ? "1 vozidlo"
-                    : filtered.length >= 2 && filtered.length <= 4
-                      ? `${filtered.length} vozidla`
-                      : `${filtered.length} vozidel`}
+                    : totalCount >= 2 && totalCount <= 4
+                      ? `${totalCount} vozidla`
+                      : `${totalCount} vozidel`}
                 </p>
                 <select
                   value={sort}
@@ -246,29 +299,91 @@ function NabidkaContent() {
                 </select>
               </div>
 
-              {/* Car Grid */}
-              {filtered.length > 0 ? (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {filtered.map((car) => (
-                    <CarCard
-                      key={car.slug}
-                      slug={car.slug}
-                      name={car.name}
-                      category={car.category}
-                      year={car.year}
-                      km={formatKm(car.km)}
-                      powerKw={formatPower(car.powerKw)}
-                      transmission={car.transmission}
-                      fuel={car.fuelLabel}
-                      price={formatPrice(car.price)}
-                      imageSrc={car.imageSrc}
-                      imageAlt={car.name}
-                      badges={car.badges}
-                    />
-                  ))}
+              {/* V nabídce */}
+              {showVNabidce && vNabidce.length > 0 && (
+                <div className="mb-12">
+                  {(showPripravujeme || showProdano) && (statusFilter === "vse") && (
+                    <h3 className="text-lg font-bold text-text mb-4">V nabídce</h3>
+                  )}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {vNabidce.map((car) => (
+                      <CarCard
+                        key={car.slug}
+                        slug={car.slug}
+                        name={car.name}
+                        category={car.category}
+                        year={car.year}
+                        km={formatKm(car.km)}
+                        powerKw={formatPower(car.powerKw)}
+                        transmission={car.transmission}
+                        fuel={car.fuelLabel}
+                        price={formatPrice(car.price)}
+                        imageSrc={car.imageSrc}
+                        imageAlt={car.name}
+                        badges={car.badges}
+                        status="v_nabidce"
+                      />
+                    ))}
+                  </div>
                 </div>
-              ) : (
-                /* Empty state */
+              )}
+
+              {/* Připravujeme */}
+              {showPripravujeme && pripravujeme.length > 0 && (
+                <div className="mb-12">
+                  <h3 className="text-lg font-bold text-text mb-4">Připravujeme</h3>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {pripravujeme.map((car) => (
+                      <CarCard
+                        key={car.slug}
+                        slug={car.slug}
+                        name={car.name}
+                        category={car.category}
+                        year={car.year}
+                        km={formatKm(car.km)}
+                        powerKw={formatPower(car.powerKw)}
+                        transmission={car.transmission}
+                        fuel={car.fuelLabel}
+                        price={formatPrice(car.price)}
+                        imageSrc={car.imageSrc}
+                        imageAlt={car.name}
+                        badges={car.badges}
+                        status="pripravujeme"
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Prodáno */}
+              {showProdano && prodano.length > 0 && (
+                <div className="mb-12">
+                  <h3 className="text-lg font-bold text-text mb-4">Prodáno</h3>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {prodano.map((car) => (
+                      <CarCard
+                        key={car.slug}
+                        slug={car.slug}
+                        name={car.name}
+                        category={car.category}
+                        year={car.year}
+                        km={formatKm(car.km)}
+                        powerKw={formatPower(car.powerKw)}
+                        transmission={car.transmission}
+                        fuel={car.fuelLabel}
+                        price={formatPrice(car.price)}
+                        imageSrc={car.imageSrc}
+                        imageAlt={car.name}
+                        badges={car.badges}
+                        status="prodano"
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Empty state */}
+              {totalCount === 0 && (
                 <div className="text-center py-20">
                   <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-light flex items-center justify-center text-blue">
                     <svg width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -286,6 +401,7 @@ function NabidkaContent() {
                     onClick={() => {
                       setFilters(defaultFilters);
                       setActiveSegment("vse");
+                      setStatusFilter("vse");
                     }}
                     className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-[8px] text-sm font-semibold bg-blue !text-white border-2 border-blue transition-all duration-[250ms] hover:bg-blue-hover hover:border-blue-hover"
                   >
