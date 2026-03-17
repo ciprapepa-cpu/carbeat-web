@@ -60,7 +60,7 @@ export default function CarCard({
         {/* Status badge — top */}
         {isPripravujeme && (
           <div className="absolute top-3 left-3">
-            <span className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full text-sm font-bold !bg-[#dcfce7] !text-[#16a34a]">
+            <span className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full text-sm font-bold !bg-[#fef3c7] !text-[#92400e]">
               Připravujeme
             </span>
           </div>
@@ -96,7 +96,7 @@ export default function CarCard({
       <div className="p-5 px-[22px] flex flex-col flex-1">
         <p
           className={`text-[11px] font-semibold uppercase tracking-[1.5px] mb-[6px] ${
-            isPripravujeme ? "text-green" : "text-blue"
+            isPripravujeme ? "text-[#b45309]" : "text-blue"
           }`}
         >
           {category}
@@ -131,15 +131,12 @@ export default function CarCard({
           )}
 
           {isPripravujeme && (
-            <a
-              href="tel:+420777027809"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[8px] text-sm font-semibold !bg-[#16a34a] !text-white border-2 !border-[#16a34a] transition-all duration-[250ms] hover:!bg-[#15803d] hover:!border-[#15803d] hover:-translate-y-0.5"
+            <Link
+              href="/#kontakt"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[8px] text-sm font-semibold bg-blue !text-white border-2 border-blue transition-all duration-[250ms] hover:bg-blue-hover hover:border-blue-hover hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(28,138,201,0.35)]"
             >
-              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />
-              </svg>
-              Pro info volejte
-            </a>
+              Zeptat se na vůz →
+            </Link>
           )}
         </div>
       </div>

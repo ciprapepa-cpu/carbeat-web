@@ -111,6 +111,18 @@ function EngineIcon() {
   );
 }
 
+/* Battery */
+function BatteryIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="1" y="6" width="18" height="12" rx="2" />
+      <path d="M23 10v4" />
+      <path d="M7 10v4" />
+      <path d="M11 10v4" />
+    </svg>
+  );
+}
+
 /* Car body */
 function CarIcon() {
   return (
@@ -161,7 +173,9 @@ export default async function CarDetailPage({ params }: PageProps) {
     { icon: <KnightIcon />, label: "Výkon", value: `${car.power_kw} kW` },
     { icon: <GearIcon />, label: "Převodovka", value: car.transmission },
     { icon: <FuelIcon />, label: "Palivo", value: car.fuel },
-    { icon: <EngineIcon />, label: "Motor", value: car.engine },
+    car.fuel === "Elektro"
+      ? { icon: <BatteryIcon />, label: "Baterie", value: car.engine }
+      : { icon: <EngineIcon />, label: "Motor", value: car.engine },
     { icon: <CarIcon />, label: "Karoserie", value: car.body_type },
     { icon: <DriveIcon />, label: "Pohon", value: car.drive },
   ];

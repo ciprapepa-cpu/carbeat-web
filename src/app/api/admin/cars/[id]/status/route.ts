@@ -33,7 +33,7 @@ export async function PATCH(
     return NextResponse.json({ error: "Neplatný stav" }, { status: 400 });
   }
 
-  const isPublished = parsed.data.status === "v_nabidce";
+  const isPublished = parsed.data.status === "v_nabidce" || parsed.data.status === "pripravujeme";
 
   const { data, error } = await getSupabaseAdmin()
     .from("cars")

@@ -28,7 +28,7 @@ interface MappedCar {
 }
 
 type SortOption = "newest" | "price-asc" | "price-desc" | "km-asc";
-type StatusFilter = "vse" | "v_nabidce" | "pripravujeme" | "prodano";
+type StatusFilterValue = "v_nabidce" | "pripravujeme" | "prodano";
 
 const sortOptions: { value: SortOption; label: string }[] = [
   { value: "newest", label: "Nejnovější" },
@@ -37,12 +37,13 @@ const sortOptions: { value: SortOption; label: string }[] = [
   { value: "km-asc", label: "Nájezd od nejnižšího" },
 ];
 
-const statusFilters: { value: StatusFilter; label: string }[] = [
-  { value: "vse", label: "Vše" },
+const statusOptions: { value: StatusFilterValue; label: string }[] = [
   { value: "v_nabidce", label: "V nabídce" },
   { value: "pripravujeme", label: "Připravujeme" },
   { value: "prodano", label: "Prodáno" },
 ];
+
+const defaultStatuses: Set<StatusFilterValue> = new Set(["v_nabidce", "pripravujeme"]);
 
 const czNumber = new Intl.NumberFormat("cs");
 
@@ -69,7 +70,7 @@ function NabidkaContent({ cars }: NabidkaClientProps) {
   const [activeSegment, setActiveSegment] = useState(segmentParam);
   const [filters, setFilters] = useState<FiltersState>(defaultFilters);
   const [sort, setSort] = useState<SortOption>("newest");
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("vse");
+  const [activeStatuses, setActiveStatuses] = useState<Set<StatusFilterValue>>(new Set(defaultStatuses));
 
   const applyFilters = useMemo(() => {
     return (carsToFilter: MappedCar[]) => {
@@ -147,13 +148,35 @@ function NabidkaContent({ cars }: NabidkaClientProps) {
   const prodano = useMemo(() => applyFilters(cars.filter((c) => c.status === "prodano")), [applyFilters, cars]);
 
   // What to show based on status filter
-  const showVNabidce = statusFilter === "vse" || statusFilter === "v_nabidce";
-  const showPripravujeme = statusFilter === "vse" || statusFilter === "pripravujeme";
-  const showProdano = statusFilter === "vse" || statusFilter === "prodano";
+  const showVNabidce = activeStatuses.has("v_nabidce");
+  const showPripravujeme = activeStatuses.has("pripravujeme");
+  const showProdano = activeStatuses.has("prodano");
 
   const totalCount = (showVNabidce ? vNabidce.length : 0) +
     (showPripravujeme ? pripravujeme.length : 0) +
     (showProdano ? prodano.length : 0);
+
+  const allSelected = activeStatuses.size === statusOptions.length;
+
+  function toggleStatus(value: StatusFilterValue) {
+    setActiveStatuses((prev) => {
+      const next = new Set(prev);
+      if (next.has(value)) {
+        if (next.size > 1) next.delete(value);
+      } else {
+        next.add(value);
+      }
+      return next;
+    });
+  }
+
+  function toggleAll() {
+    if (allSelected) {
+      setActiveStatuses(new Set(defaultStatuses));
+    } else {
+      setActiveStatuses(new Set(statusOptions.map((s) => s.value)));
+    }
+  }
 
   return (
     <>
@@ -180,6 +203,37 @@ function NabidkaContent({ cars }: NabidkaClientProps) {
       {/* Segment Tabs */}
       <SegmentTabs activeSegment={activeSegment} onSegmentChange={setActiveSegment} />
 
+      {/* Status filter */}
+      <section className="bg-bg pt-8 pb-0">
+        <div className="max-w-[1200px] mx-auto px-6">
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={toggleAll}
+              className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors ${
+                allSelected
+                  ? "bg-blue !text-white"
+                  : "bg-surface border border-border text-text-muted hover:text-text"
+              }`}
+            >
+              Vše
+            </button>
+            {statusOptions.map((sf) => (
+              <button
+                key={sf.value}
+                onClick={() => toggleStatus(sf.value)}
+                className={`px-4 py-2 rounded-full text-sm font-semibold transition-colors ${
+                  activeStatuses.has(sf.value)
+                    ? "bg-blue !text-white"
+                    : "bg-surface border border-border text-text-muted hover:text-text"
+                }`}
+              >
+                {sf.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Listing */}
       <section className="py-14 bg-bg">
         <div className="max-w-[1200px] mx-auto px-6">
@@ -187,26 +241,6 @@ function NabidkaContent({ cars }: NabidkaClientProps) {
             {/* Sidebar */}
             <div>
               <Filters filters={filters} onChange={setFilters} />
-
-              {/* Status filter */}
-              <div className="mt-6 bg-surface border border-border rounded-[12px] p-5">
-                <h3 className="text-sm font-semibold text-text mb-3">Stav</h3>
-                <div className="flex flex-wrap gap-2">
-                  {statusFilters.map((sf) => (
-                    <button
-                      key={sf.value}
-                      onClick={() => setStatusFilter(sf.value)}
-                      className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-                        statusFilter === sf.value
-                          ? "bg-blue !text-white"
-                          : "bg-bg text-text-muted hover:text-text"
-                      }`}
-                    >
-                      {sf.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
             </div>
 
             {/* Main content */}
@@ -236,7 +270,7 @@ function NabidkaContent({ cars }: NabidkaClientProps) {
               {/* V nabídce */}
               {showVNabidce && vNabidce.length > 0 && (
                 <div className="mb-12">
-                  {(showPripravujeme || showProdano) && (statusFilter === "vse") && (
+                  {activeStatuses.size > 1 && (
                     <h3 className="text-lg font-bold text-text mb-4">V nabídce</h3>
                   )}
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -335,7 +369,7 @@ function NabidkaContent({ cars }: NabidkaClientProps) {
                     onClick={() => {
                       setFilters(defaultFilters);
                       setActiveSegment("vse");
-                      setStatusFilter("vse");
+                      setActiveStatuses(new Set(statusOptions.map((s) => s.value)));
                     }}
                     className="mt-4 inline-flex items-center gap-2 px-5 py-2.5 rounded-[8px] text-sm font-semibold bg-blue !text-white border-2 border-blue transition-all duration-[250ms] hover:bg-blue-hover hover:border-blue-hover"
                   >

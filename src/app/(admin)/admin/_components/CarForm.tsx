@@ -402,7 +402,7 @@ export function CarForm({ car, mode }: CarFormProps) {
       youtube_url: youtubeUrl || null,
       equipment,
       status,
-      is_published: status === "v_nabidce",
+      is_published: status === "v_nabidce" || status === "pripravujeme",
       sort_order: sortOrder,
       meta_title: seo.meta_title,
       meta_description: seo.meta_description,
@@ -496,8 +496,8 @@ export function CarForm({ car, mode }: CarFormProps) {
               ))}
             </select>
           </Field>
-          <Field label="Motor">
-            <input type="text" value={engine} onChange={(e) => setEngine(e.target.value)} className={inputClass} placeholder="3.0 V6 Biturbo" />
+          <Field label={fuel === "Elektro" ? "Baterie (kWh)" : "Motor"}>
+            <input type="text" value={engine} onChange={(e) => setEngine(e.target.value)} className={inputClass} placeholder={fuel === "Elektro" ? "77 kWh" : "3.0 V6 Biturbo"} />
           </Field>
           <Field label="Převodovka (název)">
             <input type="text" value={transmission} onChange={(e) => setTransmission(e.target.value)} className={inputClass} placeholder="9G-Tronic" />
