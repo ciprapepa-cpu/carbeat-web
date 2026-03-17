@@ -119,7 +119,7 @@ export default function CarCard({
         {/* Footer */}
         <div className="mt-auto flex items-center justify-between pt-4 border-t border-border">
           {!isProdano && (
-            <div className="text-[26px] font-extrabold text-text">{price}</div>
+            <div className={`font-extrabold text-text ${price === "Cena na dotaz" ? "text-[20px]" : "text-[26px]"}`}>{price}</div>
           )}
 
           {isClickable && (
