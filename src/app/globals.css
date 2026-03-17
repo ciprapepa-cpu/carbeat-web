@@ -80,7 +80,11 @@
 html {
   scroll-behavior: smooth;
   overflow-x: hidden;
-  scroll-padding-top: calc(var(--topbar-height) + var(--nav-height));
+}
+
+/* Offset anchored sections so they don't hide behind sticky header */
+section[id] {
+  scroll-margin-top: calc(var(--topbar-height) + var(--nav-height));
 }
 
 body {
