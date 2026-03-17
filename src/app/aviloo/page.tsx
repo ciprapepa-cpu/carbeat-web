@@ -42,7 +42,7 @@ export default function AvilooPage() {
   return (
     <>
       {/* Page Hero */}
-      <section className="pt-[calc(36px+68px)] max-md:pt-[64px] bg-dark pb-14">
+      <section className="pt-[calc(36px+68px)] max-md:pt-[64px] bg-dark dark:bg-[#152a3a] pb-14">
         <div className="max-w-[1200px] mx-auto px-6 pt-14">
           <p className="text-[12px] font-bold tracking-[2px] uppercase text-blue mb-3">
             Diagnostika baterie
@@ -190,7 +190,7 @@ export default function AvilooPage() {
                 onClick={() => setLightbox(cert.src)}
                 className="group bg-bg border border-border rounded-[20px] overflow-hidden transition-all duration-[250ms] hover:border-blue hover:shadow-lg hover:-translate-y-1 cursor-pointer"
               >
-                <div className="relative aspect-[3/4] overflow-hidden bg-white pointer-events-none">
+                <div className="relative aspect-[3/2.4] overflow-hidden bg-white pointer-events-none">
                   <embed
                     src={`${cert.src}#toolbar=0&navpanes=0&scrollbar=0`}
                     type="application/pdf"
@@ -203,6 +203,76 @@ export default function AvilooPage() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing */}
+      <section className="py-24 bg-bg">
+        <div className="max-w-[1200px] mx-auto px-6">
+          <div className="text-center mb-12">
+            <span className="inline-block text-[11px] font-bold tracking-[2px] uppercase text-blue mb-2">
+              Ceník
+            </span>
+            <h2 className="text-[clamp(28px,4vw,42px)] font-extrabold text-text leading-tight mb-4">
+              Kolik to <span className="text-blue">stojí?</span>
+            </h2>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-[960px] mx-auto">
+            {/* Flash Test */}
+            <div className="bg-surface border border-border rounded-[20px] p-8 flex flex-col items-center text-center transition-all duration-[250ms] hover:border-blue hover:shadow-[0_4px_16px_rgba(28,138,201,0.10)]">
+              <div className="w-12 h-12 rounded-xl bg-blue-light flex items-center justify-center mb-4">
+                <svg className="w-6 h-6 text-blue" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-bold text-text mb-1">Flash Test</h3>
+              <p className="text-sm text-text-muted mb-4">Rychlý 3minutový test</p>
+              <div className="text-[36px] font-black text-blue leading-none mb-1">1 900 Kč</div>
+              <p className="text-xs text-text-muted">s DPH</p>
+            </div>
+
+            {/* Premium do 2 dnů */}
+            <div className="bg-surface border-2 border-blue rounded-[20px] p-8 flex flex-col items-center text-center shadow-[0_4px_16px_rgba(28,138,201,0.10)]">
+              <div className="w-12 h-12 rounded-xl bg-blue-light flex items-center justify-center mb-4">
+                <svg className="w-6 h-6 text-blue" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-bold text-text mb-1">Premium Test</h3>
+              <p className="text-sm text-text-muted mb-4">Půjčení AVILOO Boxu do 2 dnů</p>
+              <div className="text-[36px] font-black text-blue leading-none mb-1">4 200 Kč</div>
+              <p className="text-xs text-text-muted">s DPH</p>
+            </div>
+
+            {/* Premium do 7 dnů */}
+            <div className="bg-surface border border-border rounded-[20px] p-8 flex flex-col items-center text-center transition-all duration-[250ms] hover:border-blue hover:shadow-[0_4px_16px_rgba(28,138,201,0.10)]">
+              <div className="w-12 h-12 rounded-xl bg-blue-light flex items-center justify-center mb-4">
+                <svg className="w-6 h-6 text-blue" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-bold text-text mb-1">Premium Test</h3>
+              <p className="text-sm text-text-muted mb-4">Půjčení AVILOO Boxu do 7 dnů</p>
+              <div className="text-[36px] font-black text-blue leading-none mb-1">4 900 Kč</div>
+              <p className="text-xs text-text-muted">s DPH</p>
+            </div>
+          </div>
+
+          <div className="mt-6 bg-surface border border-border rounded-[20px] p-5 flex items-start gap-4 max-w-[960px] mx-auto">
+            <div className="w-10 h-10 rounded-lg bg-blue-light flex items-center justify-center shrink-0 mt-0.5">
+              <svg className="w-5 h-5 text-blue" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z" />
+              </svg>
+            </div>
+            <div>
+              <p className="font-bold text-text text-[15px] mb-1">Kauce u Premium Testu</p>
+              <p className="text-sm text-text-muted leading-relaxed">
+                Při zapůjčení AVILOO Boxu je nutná vratná kauce <strong className="text-text">25 000 Kč</strong>.
+                Kauce je vrácena po řádném vrácení zařízení.
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -220,7 +290,7 @@ export default function AvilooPage() {
           <div className="flex justify-center gap-4 flex-wrap">
             <a
               href="tel:+420777027809"
-              className="inline-flex items-center gap-2 px-9 py-4.5 rounded-[8px] text-base font-bold bg-white text-blue border-2 border-white transition-all duration-[250ms] hover:bg-blue-light"
+              className="inline-flex items-center gap-2 px-9 py-4.5 rounded-[8px] text-base font-bold bg-white text-blue border-2 border-white transition-all duration-[250ms] hover:bg-blue-light hover:text-blue"
             >
               Zavolat
             </a>
@@ -228,7 +298,7 @@ export default function AvilooPage() {
               href="https://wa.me/420777027809"
               target="_blank"
               rel="noopener"
-              className="inline-flex items-center gap-2 px-9 py-4.5 rounded-[8px] text-base font-semibold bg-transparent !text-white border-2 border-white/60 transition-all duration-[250ms] hover:bg-white/10 hover:border-white"
+              className="inline-flex items-center gap-2 px-9 py-4.5 rounded-[8px] text-base font-bold bg-[#25D366] !text-white border-2 border-[#25D366] transition-all duration-[250ms] hover:bg-[#1da851] hover:border-[#1da851]"
             >
               WhatsApp
             </a>
