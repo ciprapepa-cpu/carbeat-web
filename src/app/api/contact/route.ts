@@ -9,7 +9,7 @@ const contactSchema = z.object({
   message: z.string().min(10, "Zpráva je příliš krátká").max(5000),
 });
 
-// POST /api/contact — send contact form as email via Supabase Edge Function or direct email
+// POST /api/contact — send contact form via Web3Forms
 export async function POST(request: NextRequest) {
   const ip = getClientIp(request);
   const { allowed } = checkRateLimit(ip, { limit: 5, windowSeconds: 300 });
@@ -33,42 +33,29 @@ export async function POST(request: NextRequest) {
 
   const { name, email, phone, message } = parsed.data;
 
-  // Send notification email via Resend (or any provider)
-  // For now, we'll use a simple fetch to a Resend-compatible API
-  const resendKey = process.env.RESEND_API_KEY;
+  const accessKey = process.env.WEB3FORMS_KEY;
 
-  if (!resendKey) {
-    // Fallback: log the message (in dev or if Resend not configured)
-    console.log("Contact form submission:", { name, email, phone, message });
+  if (!accessKey) {
+    console.log("Contact form submission (WEB3FORMS_KEY not set):", { name, email, phone, message });
     return NextResponse.json({ success: true });
   }
 
-  const emailResponse = await fetch("https://api.resend.com/emails", {
+  const response = await fetch("https://api.web3forms.com/submit", {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${resendKey}`,
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      from: "CarBeat Web <noreply@carbeat.cz>",
-      to: ["info@carbeat.cz"],
-      reply_to: email,
+      access_key: accessKey,
       subject: `Nová zpráva z webu od ${name}`,
-      text: [
-        `Jméno: ${name}`,
-        `E-mail: ${email}`,
-        phone ? `Telefon: ${phone}` : null,
-        ``,
-        `Zpráva:`,
-        message,
-      ]
-        .filter(Boolean)
-        .join("\n"),
+      from_name: "CarBeat Web",
+      name,
+      email,
+      phone: phone || "–",
+      message,
     }),
   });
 
-  if (!emailResponse.ok) {
-    console.error("Resend error:", await emailResponse.text());
+  if (!response.ok) {
+    console.error("Web3Forms error:", await response.text());
     return NextResponse.json(
       { error: "Nepodařilo se odeslat zprávu. Zkuste to znovu." },
       { status: 500 }
