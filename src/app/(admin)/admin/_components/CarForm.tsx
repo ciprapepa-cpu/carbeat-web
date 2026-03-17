@@ -475,7 +475,6 @@ export function CarForm({ car, mode }: CarFormProps) {
         <Field label="Cena (Kč)">
           <input
             type="number"
-            required
             value={price || ""}
             onChange={(e) => setPrice(Number(e.target.value))}
             className={inputClass}

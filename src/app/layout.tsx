@@ -21,11 +21,13 @@ export const metadata: Metadata = {
 };
 
 // Dark mode IIFE — runs before paint to prevent flash
+// Default is dark (class on <html>), script removes it if user chose light
 const darkModeScript = `
 (function() {
   var theme = localStorage.getItem('cb-theme');
-  if (theme === 'light') return;
-  document.documentElement.classList.add('dark');
+  if (theme === 'light') {
+    document.documentElement.classList.remove('dark');
+  }
 })();
 `;
 
@@ -35,7 +37,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="cs" suppressHydrationWarning>
+    <html lang="cs" className="dark" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: darkModeScript }} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />

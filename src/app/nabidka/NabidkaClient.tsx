@@ -384,8 +384,8 @@ function NabidkaContent({ cars }: NabidkaClientProps) {
                   Nenašli jste co hledáte?
                 </h3>
                 <p className="text-text-muted text-sm max-w-lg mx-auto mb-5">
-                  Dovezeme Vám vůz na míru přímo z Německa. Stačí nám říct, co hledáte,
-                  a my se postaráme o zbytek — od výběru přes prověrku až po předání.
+                  Napište nám co hledáte, pokud nám dáte dost času a bude se jednat
+                  o typ vozu, který jsme schopni sehnat, pokusíme se o to.
                 </p>
                 <Link
                   href="/#kontakt"
