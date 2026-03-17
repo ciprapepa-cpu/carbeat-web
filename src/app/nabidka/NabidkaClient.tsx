@@ -350,10 +350,10 @@ function NabidkaContent({ cars }: NabidkaClientProps) {
               {/* Info box */}
               <div className="mt-12 p-8 rounded-[20px] bg-surface border border-border text-center">
                 <h3 className="text-lg font-bold text-text mb-2">
-                  Nenašli jste co hledáte?
+                  Nenašli jste, co hledáte?
                 </h3>
                 <p className="text-text-muted text-sm max-w-lg mx-auto mb-5">
-                  Napište nám co hledáte, pokud nám dáte dost času a bude se jednat
+                  Napište nám, co hledáte, pokud nám dáte dost času a bude se jednat
                   o typ vozu, který jsme schopni sehnat, pokusíme se o to.
                 </p>
                 <Link
