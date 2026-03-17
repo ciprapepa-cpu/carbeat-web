@@ -290,7 +290,7 @@ export default function AvilooPage() {
           <div className="flex justify-center gap-4 flex-wrap">
             <a
               href="tel:+420777027809"
-              className="inline-flex items-center gap-2 px-9 py-4.5 rounded-[8px] text-base font-bold bg-white text-blue border-2 border-white transition-all duration-[250ms] hover:bg-blue-light hover:text-blue"
+              className="inline-flex items-center gap-2 px-9 py-4.5 rounded-[8px] text-base font-bold bg-white !text-blue border-2 border-white transition-all duration-[250ms] hover:bg-blue-light"
             >
               Zavolat
             </a>

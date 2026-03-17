@@ -1,3 +1,5 @@
+export const revalidate = 60;
+
 import Hero from "@/components/home/Hero";
 import Vehicles from "@/components/home/Vehicles";
 import Segments from "@/components/home/Segments";

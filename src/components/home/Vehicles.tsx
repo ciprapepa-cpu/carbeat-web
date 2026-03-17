@@ -1,67 +1,17 @@
 import Link from "next/link";
 import CarCard from "@/components/car/CarCard";
+import { getVisibleCars, getPhotoUrl } from "@/lib/supabase/queries";
 
-// Hardcoded for now — will be replaced by Supabase query in Phase 7
-const cars = [
-  {
-    slug: "mercedes-c43-amg",
-    name: "Mercedes-Benz C43 AMG 4Matic Kombi",
-    category: "Sportovní",
-    year: 2017,
-    km: "92 000 km",
-    powerKw: "270 kW",
-    transmission: "9G Automat · 4MATIC",
-    fuel: "Benzín V6 biturbo",
-    price: "749 900 Kč",
-    imageSrc: "/images/cars/mercedes-c43/IMG_E5736.jpg",
-    imageAlt: "Mercedes-Benz C43 AMG Kombi",
-    badges: ["Cebia"],
-  },
-  {
-    slug: "audi-tts",
-    name: "Audi TTS 2.0 TFSI Quattro DSG",
-    category: "Sportovní",
-    year: 2008,
-    km: "125 000 km",
-    powerKw: "200 kW",
-    transmission: "S tronic 6st. · Quattro",
-    fuel: "Benzín",
-    price: "320 000 Kč",
-    imageSrc: "/images/cars/audi-tts/IMG_E6479.jpg",
-    imageAlt: "Audi TTS 2.0 TFSI Quattro",
-    badges: ["Cebia"],
-  },
-  {
-    slug: "seat-leon",
-    name: "Seat Leon Style 1.5 TSI · Full LED · CarPlay",
-    category: "Seat / Cupra",
-    year: 2022,
-    km: "67 000 km",
-    powerKw: "96 kW",
-    transmission: "Manuál 6st.",
-    fuel: "Benzín",
-    price: "394 000 Kč",
-    imageSrc: "/images/cars/seat-leon/IMG_E6803.jpg",
-    imageAlt: "Seat Leon Style 1.5 TSI",
-    badges: ["Cebia", "Po servisu"],
-  },
-  {
-    slug: "renault-trafic",
-    name: "Renault Trafic 1.6 dCi L2H1 · nové turbo",
-    category: "Užitkové",
-    year: 2015,
-    km: "105 000 km",
-    powerKw: "85 kW",
-    transmission: "Manuál 6st.",
-    fuel: "Nafta",
-    price: "229 900 Kč",
-    imageSrc: "/images/cars/renault-trafic/IMG_E6838.jpg",
-    imageAlt: "Renault Trafic 1.6 dCi L2H1",
-    badges: ["Cebia", "Po velkém servisu"],
-  },
-] as const;
+const czNumber = new Intl.NumberFormat("cs");
 
-export default function Vehicles() {
+export default async function Vehicles() {
+  const allCars = await getVisibleCars();
+
+  // Show only "v_nabidce" cars on the homepage, max 4
+  const cars = allCars
+    .filter((c) => c.status === "v_nabidce")
+    .slice(0, 4);
+
   return (
     <section className="py-24 bg-surface">
       <div className="max-w-[1200px] mx-auto px-6">
@@ -88,10 +38,46 @@ export default function Vehicles() {
 
         {/* Grid */}
         <div className="grid grid-cols-2 gap-6 max-lg:grid-cols-1">
-          {cars.map((car) => (
-            <CarCard key={car.slug} {...car} />
-          ))}
+          {cars.map((car) => {
+            const sortedPhotos = (car.car_photos ?? []).sort((a, b) => a.position - b.position);
+            const firstPhoto = sortedPhotos[0];
+            const imageSrc = firstPhoto ? getPhotoUrl(firstPhoto.storage_path) : "/images/placeholder-car.jpg";
+
+            const transLabel = car.drive && car.drive !== "Předních kol"
+              ? `${car.transmission} · ${car.drive}`
+              : car.transmission;
+
+            return (
+              <CarCard
+                key={car.slug}
+                slug={car.slug}
+                name={car.name}
+                category={car.category_label}
+                year={car.year}
+                km={`${czNumber.format(car.km)} km`}
+                powerKw={`${car.power_kw} kW`}
+                transmission={transLabel}
+                fuel={car.engine ? `${car.fuel} ${car.engine}` : car.fuel}
+                price={`${czNumber.format(car.price)} Kč`}
+                imageSrc={imageSrc}
+                imageAlt={car.name}
+                badges={car.badges ?? ["Cebia"]}
+              />
+            );
+          })}
         </div>
+
+        {cars.length === 0 && (
+          <div className="text-center py-16">
+            <p className="text-text-muted text-lg">Momentálně nemáme žádná vozidla v nabídce.</p>
+            <Link
+              href="/#kontakt"
+              className="mt-4 inline-flex items-center gap-2 px-7 py-3.5 rounded-[8px] text-[15px] font-semibold bg-blue !text-white border-2 border-blue transition-all duration-[250ms] hover:bg-blue-hover hover:border-blue-hover"
+            >
+              Kontaktujte nás
+            </Link>
+          </div>
+        )}
       </div>
     </section>
   );

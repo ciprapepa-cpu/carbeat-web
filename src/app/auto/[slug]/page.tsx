@@ -1,24 +1,31 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getCarBySlug, getAllSlugs } from "@/data/cars";
+import { getCarBySlugFromDb, getAllVisibleSlugs, getPhotoUrl } from "@/lib/supabase/queries";
 import Gallery from "@/components/car/Gallery";
 import SpecsGrid from "@/components/car/SpecsGrid";
 import EquipmentSection from "@/components/car/EquipmentSection";
 import DefectsBox from "@/components/car/DefectsBox";
+
+// Revalidate every 60s so new/updated cars appear without redeploy
+export const revalidate = 60;
 
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
 export async function generateStaticParams() {
-  return getAllSlugs().map((slug) => ({ slug }));
+  const slugs = await getAllVisibleSlugs();
+  return slugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const car = getCarBySlug(slug);
+  const car = await getCarBySlugFromDb(slug);
   if (!car) return {};
+
+  const firstPhoto = car.car_photos?.sort((a, b) => a.position - b.position)[0];
+  const ogImage = firstPhoto ? getPhotoUrl(firstPhoto.storage_path) : undefined;
 
   return {
     title: car.meta_title ?? `${car.name} | CarBeat`,
@@ -30,7 +37,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description:
         car.meta_description ??
         `${car.name} za ${car.price.toLocaleString("cs-CZ")} Kč`,
-      images: car.photos[0] ? [car.photos[0]] : [],
+      images: ogImage ? [ogImage] : [],
     },
   };
 }
@@ -134,7 +141,7 @@ function DriveIcon() {
 
 export default async function CarDetailPage({ params }: PageProps) {
   const { slug } = await params;
-  const car = getCarBySlug(slug);
+  const car = await getCarBySlugFromDb(slug);
 
   if (!car) {
     notFound();
@@ -142,6 +149,11 @@ export default async function CarDetailPage({ params }: PageProps) {
 
   const formattedPrice = car.price.toLocaleString("cs-CZ");
   const formattedKm = car.km.toLocaleString("cs-CZ");
+
+  // Build photo URLs from car_photos
+  const photos = (car.car_photos ?? [])
+    .sort((a, b) => a.position - b.position)
+    .map((p) => getPhotoUrl(p.storage_path));
 
   const specs = [
     { icon: <CalendarIcon />, label: "Rok", value: String(car.year) },
@@ -169,7 +181,7 @@ export default async function CarDetailPage({ params }: PageProps) {
         </Link>
 
         {/* Gallery — full width */}
-        <Gallery photos={car.photos} alt={car.name} />
+        <Gallery photos={photos} alt={car.name} />
 
         {/* Header: Category, Name, Price */}
         <div className="mt-8 mb-8">

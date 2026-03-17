@@ -24,9 +24,15 @@ No test framework is configured yet.
 - `/auto/[slug]` — Vehicle detail, statically generated via `generateStaticParams()`
 - `/aviloo` — AVILOO battery diagnostics page (Flash Test, Premium Test, certificates)
 
-### Data Layer (transitional)
+### Data Layer
 
-Cars are **hardcoded** in `src/data/cars.ts` with `getCarBySlug()` and `getAllSlugs()`. The same car data is duplicated in `src/app/nabidka/page.tsx` and `src/components/home/Vehicles.tsx` — when updating prices/photos/details, **update all three places**. Supabase clients exist in `src/lib/supabase/` (client + server) but the frontend doesn't query them yet. Types are in `src/types/car.ts`. The plan is to replace hardcoded data with Supabase queries and add an admin panel.
+Cars are stored in **Supabase** (PostgreSQL). Public pages fetch via `src/lib/supabase/queries.ts` using the anon key. Admin panel uses service role client (`src/lib/supabase/admin.ts`). Types in `src/types/car.ts`. All public pages use ISR with 60s revalidation.
+
+**Admin panel** at `/admin` — manages cars (CRUD), photo uploads to Supabase Storage, status management (koncept/pripravujeme/v_nabidce/prodano). Protected by middleware + Supabase Auth.
+
+**Photo URLs:** `car_photos.storage_path` — if starts with `/images/` it's a local file in `/public/`, otherwise it's in Supabase Storage bucket `car-photos`. Resolved by `getPhotoUrl()` in queries.ts.
+
+Legacy hardcoded data in `src/data/cars.ts` is no longer used by the frontend.
 
 ### Component Organization
 
@@ -60,14 +66,14 @@ Custom CSS in `globals.css` handles: EKG keyframe animations (`drawPulse`, `trav
 
 ## Adding a New Car
 
-1. Create folder in `public/images/cars/{slug}/` with all photos (JPG)
-2. **Run image optimization:** `node scripts/optimize-images.mjs {slug}` — resizes to max 1920px width, JPG 92% quality (mozjpeg). This is mandatory before committing.
-3. Add car data to all three places:
-   - `src/data/cars.ts` — full detail (photos array, equipment, description, YouTube URL)
-   - `src/app/nabidka/page.tsx` — listing card data
-   - `src/components/home/Vehicles.tsx` — homepage card data
-4. Source materials (photos, .docx context) live in `../Input/Inzeraty/{Značka Model}/`
-5. Car card badges: position bottom-left, 50% larger than default. CTA button text: "Prohlédnout vůz →"
+Use the **admin panel** at `/admin`:
+1. Go to `/admin/auta/novy` and fill in the form
+2. Upload photos — they're client-side resized (max 1920px, JPEG 85%) and uploaded to Supabase Storage
+3. Set status to "v_nabidce" to make it visible on the public site
+4. The car appears on the homepage and `/nabidka` within 60 seconds (ISR revalidation)
+
+Source materials (photos, .docx context) live in `../Input/Inzeraty/{Značka Model}/`
+Car card badges: position bottom-left, 50% larger than default. CTA button text: "Prohlédnout vůz →"
 
 ### Image Optimization Script
 
