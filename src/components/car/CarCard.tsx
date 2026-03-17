@@ -111,7 +111,7 @@ export default function CarCard({
           <span className="spec-icon spec-icon--km">{km}</span>
           <span className="spec-icon spec-icon--power">{powerKw}</span>
         </div>
-        <div className="flex justify-center gap-8 mb-4 text-[15px] text-text-muted">
+        <div className="flex justify-center gap-12 mb-4 text-[15px] text-text-muted">
           <span className="spec-icon spec-icon--trans">{transmission}</span>
           <span className="spec-icon spec-icon--fuel">{fuel}</span>
         </div>
