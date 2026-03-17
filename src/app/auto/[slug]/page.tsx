@@ -7,6 +7,7 @@ import SpecsGrid from "@/components/car/SpecsGrid";
 import EquipmentSection from "@/components/car/EquipmentSection";
 import DefectsBox from "@/components/car/DefectsBox";
 import { CarProductJsonLd, BreadcrumbJsonLd } from "@/components/seo/JsonLd";
+import ContactForm from "@/components/home/ContactForm";
 
 // Revalidate every 60s so new/updated cars appear without redeploy
 export const revalidate = 60;
@@ -294,30 +295,15 @@ export default async function CarDetailPage({ params }: PageProps) {
           </div>
         )}
 
-        {/* CTA */}
-        <div className="mt-12 p-12 bg-bg rounded-[20px] text-center max-md:p-8">
-          <h2 className="text-2xl font-bold text-text mb-3 max-md:text-xl">
+        {/* CTA — contact form */}
+        <div className="mt-12 p-12 bg-bg rounded-[20px] max-md:p-8">
+          <h2 className="text-2xl font-bold text-text mb-1 max-md:text-xl">
             Máte zájem o tento vůz?
           </h2>
-          <p className="text-text-muted mb-6 max-w-[520px] mx-auto">
-            Zavolejte nám nebo napište na WhatsApp. Rádi Vám zodpovíme všechny dotazy a domluvíme prohlídku.
+          <p className="text-text-muted mb-6 text-sm">
+            Napište nám a my se Vám ozveme co nejdříve.
           </p>
-          <div className="grid grid-cols-2 gap-3 max-w-[480px] mx-auto max-md:grid-cols-1">
-            <a
-              href="tel:+420777027809"
-              className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-[8px] text-sm font-semibold bg-blue !text-white border-2 border-blue transition-all duration-[250ms] hover:bg-blue-hover hover:border-blue-hover hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(28,138,201,0.35)]"
-            >
-              +420 777 027 809
-            </a>
-            <a
-              href="https://wa.me/420777027809"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-[8px] text-sm font-semibold bg-[#25D366] !text-white border-2 border-[#25D366] transition-all duration-[250ms] hover:bg-[#1da851] hover:border-[#1da851] hover:-translate-y-0.5"
-            >
-              Napsat na WhatsApp
-            </a>
-          </div>
+          <ContactForm />
         </div>
       </div>
     </section>
