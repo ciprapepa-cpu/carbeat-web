@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import type { CarWithPhotos, CarStatus } from "@/types/car";
+
+type StatusFilter = "vse" | CarStatus;
 
 const STATUS_LABELS: Record<CarStatus, string> = {
   koncept: "Koncept",
@@ -26,6 +28,21 @@ export function CarListTable({ cars }: CarListTableProps) {
   const router = useRouter();
   const [updating, setUpdating] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("vse");
+
+  const filtered = useMemo(() => {
+    if (statusFilter === "vse") return cars;
+    return cars.filter((c) => c.status === statusFilter);
+  }, [cars, statusFilter]);
+
+  // Count per status
+  const counts = useMemo(() => {
+    const c: Record<string, number> = { vse: cars.length };
+    for (const car of cars) {
+      c[car.status] = (c[car.status] ?? 0) + 1;
+    }
+    return c;
+  }, [cars]);
 
   async function changeStatus(id: string, newStatus: CarStatus) {
     setUpdating(id);
@@ -50,6 +67,14 @@ export function CarListTable({ cars }: CarListTableProps) {
     setDeleting(null);
   }
 
+  const statusFilterOptions: { value: StatusFilter; label: string }[] = [
+    { value: "vse", label: "Vše" },
+    { value: "v_nabidce", label: "V nabídce" },
+    { value: "pripravujeme", label: "Připravujeme" },
+    { value: "prodano", label: "Prodáno" },
+    { value: "koncept", label: "Koncept" },
+  ];
+
   if (cars.length === 0) {
     return (
       <div className="bg-surface border border-border rounded-[12px] p-12 text-center">
@@ -65,6 +90,24 @@ export function CarListTable({ cars }: CarListTableProps) {
   }
 
   return (
+    <div>
+      {/* Status filter */}
+      <div className="flex flex-wrap gap-2 mb-4">
+        {statusFilterOptions.map((opt) => (
+          <button
+            key={opt.value}
+            onClick={() => setStatusFilter(opt.value)}
+            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+              statusFilter === opt.value
+                ? "bg-blue !text-white"
+                : "bg-surface border border-border text-text-muted hover:text-text"
+            }`}
+          >
+            {opt.label} ({counts[opt.value] ?? 0})
+          </button>
+        ))}
+      </div>
+
     <div className="bg-surface border border-border rounded-[12px] overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
@@ -80,7 +123,7 @@ export function CarListTable({ cars }: CarListTableProps) {
             </tr>
           </thead>
           <tbody>
-            {cars.map((car) => {
+            {filtered.map((car) => {
               const firstPhoto = car.car_photos
                 ?.sort((a, b) => a.position - b.position)[0];
               const photoUrl = firstPhoto
@@ -155,6 +198,7 @@ export function CarListTable({ cars }: CarListTableProps) {
           </tbody>
         </table>
       </div>
+    </div>
     </div>
   );
 }
