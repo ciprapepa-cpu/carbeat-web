@@ -158,7 +158,7 @@ function NabidkaContent({ cars }: NabidkaClientProps) {
     setActiveStatuses((prev) => {
       const next = new Set(prev);
       if (next.has(value)) {
-        if (next.size > 1) next.delete(value);
+        next.delete(value);
       } else {
         next.add(value);
       }
@@ -291,7 +291,7 @@ function NabidkaContent({ cars }: NabidkaClientProps) {
               {showVNabidce && vNabidce.length > 0 && (
                 <div className="mb-12">
                   {activeStatuses.size > 1 && (
-                    <h3 className="text-lg font-bold text-text mb-4">V nabídce</h3>
+                    <h3 className="text-xl font-extrabold text-text mb-5 pl-4 border-l-4 border-blue">V nabídce</h3>
                   )}
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {vNabidce.map(renderCarCard)}
@@ -302,7 +302,7 @@ function NabidkaContent({ cars }: NabidkaClientProps) {
               {/* Připravujeme */}
               {showPripravujeme && pripravujeme.length > 0 && (
                 <div className="mb-12">
-                  <h3 className="text-lg font-bold text-text mb-4">Připravujeme</h3>
+                  <h3 className="text-xl font-extrabold text-text mb-5 pl-4 border-l-4 border-[#d97706]">Připravujeme</h3>
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {pripravujeme.map(renderCarCard)}
                   </div>
@@ -312,7 +312,7 @@ function NabidkaContent({ cars }: NabidkaClientProps) {
               {/* Prodáno */}
               {showProdano && prodano.length > 0 && (
                 <div className="mb-12">
-                  <h3 className="text-lg font-bold text-text mb-4">Prodáno</h3>
+                  <h3 className="text-xl font-extrabold text-text mb-5 pl-4 border-l-4 border-text-muted">Prodáno</h3>
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {prodano.map(renderCarCard)}
                   </div>

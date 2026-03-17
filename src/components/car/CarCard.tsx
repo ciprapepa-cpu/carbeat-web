@@ -105,14 +105,13 @@ export default function CarCard({
           {name}
         </h3>
 
-        {/* Spec row 1 */}
-        <div className="flex flex-wrap gap-4 mb-2 text-[15px] text-text-muted">
+        {/* Specs — W layout */}
+        <div className="flex justify-between mb-1.5 text-[15px] text-text-muted">
           <span className="spec-icon spec-icon--year">{year}</span>
           <span className="spec-icon spec-icon--km">{km}</span>
           <span className="spec-icon spec-icon--power">{powerKw}</span>
         </div>
-        {/* Spec row 2 */}
-        <div className="flex flex-wrap gap-4 mb-4 text-[15px] text-text-muted">
+        <div className="flex justify-center gap-6 mb-4 text-[15px] text-text-muted">
           <span className="spec-icon spec-icon--trans">{transmission}</span>
           <span className="spec-icon spec-icon--fuel">{fuel}</span>
         </div>
