@@ -83,7 +83,7 @@ export default function Reviews() {
         {/* CTA */}
         <div className="text-center mt-10">
           <a
-            href="https://search.google.com/local/reviews?placeid=ChIJldp6erddDkcRmTnrjDL1AJI"
+            href="https://www.google.com/maps/place/CarBeat+s.r.o./@50.3937319,15.9809791,748m/data=!3m1!1e3!4m8!3m7!1s0x470e7db57a7ad095:0x9202f5328ceb3999!8m2!3d50.3937285!4d15.983554!9m1!1b1!16s%2Fg%2F11y3ky7tkf"
             className="inline-flex items-center gap-2 px-7 py-3.5 rounded-[8px] text-[15px] font-semibold bg-transparent text-blue border-2 border-blue transition-all duration-[250ms] hover:bg-blue hover:!text-white"
             target="_blank"
             rel="noopener"
