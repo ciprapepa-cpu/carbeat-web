@@ -34,8 +34,9 @@ export default function Contact() {
   return (
     <section className="py-24 bg-surface" id="kontakt">
       <div className="max-w-[1200px] mx-auto px-6">
+        {/* Row 1: Contact info + Map */}
         <div className="grid grid-cols-[1fr_1fr] gap-12 max-lg:grid-cols-1">
-          {/* Left */}
+          {/* Contact info */}
           <div>
             <span className="inline-block text-xs font-bold tracking-[2px] uppercase text-blue mb-3">
               Kontakt
@@ -92,26 +93,27 @@ export default function Contact() {
             </div>
           </div>
 
-          {/* Form + Map */}
-          <div className="flex flex-col gap-8">
-            <div className="p-6 rounded-[20px] bg-bg dark:bg-bg">
-              <h3 className="text-lg font-bold text-text mb-1">Napište nám</h3>
-              <p className="text-sm text-text-muted mb-5">
-                Popište, co hledáte, a my se Vám ozveme.
-              </p>
-              <ContactForm />
-            </div>
-
-            <div className="rounded-[20px] overflow-hidden bg-bg dark:bg-bg min-h-[300px]">
+          {/* Map */}
+          <div className="flex items-center">
+            <div className="w-full rounded-[20px] overflow-hidden bg-bg dark:bg-bg min-h-[400px]">
               <iframe
                 src="https://maps.google.com/maps?q=CarBeat+s.r.o.+Svini%C5%A1%C5%A5any+63+Dolany&t=&z=15&ie=UTF8&iwloc=&output=embed"
-                className="w-full h-full min-h-[300px] border-0"
+                className="w-full h-full min-h-[400px] border-0"
                 allowFullScreen
                 loading="lazy"
                 title="CarBeat s.r.o. - Svinišťany 63, Dolany"
               />
             </div>
           </div>
+        </div>
+
+        {/* Row 2: Contact form — full width */}
+        <div className="mt-16 p-8 rounded-[20px] bg-bg dark:bg-bg max-sm:p-6">
+          <h3 className="text-lg font-bold text-text mb-1">Napište nám</h3>
+          <p className="text-sm text-text-muted mb-6">
+            Popište, co hledáte, a my se Vám ozveme.
+          </p>
+          <ContactForm />
         </div>
       </div>
     </section>

@@ -10,10 +10,9 @@ interface HeaderProps {
 }
 
 const navLinks = [
-  { href: "/#proc-carbeat", label: "Proč CarBeat" },
+  { href: "/o-nas", label: "O nás" },
   { href: "/aviloo", label: "Aviloo" },
   { href: "/#sluzby", label: "Služby" },
-  { href: "/#kontakt", label: "Kontakt" },
 ] as const;
 
 export default function Header({ onMenuOpen }: HeaderProps) {
