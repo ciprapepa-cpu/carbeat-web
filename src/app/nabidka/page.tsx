@@ -1,5 +1,18 @@
+import type { Metadata } from "next";
 import { getVisibleCars, getPhotoUrl } from "@/lib/supabase/queries";
 import NabidkaClient from "./NabidkaClient";
+
+export const metadata: Metadata = {
+  title: "Nabídka vozů | CarBeat",
+  description:
+    "Aktuální nabídka prověřených ojetých vozů z Německa. Filtrujte podle segmentu, paliva, převodovky, ceny a nájezdu. Cebia certifikát ke každému vozu.",
+  alternates: { canonical: "/nabidka" },
+  openGraph: {
+    title: "Nabídka vozů | CarBeat",
+    description:
+      "Prověřená ojetá auta z Německa — prohlédněte si naši aktuální nabídku.",
+  },
+};
 
 // Revalidate every 60s so new/updated cars appear without redeploy
 export const revalidate = 60;

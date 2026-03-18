@@ -14,10 +14,29 @@ export const metadata: Metadata = {
   description:
     "Dovoz prověřených ojetých aut z Německa. Kompletní servis od výběru po předání. Josef Cipra, +420 777 027 809.",
   metadataBase: new URL("https://carbeat.cz"),
+  alternates: { canonical: "/" },
   openGraph: {
     type: "website",
     locale: "cs_CZ",
     siteName: "CarBeat",
+    title: "CarBeat — Ověřená ojetá auta z Německa",
+    description:
+      "Dovoz prověřených ojetých aut z Německa. Kompletní servis od výběru po předání.",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "CarBeat — Ověřená ojetá auta z Německa",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "CarBeat — Ověřená ojetá auta z Německa",
+    description:
+      "Dovoz prověřených ojetých aut z Německa. Kompletní servis od výběru po předání.",
+    images: ["/og-image.jpg"],
   },
 };
 

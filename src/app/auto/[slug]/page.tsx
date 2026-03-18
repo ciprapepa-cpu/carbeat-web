@@ -34,11 +34,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     description:
       car.meta_description ??
       `${car.name}, ${car.year}, ${car.km.toLocaleString("cs-CZ")} km, ${car.power_kw} kW. Ověřený dovoz z Německa.`,
+    alternates: { canonical: `/auto/${slug}` },
     openGraph: {
       title: car.meta_title ?? car.name,
       description:
         car.meta_description ??
         `${car.name} za ${car.price.toLocaleString("cs-CZ")} Kč`,
+      type: "website",
       images: ogImage ? [ogImage] : [],
     },
   };
