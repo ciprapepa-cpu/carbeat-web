@@ -354,11 +354,10 @@ function NabidkaContent({ cars }: NabidkaClientProps) {
                   Nenašli jste, co hledáte?
                 </h3>
                 <p className="text-text-muted text-sm max-w-lg mx-auto mb-5">
-                  Napište nám, co hledáte, pokud nám dáte dost času a bude se jednat
-                  o typ vozu, který jsme schopni sehnat, pokusíme se o to.
+                  Napište nám a my Vám řekneme, jestli bude v našich silách sehnat Váš vysněný vůz.
                 </p>
                 <Link
-                  href="/#kontakt"
+                  href="/o-nas#kontakt"
                   className="inline-flex items-center gap-2 px-7 py-3.5 rounded-[8px] text-[15px] font-semibold bg-blue !text-white border-2 border-blue transition-all duration-[250ms] hover:bg-blue-hover hover:border-blue-hover hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(28,138,201,0.35)]"
                 >
                   Kontaktujte nás
