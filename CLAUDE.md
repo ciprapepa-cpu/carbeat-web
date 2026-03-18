@@ -19,16 +19,19 @@ No test framework is configured yet.
 
 ### Routing
 
-- `/` — Homepage (server component composing ~10 home sections)
+- `/` — Homepage (Hero, Vehicles, Segments, HowItWorks, Reviews, CTA banner)
 - `/nabidka` — Vehicle listing with client-side filtering/sorting (`"use client"`)
 - `/auto/[slug]` — Vehicle detail, statically generated via `generateStaticParams()`
-- `/aviloo` — AVILOO battery diagnostics page (Flash Test, Premium Test, certificates)
+- `/o-nas` — About page (Proč CarBeat, Služby, Kontakt with form + map)
+- `/faq` — Standalone FAQ page with JSON-LD FAQPage schema for SEO
+- `/aviloo` — AVILOO battery diagnostics page
+- `/admin` — Protected admin panel (CRUD for cars, photo uploads, status management)
 
 ### Data Layer
 
 Cars are stored in **Supabase** (PostgreSQL). Public pages fetch via `src/lib/supabase/queries.ts` using the anon key. Admin panel uses service role client (`src/lib/supabase/admin.ts`). Types in `src/types/car.ts`. All public pages use ISR with 60s revalidation.
 
-**Admin panel** at `/admin` — manages cars (CRUD), photo uploads to Supabase Storage, status management (koncept/pripravujeme/v_nabidce/prodano). Protected by middleware + Supabase Auth.
+**Car statuses:** `koncept` → `pripravujeme` → `v_nabidce` → `prodano`
 
 **Photo URLs:** `car_photos.storage_path` — if starts with `/images/` it's a local file in `/public/`, otherwise it's in Supabase Storage bucket `car-photos`. Resolved by `getPhotoUrl()` in queries.ts.
 
@@ -37,10 +40,17 @@ Legacy hardcoded data in `src/data/cars.ts` is no longer used by the frontend.
 ### Component Organization
 
 - `src/components/layout/` — Header, Topbar, Footer, MobileNav, WhatsAppFloat, Navigation
-- `src/components/home/` — Hero (video slideshow + EKG), TrustBar, Vehicles, Segments, HowItWorks, WhyCarBeat, Reviews, Services, Contact
+- `src/components/home/` — Hero, Vehicles, Segments, HowItWorks, WhyCarBeat, Reviews, Services, Contact, ContactForm, CtaBanner
+- `src/components/o-nas/` — FAQ (accordion), faqData (shared data for FAQ + JSON-LD)
 - `src/components/car/` — CarCard, Gallery (with lightbox), SpecsGrid, EquipmentSection, DefectsBox
-- `src/components/nabidka/` — SegmentTabs, Filters, DualRangeSlider
+- `src/components/nabidka/` — SegmentTabs, Filters, DualRangeSlider, NabidkaClient
+- `src/components/seo/` — JsonLd (structured data)
 - `src/components/ui/` — ThemeToggle, SocialIcons
+
+### Navigation Structure
+
+Desktop: O nás | FAQ | Aviloo | [Nabídka vozů CTA button]
+Mobile: Nabídka vozů | O nás | FAQ | Aviloo | [Phone + WhatsApp CTAs]
 
 ## Styling
 
@@ -62,7 +72,7 @@ Custom CSS in `globals.css` handles: EKG keyframe animations (`drawPulse`, `trav
 
 ## Hero Video Slideshow
 
-6 background videos cycle via EKG pulse animation. The SVG `.pulse-travel` path fires `animationiteration` every 5s which triggers `nextSlide()`. No JS timers — the animation is the sole trigger. Videos play/pause via refs on slide change.
+7 background videos cycle via EKG pulse animation. The SVG `.pulse-travel` path fires `animationiteration` every 5s which triggers `nextSlide()`. No JS timers — the animation is the sole trigger. Videos play/pause via refs on slide change. Source videos in `../Input/Pozadi/Videa/`.
 
 ## Adding a New Car
 
@@ -83,11 +93,11 @@ node scripts/optimize-images.mjs seat-leon    # specific car
 node scripts/optimize-images.mjs audi merc    # multiple (partial match)
 ```
 
-Located at `scripts/optimize-images.mjs`. Uses sharp (bundled with Next.js). Settings: max 1920px width, 92% JPG quality, mozjpeg compression. Only overwrites if result is smaller than original. **Always run after copying new photos into public/images/cars/.**
+Uses sharp (bundled with Next.js). Settings: max 1920px width, 92% JPG quality, mozjpeg compression. Only overwrites if result is smaller than original. **Always run after copying new photos into public/images/cars/.**
 
 ## Vehicle Filtering (nabidka)
 
-Client-side `useMemo()` filtering: segment tabs, fuel/transmission pill buttons, price/km dual-range sliders, sort dropdown. Supports URL param `?segment=`. Data currently filtered from the hardcoded array.
+Client-side `useMemo()` filtering: segment tabs, fuel/transmission pill buttons, price/km dual-range sliders, sort dropdown. Supports URL param `?segment=`. Car segments: `japonska`, `seat-cupra`, `elektro`, `sportovni`, `ostatni`.
 
 ## Detail Page Specs Grid
 

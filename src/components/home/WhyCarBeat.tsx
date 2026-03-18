@@ -39,7 +39,7 @@ export default function WhyCarBeat() {
           <div className="flex flex-col">
             <div className="flex-1 rounded-[20px] overflow-hidden bg-bg dark:bg-bg">
               <Image
-                src="/images/josef-cipra.png"
+                src="/images/josef-cipra.jpg"
                 alt="Josef Cipra – CarBeat"
                 width={600}
                 height={600}
