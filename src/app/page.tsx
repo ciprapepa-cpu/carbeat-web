@@ -5,7 +5,6 @@ import Vehicles from "@/components/home/Vehicles";
 import Segments from "@/components/home/Segments";
 import HowItWorks from "@/components/home/HowItWorks";
 import Reviews from "@/components/home/Reviews";
-import Services from "@/components/home/Services";
 import CtaBanner from "@/components/home/CtaBanner";
 
 export default function Home() {
@@ -16,7 +15,6 @@ export default function Home() {
       <Segments />
       <HowItWorks />
       <Reviews />
-      <Services />
       <CtaBanner />
     </>
   );

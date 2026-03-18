@@ -1,43 +1,18 @@
 import type { Metadata } from "next";
 import WhyCarBeat from "@/components/home/WhyCarBeat";
-import FAQ from "@/components/o-nas/FAQ";
-import { faqItems } from "@/components/o-nas/faqData";
+import Services from "@/components/home/Services";
 import Contact from "@/components/home/Contact";
 
 export const metadata: Metadata = {
   title: "O nás | CarBeat",
   description:
-    "Proč si vybrat CarBeat? Dovážíme prověřená ojetá vozidla z Německa. Cebia certifikát, přiznané vady, osobní přístup. Časté dotazy a kontakt.",
+    "Proč si vybrat CarBeat? Dovážíme prověřená ojetá vozidla z Německa. Cebia certifikát, přiznané vady, osobní přístup. Naše služby a kontakt.",
   alternates: { canonical: "/o-nas" },
 };
-
-function FAQJsonLd() {
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: faqItems.map((item) => ({
-      "@type": "Question",
-      name: item.question,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: item.answer,
-      },
-    })),
-  };
-
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-    />
-  );
-}
 
 export default function ONasPage() {
   return (
     <>
-      <FAQJsonLd />
-
       {/* Page header */}
       <section className="pt-40 pb-12 bg-bg max-md:pt-28">
         <div className="max-w-[1200px] mx-auto px-6 text-center">
@@ -51,7 +26,7 @@ export default function ONasPage() {
       </section>
 
       <WhyCarBeat />
-      <FAQ />
+      <Services />
       <Contact />
     </>
   );

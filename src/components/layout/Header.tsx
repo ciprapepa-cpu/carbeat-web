@@ -11,8 +11,8 @@ interface HeaderProps {
 
 const navLinks = [
   { href: "/o-nas", label: "O nás" },
+  { href: "/faq", label: "FAQ" },
   { href: "/aviloo", label: "Aviloo" },
-  { href: "/#sluzby", label: "Služby" },
 ] as const;
 
 export default function Header({ onMenuOpen }: HeaderProps) {

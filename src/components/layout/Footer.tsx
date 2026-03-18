@@ -11,7 +11,7 @@ const nabidkaLinks = [
 
 const infoLinks = [
   { href: "/o-nas", label: "O nás" },
-  { href: "/o-nas#faq", label: "Časté dotazy" },
+  { href: "/faq", label: "Časté dotazy" },
   { href: "/o-nas#kontakt", label: "Kontakt" },
   { href: "mailto:info@carbeat.cz", label: "info@carbeat.cz" },
   { href: "tel:+420777027809", label: "+420 777 027 809" },

@@ -12,8 +12,8 @@ interface MobileNavProps {
 const navLinks = [
   { href: "/nabidka", label: "Nabídka vozů" },
   { href: "/o-nas", label: "O nás" },
+  { href: "/faq", label: "FAQ" },
   { href: "/aviloo", label: "Aviloo" },
-  { href: "/#sluzby", label: "Služby" },
 ] as const;
 
 export default function MobileNav({ isOpen, onClose }: MobileNavProps) {
