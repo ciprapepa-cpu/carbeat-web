@@ -11,6 +11,7 @@ const videos = [
   "/videos/video-4-mini.mp4",
   "/videos/video-5-amg-exterier.mp4",
   "/videos/video-6-mazda.mp4",
+  "/videos/video-7-cupra.mp4",
 ];
 
 export default function Hero() {
