@@ -357,7 +357,7 @@ function NabidkaContent({ cars }: NabidkaClientProps) {
                   Napište nám a my Vám řekneme, jestli bude v našich silách sehnat Váš vysněný vůz.
                 </p>
                 <Link
-                  href="/o-nas#kontakt"
+                  href="/o-nas#napiste-nam"
                   className="inline-flex items-center gap-2 px-7 py-3.5 rounded-[8px] text-[15px] font-semibold bg-blue !text-white border-2 border-blue transition-all duration-[250ms] hover:bg-blue-hover hover:border-blue-hover hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(28,138,201,0.35)]"
                 >
                   Kontaktujte nás

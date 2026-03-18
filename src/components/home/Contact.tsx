@@ -108,7 +108,7 @@ export default function Contact() {
         </div>
 
         {/* Row 2: Contact form — full width */}
-        <div className="mt-16 p-8 rounded-[20px] bg-bg dark:bg-bg max-sm:p-6">
+        <div id="napiste-nam" className="mt-16 p-8 rounded-[20px] bg-bg dark:bg-bg max-sm:p-6">
           <h3 className="text-lg font-bold text-text mb-1">Napište nám</h3>
           <p className="text-sm text-text-muted mb-6">
             Popište, co hledáte, a my se Vám ozveme.
