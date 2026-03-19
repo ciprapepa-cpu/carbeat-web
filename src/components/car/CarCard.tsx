@@ -60,7 +60,7 @@ export default function CarCard({
         {/* Status badge — top */}
         {isPripravujeme && (
           <div className="absolute top-3 left-3">
-            <span className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full text-sm font-bold !bg-[#fef3c7] !text-[#92400e]">
+            <span className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full text-sm font-bold !bg-white !text-[#d97706] shadow-sm">
               Připravujeme
             </span>
           </div>
