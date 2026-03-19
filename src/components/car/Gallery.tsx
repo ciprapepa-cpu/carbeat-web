@@ -87,11 +87,12 @@ function Lightbox({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex flex-col bg-black/95"
+      className="fixed inset-0 z-[9999] flex flex-col bg-black/95"
+      onClick={onClose}
       onWheel={handleWheelDebounced}
     >
       {/* Top bar */}
-      <div className="flex items-center justify-between px-3 py-2 sm:px-4 sm:py-3">
+      <div className="flex items-center justify-between px-3 py-2 sm:px-4 sm:py-3" onClick={(e) => e.stopPropagation()}>
         {/* Counter */}
         <div className="rounded-full bg-white/10 px-3 py-1.5 text-xs sm:text-sm text-white backdrop-blur-sm">
           {currentIndex + 1} / {photos.length}
@@ -167,7 +168,10 @@ function Lightbox({
         )}
 
         {/* Image */}
-        <div className="relative w-full h-full max-w-[1400px] mx-auto">
+        <div
+          className="relative w-full h-full max-w-[1400px] mx-auto"
+          onClick={(e) => e.stopPropagation()}
+        >
           <Image
             src={photos[currentIndex]}
             alt={`${alt} - foto ${currentIndex + 1}`}
@@ -204,7 +208,7 @@ function Lightbox({
 
       {/* Thumbnail strip */}
       {photos.length > 1 && (
-        <div className="px-2 sm:px-4 py-2 sm:py-3">
+        <div className="px-2 sm:px-4 py-2 sm:py-3" onClick={(e) => e.stopPropagation()}>
           <div
             ref={thumbStripRef}
             className="flex gap-1.5 sm:gap-2 overflow-x-auto justify-center scrollbar-hide"
