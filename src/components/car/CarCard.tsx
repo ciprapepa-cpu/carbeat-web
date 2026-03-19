@@ -39,7 +39,7 @@ export default function CarCard({
 
   const card = (
     <article
-      className={`border border-border rounded-[20px] overflow-hidden transition-all duration-[250ms] bg-surface flex flex-col dark:border-border ${
+      className={`border border-border rounded-[20px] overflow-hidden transition-all duration-[250ms] bg-surface flex flex-col shadow-[0_2px_12px_rgba(0,0,0,0.08)] dark:shadow-none ${
         isClickable
           ? "hover:shadow-lg hover:-translate-y-1"
           : isProdano
