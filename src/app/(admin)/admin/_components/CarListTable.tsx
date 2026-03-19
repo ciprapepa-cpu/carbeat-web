@@ -14,10 +14,10 @@ const STATUS_LABELS: Record<CarStatus, string> = {
 };
 
 const STATUS_COLORS: Record<CarStatus, string> = {
-  koncept: "bg-bg text-text-muted",
+  koncept: "bg-bg text-text-muted border border-border",
   pripravujeme: "bg-white text-[#d97706] border border-[#d97706]",
-  v_nabidce: "bg-green-light text-green",
-  prodano: "bg-bg text-text-muted",
+  v_nabidce: "bg-green-light text-green border border-green",
+  prodano: "bg-bg text-text-muted border border-border",
 };
 
 interface CarListTableProps {
@@ -163,7 +163,7 @@ export function CarListTable({ cars }: CarListTableProps) {
                       value={car.status}
                       onChange={(e) => changeStatus(car.id, e.target.value as CarStatus)}
                       disabled={updating === car.id}
-                      className={`px-2.5 py-1 rounded-full text-xs font-medium border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue/30 ${STATUS_COLORS[car.status]}`}
+                      className={`px-2.5 py-1 rounded-full text-xs font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue/30 ${STATUS_COLORS[car.status]}`}
                     >
                       {(Object.keys(STATUS_LABELS) as CarStatus[]).map((s) => (
                         <option key={s} value={s}>
