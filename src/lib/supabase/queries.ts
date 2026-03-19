@@ -37,7 +37,6 @@ export async function getVisibleCars(): Promise<CarWithPhotos[]> {
     .from("cars")
     .select("*, car_photos(*)")
     .in("status", VISIBLE_STATUSES)
-    .eq("is_published", true)
     .order("sort_order", { ascending: true })
     .order("created_at", { ascending: false });
 
@@ -61,7 +60,6 @@ export async function getCarBySlugFromDb(slug: string): Promise<CarWithPhotos | 
     .select("*, car_photos(*)")
     .eq("slug", slug)
     .in("status", VISIBLE_STATUSES)
-    .eq("is_published", true)
     .single();
 
   if (error) {
@@ -80,8 +78,7 @@ export async function getAllVisibleSlugs(): Promise<string[]> {
   const { data, error } = await supabase
     .from("cars")
     .select("slug")
-    .in("status", VISIBLE_STATUSES)
-    .eq("is_published", true);
+    .in("status", VISIBLE_STATUSES);
 
   if (error) {
     console.error("Error fetching slugs:", error);
