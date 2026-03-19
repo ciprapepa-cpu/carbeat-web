@@ -30,7 +30,8 @@ export async function GET(
     .single();
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 404 });
+    console.error("Admin car GET error:", error.message);
+    return NextResponse.json({ error: "Auto nenalezeno" }, { status: 404 });
   }
 
   return NextResponse.json(data);
@@ -77,7 +78,8 @@ export async function PUT(
         { status: 409 }
       );
     }
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("Admin car PUT error:", error.message);
+    return NextResponse.json({ error: "Chyba při ukládání" }, { status: 500 });
   }
 
   return NextResponse.json(data);
@@ -118,7 +120,8 @@ export async function DELETE(
     .eq("id", id);
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("Admin car DELETE error:", error.message);
+    return NextResponse.json({ error: "Chyba při mazání" }, { status: 500 });
   }
 
   return NextResponse.json({ success: true });

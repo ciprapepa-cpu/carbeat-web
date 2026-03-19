@@ -53,7 +53,8 @@ export async function PATCH(
     .single();
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("Admin car status error:", error.message);
+    return NextResponse.json({ error: "Chyba při změně stavu" }, { status: 500 });
   }
 
   return NextResponse.json(data);

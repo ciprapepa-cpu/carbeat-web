@@ -206,7 +206,8 @@ export async function DELETE(
     .in("id", photos.map((p) => p.id));
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("Admin photos DELETE error:", error.message);
+    return NextResponse.json({ error: "Chyba při mazání fotek" }, { status: 500 });
   }
 
   return NextResponse.json({ success: true, deleted: photos.length });

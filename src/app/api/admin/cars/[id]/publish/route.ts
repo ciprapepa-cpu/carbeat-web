@@ -36,7 +36,8 @@ export async function PATCH(
     .single();
 
   if (fetchError) {
-    return NextResponse.json({ error: fetchError.message }, { status: 404 });
+    console.error("Admin car publish fetch error:", fetchError.message);
+    return NextResponse.json({ error: "Auto nenalezeno" }, { status: 404 });
   }
 
   // Toggle
@@ -48,7 +49,8 @@ export async function PATCH(
     .single();
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("Admin car publish error:", error.message);
+    return NextResponse.json({ error: "Chyba při změně publikace" }, { status: 500 });
   }
 
   return NextResponse.json(data);

@@ -27,7 +27,8 @@ export async function GET() {
     .order("created_at", { ascending: false });
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("Admin cars GET error:", error.message);
+    return NextResponse.json({ error: "Chyba při načítání dat" }, { status: 500 });
   }
 
   return NextResponse.json(data);
@@ -69,7 +70,8 @@ export async function POST(request: NextRequest) {
         { status: 409 }
       );
     }
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error("Admin cars POST error:", error.message);
+    return NextResponse.json({ error: "Chyba při ukládání" }, { status: 500 });
   }
 
   return NextResponse.json(data, { status: 201 });
