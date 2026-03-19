@@ -15,7 +15,7 @@ const STATUS_LABELS: Record<CarStatus, string> = {
 
 const STATUS_COLORS: Record<CarStatus, string> = {
   koncept: "bg-bg text-text-muted",
-  pripravujeme: "bg-[#fef9c3] text-[#a16207]",
+  pripravujeme: "bg-white text-[#d97706] border border-[#d97706]",
   v_nabidce: "bg-green-light text-green",
   prodano: "bg-bg text-text-muted",
 };
