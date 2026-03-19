@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, Suspense } from "react";
+import { useState, useMemo, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import CarCard from "@/components/car/CarCard";
@@ -72,6 +72,11 @@ function NabidkaContent({ cars }: NabidkaClientProps) {
   const [filters, setFilters] = useState<FiltersState>(defaultFilters);
   const [sort, setSort] = useState<SortOption>("newest");
   const [activeStatuses, setActiveStatuses] = useState<Set<StatusFilterValue>>(new Set(defaultStatuses));
+
+  // Sync segment state when URL param changes (e.g. navigating from /nabidka?segment=X to /nabidka)
+  useEffect(() => {
+    setActiveSegment(segmentParam);
+  }, [segmentParam]);
 
   const applyFilters = useMemo(() => {
     return (carsToFilter: MappedCar[]) => {

@@ -29,6 +29,7 @@ export default function MobileNav({ isOpen, onClose }: MobileNavProps) {
           width={104}
           height={52}
           className="h-[52px] w-auto logo-img"
+          style={{ maxHeight: "52px", width: "auto" }}
         />
         <button
           onClick={onClose}

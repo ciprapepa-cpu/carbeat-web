@@ -45,6 +45,7 @@ export default function Header({ onMenuOpen }: HeaderProps) {
               width={192}
               height={96}
               className="h-[96px] w-auto max-md:h-[48px] logo-img"
+              style={{ maxHeight: "96px", width: "auto" }}
               priority
             />
           </Link>
