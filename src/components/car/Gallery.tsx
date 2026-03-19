@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 
 interface GalleryProps {
   photos: string[];
@@ -15,6 +15,7 @@ function Lightbox({
   onClose,
   onPrev,
   onNext,
+  onSelect,
 }: {
   photos: string[];
   alt: string;
@@ -22,96 +23,224 @@ function Lightbox({
   onClose: () => void;
   onPrev: () => void;
   onNext: () => void;
+  onSelect: (index: number) => void;
 }) {
+  const thumbStripRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll thumbnail strip to keep active thumbnail visible
+  useEffect(() => {
+    const strip = thumbStripRef.current;
+    if (!strip) return;
+    const thumb = strip.children[currentIndex] as HTMLElement | undefined;
+    if (!thumb) return;
+    const stripRect = strip.getBoundingClientRect();
+    const thumbRect = thumb.getBoundingClientRect();
+    // If thumbnail is outside the visible area, scroll to center it
+    if (thumbRect.left < stripRect.left || thumbRect.right > stripRect.right) {
+      thumb.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+    }
+  }, [currentIndex]);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        onPrev();
+      } else if (e.key === "ArrowRight") {
+        e.preventDefault();
+        onNext();
+      } else if (e.key === "Escape") {
+        e.preventDefault();
+        onClose();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [onPrev, onNext, onClose]);
+
+  // Debounce wheel to prevent rapid-fire navigation
+  const wheelTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const handleWheelDebounced = useCallback(
+    (e: React.WheelEvent) => {
+      e.preventDefault();
+      if (wheelTimeout.current) return;
+      if (e.deltaY > 0 || e.deltaX > 0) {
+        onNext();
+      } else if (e.deltaY < 0 || e.deltaX < 0) {
+        onPrev();
+      }
+      wheelTimeout.current = setTimeout(() => {
+        wheelTimeout.current = null;
+      }, 150);
+    },
+    [onNext, onPrev]
+  );
+
+  // Prevent body scroll when lightbox is open
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
+
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
-      onClick={onClose}
+      className="fixed inset-0 z-50 flex flex-col bg-black/95"
+      onWheel={handleWheelDebounced}
     >
-      {/* Close button */}
-      <button
-        onClick={onClose}
-        className="absolute top-4 right-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition-colors hover:bg-white/20"
-        aria-label="Zavřít"
-      >
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-        >
-          <line x1="18" y1="6" x2="6" y2="18" />
-          <line x1="6" y1="6" x2="18" y2="18" />
-        </svg>
-      </button>
+      {/* Top bar */}
+      <div className="flex items-center justify-between px-3 py-2 sm:px-4 sm:py-3">
+        {/* Counter */}
+        <div className="rounded-full bg-white/10 px-3 py-1.5 text-xs sm:text-sm text-white backdrop-blur-sm">
+          {currentIndex + 1} / {photos.length}
+        </div>
 
-      {/* Counter */}
-      <div className="absolute top-4 left-4 z-10 rounded-full bg-white/10 px-3 py-1.5 text-sm text-white backdrop-blur-sm">
-        {currentIndex + 1} / {photos.length}
+        <div className="flex items-center gap-2">
+          {/* Minimize button */}
+          <button
+            onClick={onClose}
+            className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition-colors hover:bg-white/20"
+            aria-label="Zmenšit"
+            title="Zmenšit"
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <polyline points="4 14 10 14 10 20" />
+              <polyline points="20 10 14 10 14 4" />
+              <line x1="14" y1="10" x2="21" y2="3" />
+              <line x1="3" y1="21" x2="10" y2="14" />
+            </svg>
+          </button>
+
+          {/* Close button */}
+          <button
+            onClick={onClose}
+            className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition-colors hover:bg-white/20"
+            aria-label="Zavřít"
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
       </div>
 
-      {/* Previous */}
-      {photos.length > 1 && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onPrev();
-          }}
-          className="absolute left-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition-colors hover:bg-white/20"
-          aria-label="Předchozí"
-        >
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
+      {/* Main image area */}
+      <div className="relative flex flex-1 items-center justify-center min-h-0 px-2 sm:px-4">
+        {/* Previous */}
+        {photos.length > 1 && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onPrev();
+            }}
+            className="absolute left-2 sm:left-4 z-10 flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition-colors hover:bg-white/20"
+            aria-label="Předchozí"
           >
-            <polyline points="15 18 9 12 15 6" />
-          </svg>
-        </button>
-      )}
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          </button>
+        )}
 
-      {/* Next */}
-      {photos.length > 1 && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onNext();
-          }}
-          className="absolute right-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition-colors hover:bg-white/20"
-          aria-label="Další"
-        >
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
+        {/* Image */}
+        <div className="relative w-full h-full max-w-[1400px] mx-auto">
+          <Image
+            src={photos[currentIndex]}
+            alt={`${alt} - foto ${currentIndex + 1}`}
+            fill
+            className="object-contain"
+            sizes="100vw"
+            priority
+          />
+        </div>
+
+        {/* Next */}
+        {photos.length > 1 && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onNext();
+            }}
+            className="absolute right-2 sm:right-4 z-10 flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition-colors hover:bg-white/20"
+            aria-label="Další"
           >
-            <polyline points="9 18 15 12 9 6" />
-          </svg>
-        </button>
-      )}
-
-      {/* Image */}
-      <div
-        className="relative h-[80vh] w-[90vw] max-w-[1200px]"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <Image
-          src={photos[currentIndex]}
-          alt={`${alt} - foto ${currentIndex + 1}`}
-          fill
-          className="object-contain"
-          sizes="90vw"
-          priority
-        />
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </button>
+        )}
       </div>
+
+      {/* Thumbnail strip */}
+      {photos.length > 1 && (
+        <div className="px-2 sm:px-4 py-2 sm:py-3">
+          <div
+            ref={thumbStripRef}
+            className="flex gap-1.5 sm:gap-2 overflow-x-auto justify-center scrollbar-hide"
+            onWheel={(e) => {
+              // Horizontal scroll with mouse wheel on thumbnail strip
+              e.stopPropagation();
+              const strip = thumbStripRef.current;
+              if (strip) {
+                strip.scrollLeft += e.deltaY;
+              }
+            }}
+          >
+            {photos.map((photo, index) => (
+              <button
+                key={index}
+                onClick={() => onSelect(index)}
+                className={`relative h-[44px] w-[64px] sm:h-[56px] sm:w-[80px] flex-shrink-0 overflow-hidden rounded-md sm:rounded-lg border-2 transition-all ${
+                  index === currentIndex
+                    ? "border-white ring-1 ring-white/40 opacity-100"
+                    : "border-transparent opacity-50 hover:opacity-80"
+                }`}
+                aria-label={`Zobrazit foto ${index + 1}`}
+              >
+                <Image
+                  src={photo}
+                  alt={`${alt} - miniatura ${index + 1}`}
+                  fill
+                  className="object-cover"
+                  sizes="80px"
+                  loading={index < 10 ? "eager" : "lazy"}
+                />
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -119,6 +248,7 @@ function Lightbox({
 export default function Gallery({ photos, alt }: GalleryProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const thumbStripRef = useRef<HTMLDivElement>(null);
 
   const handlePrev = useCallback(() => {
     setActiveIndex((prev) => (prev === 0 ? photos.length - 1 : prev - 1));
@@ -127,6 +257,19 @@ export default function Gallery({ photos, alt }: GalleryProps) {
   const handleNext = useCallback(() => {
     setActiveIndex((prev) => (prev === photos.length - 1 ? 0 : prev + 1));
   }, [photos.length]);
+
+  // Auto-scroll thumbnail strip in main gallery
+  useEffect(() => {
+    const strip = thumbStripRef.current;
+    if (!strip) return;
+    const thumb = strip.children[activeIndex] as HTMLElement | undefined;
+    if (!thumb) return;
+    const stripRect = strip.getBoundingClientRect();
+    const thumbRect = thumb.getBoundingClientRect();
+    if (thumbRect.left < stripRect.left || thumbRect.right > stripRect.right) {
+      thumb.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+    }
+  }, [activeIndex]);
 
   if (photos.length === 0) return null;
 
@@ -190,7 +333,10 @@ export default function Gallery({ photos, alt }: GalleryProps) {
 
       {/* Thumbnail strip */}
       {photos.length > 1 && (
-        <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
+        <div
+          ref={thumbStripRef}
+          className="mt-3 flex gap-2 overflow-x-auto pb-1 scrollbar-hide"
+        >
           {photos.map((photo, index) => (
             <button
               key={index}
@@ -224,6 +370,7 @@ export default function Gallery({ photos, alt }: GalleryProps) {
           onClose={() => setLightboxOpen(false)}
           onPrev={handlePrev}
           onNext={handleNext}
+          onSelect={setActiveIndex}
         />
       )}
     </>

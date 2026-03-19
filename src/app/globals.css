@@ -311,3 +311,12 @@ a {
   opacity: 1;
   transform: translateY(0);
 }
+
+/* Hide scrollbar but keep scrolling */
+@utility scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
