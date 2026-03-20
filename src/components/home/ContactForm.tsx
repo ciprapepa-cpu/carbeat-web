@@ -34,7 +34,7 @@ export default function ContactForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          access_key: process.env.NEXT_PUBLIC_WEB3FORMS_KEY,
+          access_key: "a510c0ea-a744-4dd4-b9e1-866d3ea89546",
           subject: `Nová zpráva z webu od ${name}`,
           from_name: "CarBeat Web",
           name,
