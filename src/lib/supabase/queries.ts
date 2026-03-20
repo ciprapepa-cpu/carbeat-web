@@ -13,14 +13,9 @@ function getPublicClient() {
 }
 
 /**
- * Get the public URL for a car photo.
- * If the storage_path starts with "/images/" it's a local file in /public/.
- * Otherwise it's in Supabase Storage bucket "car-photos".
+ * Get the public URL for a car photo from Supabase Storage.
  */
 export function getPhotoUrl(storagePath: string): string {
-  if (storagePath.startsWith("/images/")) {
-    return storagePath;
-  }
   return `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/car-photos/${storagePath}`;
 }
 
