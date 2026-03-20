@@ -17,16 +17,38 @@ export default function ContactForm() {
     setStatus("sending");
     setErrorMsg("");
 
+    // Client-side validation
+    if (name.trim().length < 2) {
+      setStatus("error");
+      setErrorMsg("Jméno je příliš krátké.");
+      return;
+    }
+    if (message.trim().length < 10) {
+      setStatus("error");
+      setErrorMsg("Zpráva je příliš krátká (min. 10 znaků).");
+      return;
+    }
+
     try {
-      const res = await fetch("/api/contact", {
+      const res = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, phone, message }),
+        body: JSON.stringify({
+          access_key: process.env.NEXT_PUBLIC_WEB3FORMS_KEY,
+          subject: `Nová zpráva z webu od ${name}`,
+          from_name: "CarBeat Web",
+          name,
+          email,
+          phone: phone || "–",
+          message,
+          botcheck: "",
+        }),
       });
 
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error ?? "Nepodařilo se odeslat zprávu.");
+      const data = await res.json();
+
+      if (!data.success) {
+        throw new Error(data.message ?? "Nepodařilo se odeslat zprávu.");
       }
 
       setStatus("success");
