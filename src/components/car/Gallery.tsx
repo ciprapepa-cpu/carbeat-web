@@ -326,7 +326,7 @@ export default function Gallery({ photos, alt }: GalleryProps) {
         {photos.length > 1 && (
           <button
             onClick={(e) => { e.stopPropagation(); handlePrev(); }}
-            className="absolute left-3 top-1/2 -translate-y-1/2 z-[2] flex h-10 w-10 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm transition-all hover:bg-black/60 opacity-0 group-hover:opacity-100"
+            className="absolute left-3 top-1/2 -translate-y-1/2 z-[2] flex h-10 w-10 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm transition-all hover:bg-black/60 sm:opacity-0 sm:group-hover:opacity-100"
             aria-label="Předchozí"
           >
             <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -339,7 +339,7 @@ export default function Gallery({ photos, alt }: GalleryProps) {
         {photos.length > 1 && (
           <button
             onClick={(e) => { e.stopPropagation(); handleNext(); }}
-            className="absolute right-3 top-1/2 -translate-y-1/2 z-[2] flex h-10 w-10 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm transition-all hover:bg-black/60 opacity-0 group-hover:opacity-100"
+            className="absolute right-3 top-1/2 -translate-y-1/2 z-[2] flex h-10 w-10 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm transition-all hover:bg-black/60 sm:opacity-0 sm:group-hover:opacity-100"
             aria-label="Další"
           >
             <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
