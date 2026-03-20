@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState, useRef, type FormEvent } from "react";
 
 type Status = "idle" | "sending" | "success" | "error";
 
@@ -11,11 +11,19 @@ export default function ContactForm() {
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [errorMsg, setErrorMsg] = useState("");
+  const [honeypot, setHoneypot] = useState("");
+  const mountedAt = useRef(Date.now());
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setStatus("sending");
     setErrorMsg("");
+
+    // Bot detection: honeypot filled or submitted too fast (<3s)
+    if (honeypot || Date.now() - mountedAt.current < 3000) {
+      setStatus("success");
+      return;
+    }
 
     // Client-side validation
     if (name.trim().length < 2) {
@@ -84,6 +92,17 @@ export default function ContactForm() {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
+      {/* Honeypot — hidden from users, bots fill it in */}
+      <div className="absolute opacity-0 -z-10 pointer-events-none" aria-hidden="true" tabIndex={-1}>
+        <input
+          type="text"
+          name="company_url"
+          autoComplete="off"
+          tabIndex={-1}
+          value={honeypot}
+          onChange={(e) => setHoneypot(e.target.value)}
+        />
+      </div>
       <div className="grid grid-cols-2 gap-4 max-sm:grid-cols-1">
         <div>
           <label htmlFor="cf-name" className="block text-xs font-semibold text-text-muted uppercase tracking-wide mb-1.5">
