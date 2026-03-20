@@ -276,6 +276,17 @@ export default function Gallery({ photos, alt }: GalleryProps) {
     setActiveIndex((prev) => (prev === photos.length - 1 ? 0 : prev + 1));
   }, [photos.length]);
 
+  // Keyboard navigation in main gallery (when lightbox is closed)
+  useEffect(() => {
+    if (lightboxOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") { e.preventDefault(); handlePrev(); }
+      else if (e.key === "ArrowRight") { e.preventDefault(); handleNext(); }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [lightboxOpen, handlePrev, handleNext]);
+
   // Auto-scroll thumbnail strip in main gallery
   useEffect(() => {
     const strip = thumbStripRef.current;
