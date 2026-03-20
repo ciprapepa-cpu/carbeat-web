@@ -163,7 +163,7 @@ export default function AvilooPage() {
             <div>
               <p className="font-bold text-text text-[15px] mb-1">Časový limit</p>
               <p className="text-sm text-text-muted leading-relaxed">
-                Vybití (jízdu) ze 100 % na 10 % je nutné stihnout v rozmezí maximálně 7 dnů
+                Vybití (jízda) ze 100 % na 10 % je nutné stihnout v rozmezí maximálně 7 dnů
                 od zahájení testu. Výsledky jsou k dispozici do 2 pracovních dnů.
               </p>
             </div>
