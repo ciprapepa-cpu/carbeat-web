@@ -316,6 +316,28 @@ export default function Gallery({ photos, alt }: GalleryProps) {
           onClick={() => setLightboxOpen(true)}
         />
 
+        {/* Prefetch adjacent images for instant switching */}
+        {photos.length > 1 && (
+          <>
+            {[activeIndex - 1, activeIndex + 1, activeIndex + 2].map((i) => {
+              const idx = (i + photos.length) % photos.length;
+              if (idx === activeIndex) return null;
+              return (
+                <Image
+                  key={`prefetch-${idx}`}
+                  src={photos[idx]}
+                  alt=""
+                  fill
+                  className="opacity-0 pointer-events-none absolute"
+                  sizes="(max-width: 768px) 100vw, 720px"
+                  priority={false}
+                  aria-hidden
+                />
+              );
+            })}
+          </>
+        )}
+
         {/* Zoom button */}
         <button
           onClick={() => setLightboxOpen(true)}
