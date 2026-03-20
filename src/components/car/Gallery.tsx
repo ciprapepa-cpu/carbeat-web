@@ -85,11 +85,25 @@ function Lightbox({
     };
   }, []);
 
+  // Swipe down to close on mobile
+  const touchStartY = useRef<number | null>(null);
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartY.current = e.touches[0].clientY;
+  }, []);
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (touchStartY.current === null) return;
+    const deltaY = e.changedTouches[0].clientY - touchStartY.current;
+    if (deltaY > 80) onClose();
+    touchStartY.current = null;
+  }, [onClose]);
+
   return (
     <div
       className="fixed inset-0 z-[9999] flex flex-col bg-black/95"
       onClick={onClose}
       onWheel={handleWheelDebounced}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
     >
       {/* Top bar */}
       <div className="flex items-center justify-between px-3 py-2 sm:px-4 sm:py-3" onClick={(e) => e.stopPropagation()}>
@@ -124,16 +138,16 @@ function Lightbox({
           {/* Close button */}
           <button
             onClick={onClose}
-            className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition-colors hover:bg-white/20"
+            className="flex h-11 w-11 sm:h-10 sm:w-10 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur-sm transition-colors hover:bg-white/30"
             aria-label="Zavřít"
           >
             <svg
-              width="18"
-              height="18"
+              width="22"
+              height="22"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              strokeWidth="2"
+              strokeWidth="2.5"
             >
               <line x1="18" y1="6" x2="6" y2="18" />
               <line x1="6" y1="6" x2="18" y2="18" />

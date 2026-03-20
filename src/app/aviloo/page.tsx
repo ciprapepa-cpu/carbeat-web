@@ -1,15 +1,18 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 
 const certificates = [
   {
-    src: "/aviloo/certifikat-aviloo-1.pdf",
+    src: "/aviloo/certifikat-aviloo-1.jpg",
     alt: "AVILOO Battery Certificate - Premium Test",
+    label: "This is AVILOO",
   },
   {
-    src: "/aviloo/certifikat-aviloo-2.pdf",
+    src: "/aviloo/certifikat-aviloo-2.jpg",
     alt: "AVILOO Battery Certificate - Flash Test",
+    label: "AVILOO Flash Test",
   },
 ];
 
@@ -190,15 +193,17 @@ export default function AvilooPage() {
                 onClick={() => setLightbox(cert.src)}
                 className="group bg-bg border border-border rounded-[20px] overflow-hidden transition-all duration-[250ms] hover:border-blue hover:shadow-lg hover:-translate-y-1 cursor-pointer"
               >
-                <div className="relative aspect-[3/2.4] overflow-hidden bg-white pointer-events-none">
-                  <embed
-                    src={`${cert.src}#toolbar=0&navpanes=0&scrollbar=0`}
-                    type="application/pdf"
-                    className="w-full h-full"
+                <div className="relative aspect-[3/2] overflow-hidden bg-white">
+                  <Image
+                    src={cert.src}
+                    alt={cert.alt}
+                    fill
+                    className="object-contain"
+                    sizes="(max-width: 640px) 100vw, 400px"
                   />
                 </div>
                 <div className="p-4 text-center border-t border-border">
-                  <p className="font-bold text-text text-sm">Certifikát AVILOO {i + 1}</p>
+                  <p className="font-bold text-text text-sm">{cert.label}</p>
                   <p className="text-xs text-text-muted mt-1">Klikněte pro zvětšení</p>
                 </div>
               </div>
@@ -277,6 +282,36 @@ export default function AvilooPage() {
         </div>
       </section>
 
+      {/* Supported vehicles */}
+      <section className="py-24 bg-surface">
+        <div className="max-w-[1200px] mx-auto px-6">
+          <div className="bg-bg border border-border rounded-[20px] p-8 sm:p-10 text-center">
+            <div className="w-14 h-14 mx-auto mb-5 rounded-2xl bg-blue-light flex items-center justify-center">
+              <svg className="w-7 h-7 text-blue" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h2 className="text-[clamp(22px,3vw,30px)] font-extrabold text-text leading-tight mb-3">
+              Zjistěte, zda je možné otestovat váš vůz
+            </h2>
+            <p className="text-text-muted max-w-[600px] mx-auto mb-6 leading-relaxed">
+              AVILOO podporuje širokou škálu elektromobilů a plug-in hybridů na trhu. Zda je mezi nimi i vaše vozidlo (nebo vozidla vašich zákazníků), si můžete snadno a rychle ověřit.
+            </p>
+            <a
+              href="https://aviloo.com/en/vehicle-coverage"
+              target="_blank"
+              rel="noopener"
+              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-[8px] text-[15px] font-semibold bg-blue !text-white border-2 border-blue transition-all duration-[250ms] hover:bg-blue-hover hover:border-blue-hover hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(28,138,201,0.35)]"
+            >
+              Seznam podporovaných vozidel
+              <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <path d="M7 17L17 7M17 7H7M17 7v10" />
+              </svg>
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="py-24 bg-blue relative overflow-hidden text-center">
         <div className="absolute top-[-50%] left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-[radial-gradient(circle,rgba(255,255,255,0.10)_0%,transparent_65%)] pointer-events-none" />
@@ -309,23 +344,31 @@ export default function AvilooPage() {
       {/* Lightbox */}
       {lightbox && (
         <div
-          className="fixed inset-0 z-[2000] bg-black/80 flex items-center justify-center p-4 cursor-pointer"
+          className="fixed inset-0 z-[2000] bg-black/90 flex items-center justify-center p-4 cursor-pointer"
           onClick={() => setLightbox(null)}
         >
           <button
             onClick={() => setLightbox(null)}
-            className="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors cursor-pointer border-none"
+            className="absolute top-4 right-4 sm:top-6 sm:right-6 z-10 w-11 h-11 sm:w-10 sm:h-10 rounded-full bg-white/15 flex items-center justify-center text-white hover:bg-white/25 transition-colors cursor-pointer border-none backdrop-blur-sm"
             aria-label="Zavřít"
           >
             <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path d="M18 6L6 18M6 6l12 12" />
             </svg>
           </button>
-          <iframe
-            src={lightbox}
-            className="w-full max-w-[800px] h-[90vh] rounded-[12px] bg-white"
+          <div
+            className="relative w-full max-w-[900px] aspect-[3/2]"
             onClick={(e) => e.stopPropagation()}
-          />
+          >
+            <Image
+              src={lightbox}
+              alt="AVILOO certifikát"
+              fill
+              className="object-contain rounded-[12px]"
+              sizes="(max-width: 768px) 100vw, 900px"
+              priority
+            />
+          </div>
         </div>
       )}
     </>

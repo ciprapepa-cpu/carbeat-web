@@ -36,8 +36,11 @@ export async function POST(request: NextRequest) {
   const accessKey = process.env.WEB3FORMS_KEY;
 
   if (!accessKey) {
-    console.log("Contact form submission (WEB3FORMS_KEY not set):", { name, email, phone, message });
-    return NextResponse.json({ success: true });
+    console.error("WEB3FORMS_KEY is not set — email will not be sent");
+    return NextResponse.json(
+      { error: "Odesílání zpráv je dočasně nedostupné. Kontaktujte nás prosím telefonicky." },
+      { status: 503 }
+    );
   }
 
   const response = await fetch("https://api.web3forms.com/submit", {
