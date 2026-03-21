@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   },
   description:
     "Dovoz prověřených ojetých aut z Německa. Kompletní servis od výběru po předání. Josef Cipra, +420 777 027 809.",
-  metadataBase: new URL("https://carbeat.cz"),
+  metadataBase: new URL("https://carbeat-web.vercel.app"),
   alternates: { canonical: "/" },
   openGraph: {
     type: "website",
