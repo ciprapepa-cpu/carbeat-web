@@ -9,6 +9,18 @@ import DefectsBox from "@/components/car/DefectsBox";
 import { CarProductJsonLd, BreadcrumbJsonLd } from "@/components/seo/JsonLd";
 import ContactForm from "@/components/home/ContactForm";
 
+function toYouTubeEmbed(url: string): string {
+  // Already an embed URL — normalise to nocookie domain
+  if (url.includes("/embed/")) {
+    return url.replace("www.youtube.com", "www.youtube-nocookie.com");
+  }
+  // Extract video ID from various YouTube URL formats
+  const match = url.match(
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]+)/
+  );
+  return match ? `https://www.youtube-nocookie.com/embed/${match[1]}` : url;
+}
+
 // Revalidate every 60s so new/updated cars appear without redeploy
 export const revalidate = 60;
 
@@ -287,7 +299,7 @@ export default async function CarDetailPage({ params }: PageProps) {
             <h2 className="text-xl font-bold text-text mb-4">Videoprohlídka</h2>
             <div className="relative aspect-video overflow-hidden rounded-[20px] bg-bg">
               <iframe
-                src={car.youtube_url}
+                src={toYouTubeEmbed(car.youtube_url)}
                 title={`Videoprohlídka - ${car.name}`}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
