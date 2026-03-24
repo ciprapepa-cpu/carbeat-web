@@ -89,7 +89,7 @@ export default function CarCard({
             {badges.map((badge) => (
               <span
                 key={badge}
-                className={`inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full text-sm font-bold ${
+                className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold ${
                   badge === "Cebia"
                     ? "!bg-[#dcfce7] !text-[#16a34a]"
                     : "bg-blue text-white"
@@ -116,7 +116,7 @@ export default function CarCard({
         </h3>
 
         {/* Specs — 3×2 grid */}
-        <div className="grid grid-cols-3 gap-y-1.5 mb-4 text-[13px] text-text-muted [&>span]:whitespace-nowrap [&>span]:overflow-hidden [&>span]:text-ellipsis">
+        <div className="grid gap-y-1.5 mb-4 text-[14px] text-text-muted [&>span]:whitespace-nowrap [&>span]:overflow-hidden [&>span]:text-ellipsis" style={{ gridTemplateColumns: "2fr 3fr 2fr" }}>
           <span className="spec-icon spec-icon--year">{year}</span>
           <span className="spec-icon spec-icon--km">{km}</span>
           <span className="spec-icon spec-icon--fuel">{fuel}</span>
