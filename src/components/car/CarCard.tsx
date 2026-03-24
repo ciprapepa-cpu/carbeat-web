@@ -126,7 +126,7 @@ export default function CarCard({
         </div>
 
         {/* Footer */}
-        <div className="mt-auto flex items-center justify-between pt-4 border-t border-border">
+        <div className="mt-auto flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-border">
           {!isProdano && (
             <div className={`font-extrabold text-text whitespace-nowrap ${price === "Cena na dotaz" ? "text-[20px]" : "text-[26px]"}`}>{price}</div>
           )}
@@ -134,7 +134,7 @@ export default function CarCard({
           {isClickable && (
             <Link
               href={`/auto/${slug}`}
-              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-[8px] text-sm font-semibold bg-blue !text-white border-2 border-blue transition-all duration-[250ms] hover:bg-blue-hover hover:border-blue-hover hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(28,138,201,0.35)] whitespace-nowrap"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-[8px] text-sm font-semibold bg-blue !text-white border-2 border-blue transition-all duration-[250ms] hover:bg-blue-hover hover:border-blue-hover hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(28,138,201,0.35)] whitespace-nowrap flex-1 min-w-[180px]"
             >
               Prohlédnout vůz →
             </Link>
@@ -143,7 +143,7 @@ export default function CarCard({
           {isPripravujeme && (
             <Link
               href="/#kontakt"
-              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-[8px] text-sm font-semibold bg-blue !text-white border-2 border-blue transition-all duration-[250ms] hover:bg-blue-hover hover:border-blue-hover hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(28,138,201,0.35)] whitespace-nowrap"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-[8px] text-sm font-semibold bg-blue !text-white border-2 border-blue transition-all duration-[250ms] hover:bg-blue-hover hover:border-blue-hover hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(28,138,201,0.35)] whitespace-nowrap flex-1 min-w-[180px]"
             >
               Zeptat se na vůz →
             </Link>
