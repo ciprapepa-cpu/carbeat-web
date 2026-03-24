@@ -192,6 +192,7 @@ function NabidkaContent({ cars }: NabidkaClientProps) {
         powerKw={formatPower(car.powerKw)}
         transmission={car.transmissionType}
         fuel={car.fuel}
+        drive={car.drive}
         price={formatPrice(car.price)}
         imageSrc={car.imageSrc}
         imageAlt={car.name}

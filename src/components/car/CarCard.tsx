@@ -11,11 +11,20 @@ interface CarCardProps {
   powerKw: string;
   transmission: string;
   fuel: string;
+  drive: string;
   price: string;
   imageSrc: string;
   imageAlt: string;
   badges?: readonly string[];
   status?: CarStatus;
+}
+
+function formatDrive(drive: string): string {
+  const lower = drive.toLowerCase();
+  if (lower.includes("předn")) return "Přední";
+  if (lower.includes("zadn")) return "Zadní";
+  if (lower.includes("4x4") || lower.includes("4×4")) return "4x4";
+  return drive;
 }
 
 export default function CarCard({
@@ -27,6 +36,7 @@ export default function CarCard({
   powerKw,
   transmission,
   fuel,
+  drive,
   price,
   imageSrc,
   imageAlt,
@@ -105,15 +115,14 @@ export default function CarCard({
           {name}
         </h3>
 
-        {/* Specs — W layout */}
-        <div className="flex justify-between mb-1.5 text-[15px] text-text-muted">
+        {/* Specs — 3×2 grid */}
+        <div className="grid grid-cols-3 gap-y-1.5 mb-4 text-[15px] text-text-muted">
           <span className="spec-icon spec-icon--year">{year}</span>
           <span className="spec-icon spec-icon--km">{km}</span>
-          <span className="spec-icon spec-icon--power">{powerKw}</span>
-        </div>
-        <div className="flex justify-center gap-12 mb-4 text-[15px] text-text-muted">
-          <span className="spec-icon spec-icon--trans">{transmission}</span>
           <span className="spec-icon spec-icon--fuel">{fuel}</span>
+          <span className="spec-icon spec-icon--power">{powerKw}</span>
+          <span className="spec-icon spec-icon--trans">{transmission}</span>
+          <span className="spec-icon spec-icon--drive">{formatDrive(drive)}</span>
         </div>
 
         {/* Footer */}
