@@ -128,13 +128,13 @@ export default function CarCard({
         {/* Footer */}
         <div className="mt-auto flex items-center justify-between pt-4 border-t border-border">
           {!isProdano && (
-            <div className={`font-extrabold text-text ${price === "Cena na dotaz" ? "text-[20px]" : "text-[26px]"}`}>{price}</div>
+            <div className={`font-extrabold text-text whitespace-nowrap ${price === "Cena na dotaz" ? "text-[20px]" : "text-[26px]"}`}>{price}</div>
           )}
 
           {isClickable && (
             <Link
               href={`/auto/${slug}`}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[8px] text-sm font-semibold bg-blue !text-white border-2 border-blue transition-all duration-[250ms] hover:bg-blue-hover hover:border-blue-hover hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(28,138,201,0.35)]"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-[8px] text-sm font-semibold bg-blue !text-white border-2 border-blue transition-all duration-[250ms] hover:bg-blue-hover hover:border-blue-hover hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(28,138,201,0.35)] whitespace-nowrap"
             >
               Prohlédnout vůz →
             </Link>
@@ -143,7 +143,7 @@ export default function CarCard({
           {isPripravujeme && (
             <Link
               href="/#kontakt"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-[8px] text-sm font-semibold bg-blue !text-white border-2 border-blue transition-all duration-[250ms] hover:bg-blue-hover hover:border-blue-hover hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(28,138,201,0.35)]"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-[8px] text-sm font-semibold bg-blue !text-white border-2 border-blue transition-all duration-[250ms] hover:bg-blue-hover hover:border-blue-hover hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(28,138,201,0.35)] whitespace-nowrap"
             >
               Zeptat se na vůz →
             </Link>
