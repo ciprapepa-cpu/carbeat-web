@@ -116,7 +116,7 @@ export default function CarCard({
         </h3>
 
         {/* Specs — 3×2 grid */}
-        <div className="grid grid-cols-3 gap-y-1.5 mb-4 text-[15px] text-text-muted">
+        <div className="grid grid-cols-3 gap-y-1.5 mb-4 text-[13px] text-text-muted [&>span]:whitespace-nowrap [&>span]:overflow-hidden [&>span]:text-ellipsis">
           <span className="spec-icon spec-icon--year">{year}</span>
           <span className="spec-icon spec-icon--km">{km}</span>
           <span className="spec-icon spec-icon--fuel">{fuel}</span>
