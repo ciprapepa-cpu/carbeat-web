@@ -204,7 +204,7 @@ export default async function CarDetailPage({ params }: PageProps) {
         name={car.name}
         description={car.description ?? `${car.name}, ${car.year}, ${formattedKm} km, ${car.power_kw} kW`}
         image={firstPhotoUrl}
-        url={`https://carbeat.cz/auto/${slug}`}
+        url={`https://www.carbeat.cz/auto/${slug}`}
         price={car.price}
         year={car.year}
         km={car.km}
@@ -213,9 +213,9 @@ export default async function CarDetailPage({ params }: PageProps) {
       />
       <BreadcrumbJsonLd
         items={[
-          { name: "Domů", url: "https://carbeat.cz" },
-          { name: "Nabídka", url: "https://carbeat.cz/nabidka" },
-          { name: car.name, url: `https://carbeat.cz/auto/${slug}` },
+          { name: "Domů", url: "https://www.carbeat.cz" },
+          { name: "Nabídka", url: "https://www.carbeat.cz/nabidka" },
+          { name: car.name, url: `https://www.carbeat.cz/auto/${slug}` },
         ]}
       />
       <div className="mx-auto max-w-[1200px] px-6">

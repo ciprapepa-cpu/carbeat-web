@@ -4,4 +4,4 @@ Allow: /
 Disallow: /admin
 Disallow: /api/
 
-Sitemap: https://carbeat.cz/sitemap.xml
+Sitemap: https://www.carbeat.cz/sitemap.xml

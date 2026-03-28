@@ -24,9 +24,9 @@ export function OrganizationJsonLd() {
     "@context": "https://schema.org",
     "@type": "AutoDealer",
     name: "CarBeat",
-    url: "https://carbeat.cz",
-    logo: "https://carbeat.cz/logo.png",
-    image: "https://carbeat.cz/logo.png",
+    url: "https://www.carbeat.cz",
+    logo: "https://www.carbeat.cz/logo.png",
+    image: "https://www.carbeat.cz/logo.png",
     description:
       "Dovoz prověřených ojetých aut z Německa. Kompletní servis od výběru po předání.",
     telephone: "+420777027809",
@@ -42,7 +42,7 @@ export function OrganizationJsonLd() {
       availableLanguage: ["cs"],
     },
     sameAs: [
-      "https://www.instagram.com/carbeat.cz/",
+      "https://www.instagram.com/carbeat_cz/",
     ],
   };
 

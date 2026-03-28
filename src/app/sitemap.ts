@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { getVisibleCars } from "@/lib/supabase/queries";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = "https://carbeat.cz";
+  const baseUrl = "https://www.carbeat.cz";
 
   const cars = await getVisibleCars();
 

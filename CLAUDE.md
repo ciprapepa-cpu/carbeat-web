@@ -35,7 +35,15 @@ Cars are stored in **Supabase** (PostgreSQL). Public pages fetch via `src/lib/su
 
 **Photo URLs:** `car_photos.storage_path` — if starts with `/images/` it's a local file in `/public/`, otherwise it's in Supabase Storage bucket `car-photos`. Resolved by `getPhotoUrl()` in queries.ts.
 
-Legacy hardcoded data in `src/data/cars.ts` is no longer used by the frontend.
+**Drive options in DB:** "Předních kol", "Zadních kol", "4x4" — displayed on car cards as "Přední", "Zadní", "4x4" via `formatDrive()` in CarCard.
+
+### API Routes
+
+- `api/contact` — Contact form submission
+- `api/admin/cars` — CRUD operations for cars
+- `api/admin/cars/[id]/photos` — Photo upload/management
+- `api/admin/cars/[id]/publish` — Publish/unpublish
+- `api/admin/cars/[id]/status` — Status transitions
 
 ### Component Organization
 
@@ -56,7 +64,7 @@ Mobile: Nabídka vozů | O nás | FAQ | Aviloo | [Phone + WhatsApp CTAs]
 
 **Tailwind v4 CSS-first config** — no `tailwind.config.js`. All theme tokens defined via `@theme {}` in `src/app/globals.css`. PostCSS plugin: `@tailwindcss/postcss`.
 
-Custom CSS in `globals.css` handles: EKG keyframe animations (`drawPulse`, `travelGlow`), car card spec icons (SVG data URIs as `::before` pseudo-elements), detail page specs grid (`.detail-specs-grid` with nth-child border logic), dual-range sliders, scroll reveal.
+Custom CSS in `globals.css` handles: EKG keyframe animations (`drawPulse`, `travelGlow`), car card spec icons (SVG data URIs as `::before` pseudo-elements — classes: `spec-icon--year`, `--km`, `--fuel`, `--power`, `--trans`, `--drive`), detail page specs grid (`.detail-specs-grid` with nth-child border logic), dual-range sliders, scroll reveal.
 
 **Brand color:** `#1c8ac9` — the only blue. All theme colors are CSS custom properties overridden in `.dark {}`.
 
@@ -83,7 +91,7 @@ Use the **admin panel** at `/admin`:
 4. The car appears on the homepage and `/nabidka` within 60 seconds (ISR revalidation)
 
 Source materials (photos, .docx context) live in `../Input/Inzeraty/{Značka Model}/`
-Car card badges: position bottom-left, 50% larger than default. CTA button text: "Prohlédnout vůz →"
+Car card badges: position bottom-left (`text-xs` compact). CTA button text: "Prohlédnout vůz →". Car card specs: 3×2 grid (`2fr 3fr 2fr`) — row 1: year, km, fuel; row 2: power, transmission, drive. Footer wraps on narrow screens (price above, button below).
 
 ### Image Optimization Script
 
