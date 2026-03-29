@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState, useCallback, useRef, useEffect } from "react";
+import { trackGalleryOpen } from "@/lib/analytics";
 
 interface GalleryProps {
   photos: string[];
@@ -300,6 +301,11 @@ export default function Gallery({ photos, alt }: GalleryProps) {
     }
   }, [activeIndex]);
 
+  const openLightbox = useCallback((index: number) => {
+    trackGalleryOpen(alt, index);
+    setLightboxOpen(true);
+  }, [alt]);
+
   if (photos.length === 0) return null;
 
   return (
@@ -313,7 +319,7 @@ export default function Gallery({ photos, alt }: GalleryProps) {
           className="object-cover cursor-zoom-in"
           sizes="(max-width: 768px) 100vw, 720px"
           priority
-          onClick={() => setLightboxOpen(true)}
+          onClick={() => openLightbox(activeIndex)}
         />
 
         {/* Prefetch adjacent images for instant switching */}
@@ -340,7 +346,7 @@ export default function Gallery({ photos, alt }: GalleryProps) {
 
         {/* Zoom button */}
         <button
-          onClick={() => setLightboxOpen(true)}
+          onClick={() => openLightbox(activeIndex)}
           className="absolute top-3 right-3 z-[2] flex h-9 w-9 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm transition-all hover:bg-black/60 opacity-0 group-hover:opacity-100"
           aria-label="Zvětšit"
         >

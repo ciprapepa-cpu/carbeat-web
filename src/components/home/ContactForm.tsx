@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, type FormEvent } from "react";
+import { trackContactFormSubmit } from "@/lib/analytics";
 
 type Status = "idle" | "sending" | "success" | "error";
 
@@ -60,6 +61,7 @@ export default function ContactForm() {
       }
 
       setStatus("success");
+      trackContactFormSubmit();
       setName("");
       setEmail("");
       setPhone("");

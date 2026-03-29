@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { CarStatus } from "@/types/car";
+import TrackClick from "@/components/analytics/TrackClick";
 
 interface CarCardProps {
   slug: string;
@@ -132,12 +133,14 @@ export default function CarCard({
           )}
 
           {isClickable && (
-            <Link
-              href={`/auto/${slug}`}
-              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-[8px] text-sm font-semibold bg-blue !text-white border-2 border-blue transition-all duration-[250ms] hover:bg-blue-hover hover:border-blue-hover hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(28,138,201,0.35)] whitespace-nowrap flex-1 min-w-[180px]"
-            >
-              Prohlédnout vůz →
-            </Link>
+            <TrackClick track={{ event: "selectCar", id: slug, name, price: parseFloat(price.replace(/\s/g, "").replace("Kč", "")) || 0, listName: "nabidka" }}>
+              <Link
+                href={`/auto/${slug}`}
+                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-[8px] text-sm font-semibold bg-blue !text-white border-2 border-blue transition-all duration-[250ms] hover:bg-blue-hover hover:border-blue-hover hover:-translate-y-0.5 hover:shadow-[0_8px_24px_rgba(28,138,201,0.35)] whitespace-nowrap flex-1 min-w-[180px]"
+              >
+                Prohlédnout vůz →
+              </Link>
+            </TrackClick>
           )}
 
           {isPripravujeme && (
