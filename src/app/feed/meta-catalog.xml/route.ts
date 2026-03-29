@@ -111,7 +111,7 @@ function buildListing(car: CarWithPhotos): string {
       <component name="addr1">Sviňišťany 63</component>
       <component name="city">Sviňišťany</component>
       <component name="region">Královéhradecký kraj</component>
-      <component name="postal_code">503 12</component>
+      <component name="postal_code">552 01</component>
       <component name="country">CZ</component>
     </address>
     <latitude>50.1848</latitude>
