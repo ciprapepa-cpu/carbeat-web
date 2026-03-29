@@ -44,8 +44,8 @@ export default function Header({ onMenuOpen }: HeaderProps) {
               alt="CarBeat"
               width={192}
               height={96}
-              className="h-[96px] w-auto max-md:h-[48px] logo-img"
-              style={{ maxHeight: "96px", width: "auto" }}
+              className="h-[96px] w-auto max-md:h-[80px] logo-img"
+              style={{ width: "auto" }}
               priority
             />
           </Link>
