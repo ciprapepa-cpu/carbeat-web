@@ -30,8 +30,8 @@ export default function Header({ onMenuOpen }: HeaderProps) {
       className={`fixed left-0 right-0 z-[1000] overflow-visible transition-all duration-[250ms]
         top-[36px] md:top-[36px] max-md:top-0
         ${scrolled
-          ? "border-b border-border shadow-sm bg-surface dark:bg-[rgba(15,30,44,0.95)] dark:border-border"
-          : "border-b border-transparent bg-surface dark:bg-[rgba(15,30,44,0.95)]"
+          ? "border-b border-[#1e3348] shadow-sm bg-[rgba(15,30,44,0.95)]"
+          : "border-b border-transparent bg-[rgba(15,30,44,0.95)]"
         }
         backdrop-blur-[12px]`}
     >
@@ -56,7 +56,7 @@ export default function Header({ onMenuOpen }: HeaderProps) {
               <li key={link.href}>
                 <Link
                   href={link.href}
-                  className="px-4 py-2 rounded-[8px] text-[15px] font-medium text-text transition-all duration-[250ms] hover:text-blue hover:bg-blue-light"
+                  className="px-4 py-2 rounded-[8px] text-[15px] font-medium text-[#e0e8f0] transition-all duration-[250ms] hover:text-blue hover:bg-blue-light"
                 >
                   {link.label}
                 </Link>
@@ -73,16 +73,16 @@ export default function Header({ onMenuOpen }: HeaderProps) {
           </Link>
 
           {/* Mobile: theme toggle + hamburger */}
-          <ThemeToggle className="md:hidden ml-auto mr-3" />
+          <ThemeToggle className="md:hidden ml-auto mr-3 !border-white/20 !text-[#e0e8f0] hover:!border-blue hover:!text-blue" />
 
           <button
             onClick={onMenuOpen}
             className="md:hidden flex flex-col gap-[5px] p-2 cursor-pointer bg-transparent border-none"
             aria-label="Menu"
           >
-            <span className="block w-6 h-0.5 bg-text rounded-sm transition-all duration-[250ms] dark:bg-[#e0e8f0]" />
-            <span className="block w-6 h-0.5 bg-text rounded-sm transition-all duration-[250ms] dark:bg-[#e0e8f0]" />
-            <span className="block w-6 h-0.5 bg-text rounded-sm transition-all duration-[250ms] dark:bg-[#e0e8f0]" />
+            <span className="block w-6 h-0.5 bg-[#e0e8f0] rounded-sm transition-all duration-[250ms]" />
+            <span className="block w-6 h-0.5 bg-[#e0e8f0] rounded-sm transition-all duration-[250ms]" />
+            <span className="block w-6 h-0.5 bg-[#e0e8f0] rounded-sm transition-all duration-[250ms]" />
           </button>
         </nav>
       </div>

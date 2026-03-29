@@ -148,11 +148,7 @@ img {
   transition: filter 0.25s ease;
 }
 
-html:not(.dark) .logo-img {
-  filter: invert(42%) sepia(85%) saturate(600%) hue-rotate(174deg) brightness(90%) contrast(90%);
-}
-
-.dark .logo-img {
+.logo-img {
   filter: invert(1) hue-rotate(180deg);
 }
 
