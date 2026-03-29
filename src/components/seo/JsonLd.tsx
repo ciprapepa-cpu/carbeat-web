@@ -28,7 +28,7 @@ export function OrganizationJsonLd() {
     logo: "https://www.carbeat.cz/logo.png",
     image: "https://www.carbeat.cz/logo.png",
     description:
-      "Dovoz prověřených ojetých aut z Německa. Kompletní servis od výběru po předání.",
+      "Prodej prověřených ojetých aut z Německa. Kompletní servis od výběru po předání.",
     telephone: "+420777027809",
     address: {
       "@type": "PostalAddress",

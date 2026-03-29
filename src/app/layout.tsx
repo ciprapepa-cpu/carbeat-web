@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     template: "%s | CarBeat",
   },
   description:
-    "Dovoz prověřených ojetých aut z Německa. Kompletní servis od výběru po předání. Josef Cipra, +420 777 027 809.",
+    "Prodej prověřených ojetých aut z Německa. Kompletní servis od výběru po předání. Josef Cipra, +420 777 027 809.",
   metadataBase: new URL("https://www.carbeat.cz"),
   alternates: { canonical: "/" },
   openGraph: {
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     siteName: "CarBeat",
     title: "CarBeat — Ověřená ojetá auta z Německa",
     description:
-      "Dovoz prověřených ojetých aut z Německa. Kompletní servis od výběru po předání.",
+      "Prodej prověřených ojetých aut z Německa. Kompletní servis od výběru po předání.",
     images: [
       {
         url: "/og-image.jpg",
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "CarBeat — Ověřená ojetá auta z Německa",
     description:
-      "Dovoz prověřených ojetých aut z Německa. Kompletní servis od výběru po předání.",
+      "Prodej prověřených ojetých aut z Německa. Kompletní servis od výběru po předání.",
     images: ["/og-image.jpg"],
   },
 };
