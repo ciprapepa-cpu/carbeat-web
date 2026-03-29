@@ -1,10 +1,16 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import "./globals.css";
 import Topbar from "@/components/layout/Topbar";
 import Navigation from "@/components/layout/Navigation";
 import Footer from "@/components/layout/Footer";
 import WhatsAppFloat from "@/components/layout/WhatsAppFloat";
 import { OrganizationJsonLd } from "@/components/seo/JsonLd";
+import ConsentDefaults from "@/components/analytics/ConsentDefaults";
+import GoogleAnalytics from "@/components/analytics/GoogleAnalytics";
+import MetaPixel from "@/components/analytics/MetaPixel";
+import RouteChangeTracker from "@/components/analytics/RouteChangeTracker";
+import CookieConsent from "@/components/analytics/CookieConsent";
 
 export const metadata: Metadata = {
   title: {
@@ -59,6 +65,7 @@ export default function RootLayout({
   return (
     <html lang="cs" className="dark" suppressHydrationWarning>
       <head>
+        <ConsentDefaults />
         <script dangerouslySetInnerHTML={{ __html: darkModeScript }} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
@@ -73,11 +80,17 @@ export default function RootLayout({
       </head>
       <body className="bg-surface text-text antialiased">
         <OrganizationJsonLd />
+        <GoogleAnalytics />
+        <MetaPixel />
+        <Suspense fallback={null}>
+          <RouteChangeTracker />
+        </Suspense>
         <Topbar />
         <Navigation />
         <main>{children}</main>
         <Footer />
         <WhatsAppFloat />
+        <CookieConsent />
       </body>
     </html>
   );
