@@ -120,7 +120,6 @@ export default function CookieConsent() {
           </div>
         )}
 
-        {/* GDPR: Accept & Reject must be equally prominent */}
         <div className="flex flex-wrap items-center gap-3">
           <button
             onClick={handleAcceptAll}
@@ -128,26 +127,28 @@ export default function CookieConsent() {
           >
             Přijmout vše
           </button>
-          <button
-            onClick={handleRejectAll}
-            className="rounded-[8px] bg-blue-light px-6 py-2.5 text-sm font-semibold text-text transition-all duration-[250ms] hover:bg-border"
-          >
-            Odmítnout vše
-          </button>
           {!showDetails ? (
             <button
               onClick={() => setShowDetails(true)}
-              className="px-4 py-2.5 text-sm text-text-muted underline transition-colors hover:text-text"
+              className="rounded-[8px] bg-blue-light px-6 py-2.5 text-sm font-semibold text-text transition-all duration-[250ms] hover:bg-border"
             >
               Přizpůsobit
             </button>
           ) : (
-            <button
-              onClick={handleSavePreferences}
-              className="rounded-[8px] bg-dark px-6 py-2.5 text-sm font-semibold !text-white transition-all duration-[250ms] hover:bg-dark-2"
-            >
-              Uložit nastavení
-            </button>
+            <>
+              <button
+                onClick={handleSavePreferences}
+                className="rounded-[8px] bg-blue-light px-6 py-2.5 text-sm font-semibold text-text transition-all duration-[250ms] hover:bg-border"
+              >
+                Uložit nastavení
+              </button>
+              <button
+                onClick={handleRejectAll}
+                className="px-4 py-2.5 text-sm text-text-muted underline transition-colors hover:text-text"
+              >
+                Odmítnout vše
+              </button>
+            </>
           )}
         </div>
       </div>
