@@ -24,6 +24,15 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/cookies",
+        destination: "/zasady-cookies",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {
