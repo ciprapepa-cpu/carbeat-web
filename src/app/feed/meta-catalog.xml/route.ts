@@ -107,6 +107,17 @@ function buildListing(car: CarWithPhotos): string {
     <exterior_color>N/A</exterior_color>
     <state_of_vehicle>Used</state_of_vehicle>
     <availability>AVAILABLE</availability>
+    <address format="simple">
+      <component name="addr1">Sviňišťany 63</component>
+      <component name="city">Sviňišťany</component>
+      <component name="region">Královéhradecký kraj</component>
+      <component name="postal_code">503 12</component>
+      <component name="country">CZ</component>
+    </address>
+    <latitude>50.1848</latitude>
+    <longitude>15.7378</longitude>
+    <dealer_name>CarBeat s.r.o.</dealer_name>
+    <dealer_phone>+420777027809</dealer_phone>
 ${imageElements}
   </listing>`;
 }
