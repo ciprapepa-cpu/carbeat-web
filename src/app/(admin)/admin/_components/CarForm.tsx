@@ -163,21 +163,17 @@ export function CarForm({ car, mode }: CarFormProps) {
     setUploadStatus(`Konvertuji ${file.name} z HEIC...`);
     const blob = await heic2any({ blob: file, toType: "image/jpeg", quality: 0.92 });
     const result = Array.isArray(blob) ? blob[0] : blob;
-    const newName = file.name.replace(/\.heic$/i, ".jpg").replace(/\.heif$/i, ".jpg");
-    return new File([result], newName, { type: "image/jpeg" });
+    const newName = file.name.replace(/\.heic$/i, ".webp").replace(/\.heif$/i, ".webp");
+    return new File([result], newName, { type: "image/webp" });
   }
 
   function resizeImage(file: File, maxWidth: number, quality: number): Promise<File> {
     return new Promise((resolve) => {
       const img = new Image();
       img.onload = () => {
-        // Skip resize if already small enough
-        if (img.width <= maxWidth && file.size < 2 * 1024 * 1024) {
-          resolve(file);
-          return;
-        }
-
-        const scale = Math.min(1, maxWidth / img.width);
+        // Always re-encode to WebP for optimal file size
+        const needsResize = img.width > maxWidth;
+        const scale = needsResize ? maxWidth / img.width : 1;
         const canvas = document.createElement("canvas");
         canvas.width = Math.round(img.width * scale);
         canvas.height = Math.round(img.height * scale);
@@ -188,15 +184,15 @@ export function CarForm({ car, mode }: CarFormProps) {
         canvas.toBlob(
           (blob) => {
             if (blob) {
-              const resized = new File([blob], file.name.replace(/\.\w+$/, ".jpg"), {
-                type: "image/jpeg",
+              const resized = new File([blob], file.name.replace(/\.\w+$/, ".webp"), {
+                type: "image/webp",
               });
               resolve(resized);
             } else {
               resolve(file);
             }
           },
-          "image/jpeg",
+          "image/webp",
           quality
         );
       };

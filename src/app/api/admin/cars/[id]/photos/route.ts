@@ -77,9 +77,9 @@ export async function POST(
       continue;
     }
 
-    // For HEIC files that weren't converted client-side, store as-is with jpeg content type
-    const contentType = isHeic ? "image/jpeg" : file.type;
-    const ext = isHeic ? "jpg" : (file.name.split(".").pop()?.toLowerCase() || "jpg");
+    // For HEIC files that weren't converted client-side, store as webp content type
+    const contentType = isHeic ? "image/webp" : file.type;
+    const ext = file.name.split(".").pop()?.toLowerCase() || "webp";
     const storagePath = `${id}/${Date.now()}-${nextPosition}.${ext}`;
 
     const { error: uploadError } = await admin.storage

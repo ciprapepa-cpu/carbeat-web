@@ -73,7 +73,7 @@ Custom CSS in `globals.css` handles: EKG keyframe animations (`drawPulse`, `trav
 - **Dark is the default.** Light mode only when user explicitly selects it.
 - Class strategy: `<html class="dark">` toggled via ThemeToggle component.
 - IIFE in `layout.tsx` runs before paint (reads `localStorage('cb-theme')`).
-- Logo: `.logo-img` class applies `filter: invert(1) hue-rotate(180deg)` in dark mode (inverts black text to white, preserves blue EKG line).
+- Logo: `.logo-img` class applies `filter: invert(1) hue-rotate(180deg)` always (white text + blue EKG). Header has dark bg in both modes.
 - Buttons on colored backgrounds use `!text-white` to force white text in both modes.
 - Cebia badge always forced: `!bg-[#dcfce7] !text-[#16a34a]`.
 - Footer logo uses `brightness-0 invert` (always white on dark bg).
@@ -86,7 +86,7 @@ Custom CSS in `globals.css` handles: EKG keyframe animations (`drawPulse`, `trav
 
 Use the **admin panel** at `/admin`:
 1. Go to `/admin/auta/novy` and fill in the form
-2. Upload photos — they're client-side resized (max 1920px, JPEG 85%) and uploaded to Supabase Storage
+2. Upload photos — they're client-side converted to WebP (max 1920px, 85% quality) and uploaded to Supabase Storage
 3. Set status to "v_nabidce" to make it visible on the public site
 4. The car appears on the homepage and `/nabidka` within 60 seconds (ISR revalidation)
 
@@ -101,7 +101,22 @@ node scripts/optimize-images.mjs seat-leon    # specific car
 node scripts/optimize-images.mjs audi merc    # multiple (partial match)
 ```
 
-Uses sharp (bundled with Next.js). Settings: max 1920px width, 92% JPG quality, mozjpeg compression. Only overwrites if result is smaller than original. **Always run after copying new photos into public/images/cars/.**
+Uses sharp (bundled with Next.js). Settings: max 1920px width, WebP 92% quality. Only overwrites if WebP is smaller than original. Originals kept as .bak. **Always run after copying new photos into public/images/cars/.**
+
+### Video Compression Script
+
+```bash
+node scripts/compress-videos.mjs              # compress all hero videos
+node scripts/compress-videos.mjs --dry-run    # preview sizes only
+```
+
+Requires ffmpeg (`winget install ffmpeg`). Compresses to 720p H.264 CRF 28, no audio. Originals saved as `.original.mp4`.
+
+## Performance & Bandwidth
+
+- **Image optimization**: Next.js serves AVIF/WebP automatically (`formats` in next.config.ts). Admin uploads convert to WebP client-side.
+- **Cache headers**: Static assets (`/videos/*`, `/images/*`, `/aviloo/*`) have `Cache-Control: public, max-age=31536000, immutable`.
+- **Video loading**: Only first hero video preloads fully; others load metadata only until activated.
 
 ## Vehicle Filtering (nabidka)
 
