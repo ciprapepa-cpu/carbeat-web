@@ -97,7 +97,7 @@ function buildListing(car: CarWithPhotos): string {
     <year>${car.year}</year>
     <mileage>
       <value>${car.km}</value>
-      <unit>KM</unit>
+      <unit>KILOMETERS</unit>
     </mileage>
     <price>${car.price} CZK</price>
     <body_style>${mapBodyStyle(car.body_type)}</body_style>
@@ -105,7 +105,7 @@ function buildListing(car: CarWithPhotos): string {
     <fuel_type>${mapFuel(car.fuel)}</fuel_type>
     <drivetrain>${mapDrivetrain(car.drive)}</drivetrain>
     <exterior_color>N/A</exterior_color>
-    <state_of_vehicle>Used</state_of_vehicle>
+    <state_of_vehicle>USED</state_of_vehicle>
     <availability>AVAILABLE</availability>
     <address format="simple">
       <component name="addr1">Sviňišťany 63</component>
