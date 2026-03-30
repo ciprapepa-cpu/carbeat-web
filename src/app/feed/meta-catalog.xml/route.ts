@@ -106,7 +106,7 @@ function buildListing(car: CarWithPhotos): string {
     <drivetrain>${mapDrivetrain(car.drive)}</drivetrain>
     <exterior_color>N/A</exterior_color>
     <state_of_vehicle>Used</state_of_vehicle>
-    <availability>available</availability>
+    <availability>In stock</availability>
     <address format="simple">
       <component name="addr1">Sviňišťany 63</component>
       <component name="city">Sviňišťany</component>
