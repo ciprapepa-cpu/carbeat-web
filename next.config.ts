@@ -27,6 +27,12 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
+        source: "/:path*",
+        has: [{ type: "host", value: "^carbeat\\.cz$" }],
+        destination: "https://www.carbeat.cz/:path*",
+        permanent: true,
+      },
+      {
         source: "/cookies",
         destination: "/zasady-cookies",
         permanent: true,
