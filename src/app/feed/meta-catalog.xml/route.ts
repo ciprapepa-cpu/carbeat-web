@@ -35,9 +35,9 @@ function mapFuel(fuel: string): string {
 
 function mapTransmission(trans: string): string {
   const lower = trans.toLowerCase();
-  if (lower.includes("automat")) return "AUTOMATIC";
-  if (lower.includes("manuál") || lower.includes("manual")) return "MANUAL";
-  return "AUTOMATIC";
+  if (lower.includes("automat")) return "Automatic";
+  if (lower.includes("manuál") || lower.includes("manual")) return "Manual";
+  return "Automatic";
 }
 
 function mapBodyStyle(body: string): string {
@@ -55,7 +55,7 @@ function mapBodyStyle(body: string): string {
 
 function mapDrivetrain(drive: string): string {
   const lower = drive.toLowerCase();
-  if (lower.includes("4x4") || lower.includes("4wd") || lower.includes("awd")) return "AWD";
+  if (lower.includes("4x4") || lower.includes("4wd") || lower.includes("awd")) return "4X4";
   if (lower.includes("zadn")) return "RWD";
   return "FWD";
 }
@@ -97,7 +97,7 @@ function buildListing(car: CarWithPhotos): string {
     <year>${car.year}</year>
     <mileage>
       <value>${car.km}</value>
-      <unit>KILOMETERS</unit>
+      <unit>KM</unit>
     </mileage>
     <price>${car.price} CZK</price>
     <body_style>${mapBodyStyle(car.body_type)}</body_style>
@@ -105,8 +105,8 @@ function buildListing(car: CarWithPhotos): string {
     <fuel_type>${mapFuel(car.fuel)}</fuel_type>
     <drivetrain>${mapDrivetrain(car.drive)}</drivetrain>
     <exterior_color>N/A</exterior_color>
-    <state_of_vehicle>USED</state_of_vehicle>
-    <availability>AVAILABLE</availability>
+    <state_of_vehicle>Used</state_of_vehicle>
+    <availability>available</availability>
     <address format="simple">
       <component name="addr1">Sviňišťany 63</component>
       <component name="city">Sviňišťany</component>
@@ -128,6 +128,8 @@ export async function GET(): Promise<NextResponse> {
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <listings>
+  <title>CarBeat Vehicle Feed</title>
+  <link rel="self" href="${BASE_URL}/feed/meta-catalog.xml"/>
 ${feedCars.map(buildListing).join("\n")}
 </listings>`;
 
