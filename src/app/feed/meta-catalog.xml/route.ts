@@ -131,7 +131,7 @@ function buildListing(car: CarWithPhotos): string {
     </address>
     <latitude>50.1848</latitude>
     <longitude>15.7378</longitude>
-    <fb_page_id>100089114341808</fb_page_id>
+    <fb_page_id>106586222311897</fb_page_id>
     <dealer_name>CarBeat s.r.o.</dealer_name>
     <dealer_phone>+420777027809</dealer_phone>
     <custom_label_0>${getPriceLabel(car.price)}</custom_label_0>
