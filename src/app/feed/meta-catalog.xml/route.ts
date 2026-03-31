@@ -25,7 +25,7 @@ function parseMakeModel(name: string): { make: string; model: string } {
 
 function mapFuel(fuel: string): string {
   const lower = fuel.toLowerCase();
-  if (lower.includes("benz")) return "GASOLINE";
+  if (lower.includes("benz")) return "PETROL";
   if (lower.includes("nafta") || lower.includes("diesel")) return "DIESEL";
   if (lower.includes("elektr")) return "ELECTRIC";
   if (lower.includes("hybrid")) return "HYBRID";
@@ -80,10 +80,13 @@ function buildListing(car: CarWithPhotos): string {
   const description = car.description
     || `${car.name} – ${car.year}, ${car.km.toLocaleString("cs-CZ")} km, ${car.fuel}, ${car.power_kw} kW`;
 
-  const imageElements = photos
-    .map((photoUrl, i) => `    <image>
+  const mainImage = photos[0] || "";
+  const additionalImages = photos.slice(1);
+
+  const additionalImageElements = additionalImages
+    .map((photoUrl) => `    <image>
       <url>${escapeXml(photoUrl)}</url>
-      <tag>${i === 0 ? "Exterior" : "Interior"}</tag>
+      <tag>Interior</tag>
     </image>`)
     .join("\n");
 
@@ -92,6 +95,7 @@ function buildListing(car: CarWithPhotos): string {
     <title>${escapeXml(car.name)} ${car.year}</title>
     <description><![CDATA[${description}]]></description>
     <url>${escapeXml(url)}</url>
+    <image_link>${escapeXml(mainImage)}</image_link>
     <make>${escapeXml(make)}</make>
     <model>${escapeXml(model)}</model>
     <year>${car.year}</year>
@@ -106,7 +110,7 @@ function buildListing(car: CarWithPhotos): string {
     <drivetrain>${mapDrivetrain(car.drive)}</drivetrain>
     <exterior_color>${escapeXml(car.exterior_color || "Other")}</exterior_color>
     <state_of_vehicle>Used</state_of_vehicle>
-    <availability>AVAILABLE</availability>
+    <availability>in stock</availability>
     <address format="simple">
       <component name="addr1">Sviňišťany 63</component>
       <component name="city">Sviňišťany</component>
@@ -119,7 +123,7 @@ function buildListing(car: CarWithPhotos): string {
     <fb_page_id>100089114341808</fb_page_id>
     <dealer_name>CarBeat s.r.o.</dealer_name>
     <dealer_phone>+420777027809</dealer_phone>
-${imageElements}
+${additionalImageElements}
   </listing>`;
 }
 
