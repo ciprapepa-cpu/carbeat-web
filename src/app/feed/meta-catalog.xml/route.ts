@@ -60,6 +60,21 @@ function mapDrivetrain(drive: string): string {
   return "FWD";
 }
 
+function getPriceLabel(price: number): string {
+  if (price < 200000) return "Budget_under_200k";
+  if (price <= 500000) return "Midrange_200k-500k";
+  return "Premium_over_500k";
+}
+
+function getUseCaseLabel(bodyType: string): string {
+  const lower = bodyType.toLowerCase();
+  if (lower.includes("kombi") || lower.includes("combi") || lower.includes("suv") || lower.includes("mpv") || lower.includes("van") || lower.includes("minivan")) return "Family_Transport";
+  if (lower.includes("hatchback") || lower.includes("sedan")) return "City_Commuter";
+  if (lower.includes("pick") || lower.includes("skříň") || lower.includes("dodáv")) return "Work_Utility";
+  if (lower.includes("kupé") || lower.includes("coupe") || lower.includes("coupé") || lower.includes("kabrio") || lower.includes("cabrio")) return "Sport";
+  return "City_Commuter";
+}
+
 function getPhotoAbsoluteUrl(storagePath: string): string {
   if (storagePath.startsWith("/images/")) return `${BASE_URL}${storagePath}`;
   return getPhotoUrl(storagePath);
@@ -103,7 +118,7 @@ function buildListing(car: CarWithPhotos): string {
       <value>${car.km}</value>
       <unit>KM</unit>
     </mileage>
-    <price>${car.price} CZK</price>
+    <price>${car.price}.00 CZK</price>
     <body_style>${mapBodyStyle(car.body_type)}</body_style>
     <transmission>${mapTransmission(car.transmission_type)}</transmission>
     <fuel_type>${mapFuel(car.fuel)}</fuel_type>
@@ -123,6 +138,8 @@ function buildListing(car: CarWithPhotos): string {
     <fb_page_id>100089114341808</fb_page_id>
     <dealer_name>CarBeat s.r.o.</dealer_name>
     <dealer_phone>+420777027809</dealer_phone>
+    <custom_label_0>${getPriceLabel(car.price)}</custom_label_0>
+    <custom_label_3>${getUseCaseLabel(car.body_type)}</custom_label_3>
 ${additionalImageElements}
   </listing>`;
 }

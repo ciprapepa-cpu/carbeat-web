@@ -57,6 +57,7 @@ export function CarForm({ car, mode }: CarFormProps) {
   const [drive, setDrive] = useState(car?.drive ?? "Předních kol");
   const [bodyType, setBodyType] = useState(car?.body_type ?? "Sedan / limuzína");
   const [exteriorColor, setExteriorColor] = useState(car?.exterior_color ?? "Other");
+  const [vin, setVin] = useState(car?.vin ?? "");
 
   // Category
   const [segment, setSegment] = useState<CarSegment>(car?.segment ?? "ostatni");
@@ -410,6 +411,7 @@ export function CarForm({ car, mode }: CarFormProps) {
       drive,
       body_type: bodyType,
       exterior_color: exteriorColor,
+      vin: vin || null,
       price: priceOnRequest ? -1 : price,
       description: description || null,
       defects,
@@ -556,6 +558,9 @@ export function CarForm({ car, mode }: CarFormProps) {
                 <option key={c} value={c}>{c}</option>
               ))}
             </select>
+          </Field>
+          <Field label="VIN (Meta)">
+            <input type="text" value={vin} onChange={(e) => setVin(e.target.value.toUpperCase())} maxLength={17} placeholder="17místný VIN kód" className={inputClass} />
           </Field>
         </div>
       </Section>

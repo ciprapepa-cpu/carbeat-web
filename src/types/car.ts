@@ -17,6 +17,7 @@ export interface Car {
   drive: string;
   body_type: string;
   exterior_color: string;
+  vin: string | null;
   price: number;
   description: string | null;
   defects: string[];
