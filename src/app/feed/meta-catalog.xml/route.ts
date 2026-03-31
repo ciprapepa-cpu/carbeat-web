@@ -106,7 +106,7 @@ function buildListing(car: CarWithPhotos): string {
     <drivetrain>${mapDrivetrain(car.drive)}</drivetrain>
     <exterior_color>${escapeXml(car.exterior_color || "Other")}</exterior_color>
     <state_of_vehicle>Used</state_of_vehicle>
-    <availability>In stock</availability>
+    <availability>AVAILABLE</availability>
     <address format="simple">
       <component name="addr1">Sviňišťany 63</component>
       <component name="city">Sviňišťany</component>
