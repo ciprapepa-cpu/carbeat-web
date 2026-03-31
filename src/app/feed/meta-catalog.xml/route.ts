@@ -101,7 +101,7 @@ function buildListing(car: CarWithPhotos): string {
     </mileage>
     <price>${car.price} CZK</price>
     <body_style>${mapBodyStyle(car.body_type)}</body_style>
-    <transmission>${mapTransmission(car.transmission)}</transmission>
+    <transmission>${mapTransmission(car.transmission_type)}</transmission>
     <fuel_type>${mapFuel(car.fuel)}</fuel_type>
     <drivetrain>${mapDrivetrain(car.drive)}</drivetrain>
     <exterior_color>${escapeXml(car.exterior_color || "Other")}</exterior_color>
@@ -116,6 +116,7 @@ function buildListing(car: CarWithPhotos): string {
     </address>
     <latitude>50.1848</latitude>
     <longitude>15.7378</longitude>
+    <fb_page_id>100089114341808</fb_page_id>
     <dealer_name>CarBeat s.r.o.</dealer_name>
     <dealer_phone>+420777027809</dealer_phone>
 ${imageElements}
