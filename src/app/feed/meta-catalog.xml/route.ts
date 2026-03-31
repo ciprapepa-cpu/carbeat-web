@@ -104,7 +104,7 @@ function buildListing(car: CarWithPhotos): string {
     <transmission>${mapTransmission(car.transmission)}</transmission>
     <fuel_type>${mapFuel(car.fuel)}</fuel_type>
     <drivetrain>${mapDrivetrain(car.drive)}</drivetrain>
-    <exterior_color>N/A</exterior_color>
+    <exterior_color>${escapeXml(car.exterior_color || "Other")}</exterior_color>
     <state_of_vehicle>Used</state_of_vehicle>
     <availability>In stock</availability>
     <address format="simple">

@@ -29,6 +29,7 @@ export const carSchema = z.object({
   transmission_type: z.string().default(""),
   drive: z.string().default(""),
   body_type: z.string().default(""),
+  exterior_color: z.string().default("Other"),
   price: z.number().int().min(-1, "Cena musí být kladná nebo -1 pro cenu na dotaz"),
   description: z.string().nullable().default(null),
   defects: z.array(z.string()).default([]),

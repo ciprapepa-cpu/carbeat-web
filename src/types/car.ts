@@ -16,6 +16,7 @@ export interface Car {
   transmission_type: string;
   drive: string;
   body_type: string;
+  exterior_color: string;
   price: number;
   description: string | null;
   defects: string[];

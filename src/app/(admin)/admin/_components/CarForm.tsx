@@ -28,6 +28,7 @@ const FUEL_OPTIONS = ["Benzín", "Nafta", "Hybrid", "Elektro", "CNG", "LPG"];
 const BODY_TYPE_OPTIONS = ["Kombi", "SUV", "Hatchback", "Sedan / limuzína", "Liftback", "Kabrio", "MPV", "Kupé", "VAN", "Ostatní"];
 const DRIVE_OPTIONS = ["Předních kol", "Zadních kol", "4x4"];
 const TRANSMISSION_OPTIONS = ["Manuální", "Automatická"];
+const EXTERIOR_COLOR_OPTIONS = ["Black", "White", "Gray", "Silver", "Blue", "Red", "Green", "Brown", "Beige", "Orange", "Yellow", "Other"];
 
 interface CarFormProps {
   car?: CarWithPhotos;
@@ -55,6 +56,7 @@ export function CarForm({ car, mode }: CarFormProps) {
   const [transmissionType, setTransmissionType] = useState(car?.transmission_type ?? "Manuální");
   const [drive, setDrive] = useState(car?.drive ?? "Předních kol");
   const [bodyType, setBodyType] = useState(car?.body_type ?? "Sedan / limuzína");
+  const [exteriorColor, setExteriorColor] = useState(car?.exterior_color ?? "Other");
 
   // Category
   const [segment, setSegment] = useState<CarSegment>(car?.segment ?? "ostatni");
@@ -407,6 +409,7 @@ export function CarForm({ car, mode }: CarFormProps) {
       transmission_type: transmissionType,
       drive,
       body_type: bodyType,
+      exterior_color: exteriorColor,
       price: priceOnRequest ? -1 : price,
       description: description || null,
       defects,
@@ -544,6 +547,13 @@ export function CarForm({ car, mode }: CarFormProps) {
             <select value={bodyType} onChange={(e) => setBodyType(e.target.value)} className={inputClass}>
               {BODY_TYPE_OPTIONS.map((b) => (
                 <option key={b} value={b}>{b}</option>
+              ))}
+            </select>
+          </Field>
+          <Field label="Barva exteriéru (Meta)">
+            <select value={exteriorColor} onChange={(e) => setExteriorColor(e.target.value)} className={inputClass}>
+              {EXTERIOR_COLOR_OPTIONS.map((c) => (
+                <option key={c} value={c}>{c}</option>
               ))}
             </select>
           </Field>
