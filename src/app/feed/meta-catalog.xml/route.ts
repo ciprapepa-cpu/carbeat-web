@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getVisibleCars, getPhotoUrl } from "@/lib/supabase/queries";
 import type { CarWithPhotos } from "@/types/car";
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 const BASE_URL = "https://www.carbeat.cz";
 
