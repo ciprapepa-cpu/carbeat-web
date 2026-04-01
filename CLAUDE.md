@@ -26,6 +26,9 @@ No test framework is configured yet.
 - `/faq` — Standalone FAQ page with JSON-LD FAQPage schema for SEO
 - `/aviloo` — AVILOO battery diagnostics page
 - `/admin` — Protected admin panel (CRUD for cars, photo uploads, status management)
+- `/admin/auta/[id]/smlouva` — Contract wizard (kupní smlouva generator)
+- `/zasady-cookies` — Cookie policy page
+- `/sitemap.xml` — Dynamic sitemap (generated from `src/app/sitemap.ts`)
 
 ### Data Layer
 
@@ -137,9 +140,11 @@ Requires ffmpeg (`winget install ffmpeg`). Compresses to 720p H.264 CRF 28, no a
 
 ## Performance & Bandwidth
 
-- **Image optimization**: Next.js serves AVIF/WebP automatically (`formats` in next.config.ts). Admin uploads convert to WebP client-side.
+- **Image optimization**: All `<Image>` components have `unoptimized` prop — Vercel Image Optimization is bypassed (free tier quota exhausted). Admin uploads convert to WebP client-side (max 1920px, 85% quality), so source images are already optimized. When removing `unoptimized` in the future, also review `deviceSizes` in next.config.ts (currently narrowed to `[640, 828, 1200, 1920]`).
+- **Car photos**: Served directly from Supabase Storage (not Vercel bandwidth). Local images only: logos, josef-cipra.jpg, logo-cupra.png.
 - **Cache headers**: Static assets (`/videos/*`, `/images/*`, `/aviloo/*`) have `Cache-Control: public, max-age=31536000, immutable`.
 - **Video loading**: Only first hero video preloads fully; others load metadata only until activated.
+- **Gallery prefetch**: Adjacent images prefetched via `<link rel="prefetch">` (not `<Image>`) to avoid optimization cost.
 
 ## Vehicle Filtering (nabidka)
 
@@ -165,7 +170,7 @@ Client-side `useMemo()` filtering: segment tabs, fuel/transmission pill buttons,
 ### Knowledge Base (Input)
 
 - `../Input/Kupni-smlouva/kupni_smlouva_auto_knowledge.json` — Legal framework, contract structure, all 8 articles, warnings
-- `../Input/Kupni-smlouva/kupni_smlouva_questions_claude_code.json` — Structured Q&A flow (Q01-Q19), validation rules
+- `../Input/Kupni-smlouva/kupni_smlouva_questions_claude_code.json` — Structured wizard steps (v2.0.0, matches current implementation)
 
 ### Wizard Steps
 
