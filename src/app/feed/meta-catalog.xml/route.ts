@@ -53,6 +53,26 @@ function mapBodyStyle(body: string): string {
   return "OTHER";
 }
 
+function mapExteriorColor(color: string): string {
+  const map: Record<string, string> = {
+    "černá": "Black",
+    "bílá": "White",
+    "šedá": "Gray",
+    "stříbrná": "Silver",
+    "modrá": "Blue",
+    "červená": "Red",
+    "zelená": "Green",
+    "hnědá": "Brown",
+    "béžová": "Beige",
+    "oranžová": "Orange",
+    "žlutá": "Yellow",
+    "fialová": "Purple",
+    "zlatá": "Gold",
+  };
+  const lower = color.toLowerCase().trim();
+  return map[lower] || "Other";
+}
+
 function mapDrivetrain(drive: string): string {
   const lower = drive.toLowerCase();
   if (lower.includes("4x4") || lower.includes("4wd") || lower.includes("awd")) return "4X4";
@@ -119,7 +139,7 @@ function buildListing(car: CarWithPhotos): string {
     <transmission>${mapTransmission(car.transmission_type)}</transmission>
     <fuel_type>${mapFuel(car.fuel)}</fuel_type>
     <drivetrain>${mapDrivetrain(car.drive)}</drivetrain>
-    <exterior_color>${escapeXml(car.exterior_color || "Other")}</exterior_color>
+    <exterior_color>${mapExteriorColor(car.exterior_color || "")}</exterior_color>
     <state_of_vehicle>Used</state_of_vehicle>
     <availability>available</availability>
     <address format="simple">

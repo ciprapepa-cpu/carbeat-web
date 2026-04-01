@@ -183,6 +183,12 @@ export function CarListTable({ cars }: CarListTableProps) {
                       >
                         Upravit
                       </a>
+                      <a
+                        href={`/admin/auta/${car.id}/smlouva`}
+                        className="px-3 py-1.5 rounded-[6px] text-xs font-medium bg-bg text-text hover:bg-blue-light transition-colors"
+                      >
+                        Smlouva
+                      </a>
                       <button
                         onClick={() => deleteCar(car.id, car.name)}
                         disabled={deleting === car.id}

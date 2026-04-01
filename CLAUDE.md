@@ -37,6 +37,10 @@ Cars are stored in **Supabase** (PostgreSQL). Public pages fetch via `src/lib/su
 
 **Drive options in DB:** "Předních kol", "Zadních kol", "4x4" — displayed on car cards as "Přední", "Zadní", "4x4" via `formatDrive()` in CarCard.
 
+### Feed Routes
+
+- `feed/meta-catalog.xml` — Meta (Facebook) Automotive Inventory XML feed. Generates `<listings>` with vehicle data for Commerce Manager catalog (type: Vehicles). Maps Czech values to Meta enums (e.g., "Benzín" → GASOLINE, "Automat" → Automatic). Photos sorted by position, max 20 per listing. Only includes cars with status `v_nabidce`. Cached 1hr with 10min stale-while-revalidate.
+
 ### API Routes
 
 - `api/contact` — Contact form submission
@@ -44,6 +48,25 @@ Cars are stored in **Supabase** (PostgreSQL). Public pages fetch via `src/lib/su
 - `api/admin/cars/[id]/photos` — Photo upload/management
 - `api/admin/cars/[id]/publish` — Publish/unpublish
 - `api/admin/cars/[id]/status` — Status transitions
+
+### Auth & Admin
+
+Middleware (`src/middleware.ts`) protects `/admin/*` and `/api/admin/*` routes via Supabase SSR auth. Login at `/admin/prihlaseni`. API routes use `requireAuth()` which returns 401 if no session. Admin write endpoints have rate limiting (30 req/60s per IP).
+
+### Analytics & Consent (GDPR)
+
+Three-layer setup in `src/components/analytics/`:
+- `ConsentDefaults.tsx` — Server component, sets all consent to "denied" by default (inline `<script>`)
+- `CookieConsent.tsx` — Banner UI, stores preference in `cookie_consent` cookie (365 days)
+- `GoogleAnalytics.tsx` / `MetaPixel.tsx` — Initialize only after `ad_storage === "granted"`
+- `RouteChangeTracker.tsx` — Sends page_view on client-side navigation
+- `TrackViewCar.tsx` / `TrackClick.tsx` — Event tracking wrappers for Server Components
+
+Event helpers in `src/lib/analytics.ts`: `trackViewCar()` fires both GA4 `view_item` and Meta `ViewContent` (with `content_type: "vehicle"` and `content_ids: [car.id]` for catalog matching). Consent logic in `src/lib/consent.ts`.
+
+### Supabase Migrations
+
+Sequential files in `supabase/migrations/`: `001_create_tables.sql` through `005_add_vin.sql`. Run manually against Supabase dashboard (no CLI migration setup). RLS enabled on all tables.
 
 ### Component Organization
 
@@ -126,12 +149,90 @@ Client-side `useMemo()` filtering: segment tabs, fuel/transmission pill buttons,
 
 `.detail-specs-grid` in CSS: 4 columns desktop → 2 at 900px → 1 at 768px. Border logic uses `nth-child(4n)` / `nth-last-child(-n+4)` with responsive overrides. Icons are inline SVG components defined in the page file.
 
+## Contract Wizard (Kupní smlouva)
+
+8-step wizard for generating Czech vehicle purchase contracts. Accessible at `/admin/auta/[id]/smlouva` (admin-only). Car list table has a "Smlouva" button for each car.
+
+### File Structure
+
+- `src/types/contract.ts` — All TypeScript types, constants, and labels
+- `src/app/(admin)/admin/_components/smlouva/ContractWizard.tsx` — Main 8-step wizard form (612 lines)
+- `src/app/(admin)/admin/_components/smlouva/ContractPreview.tsx` — Live HTML preview + print (436 lines)
+- `src/app/(admin)/admin/_components/smlouva/contractDocx.ts` — DOCX export via `docx` library (593 lines)
+- `src/app/(admin)/admin/_components/smlouva/contractUtils.ts` — Helpers: legal regime detection, validation, presets, Czech number-to-words
+- `src/app/(admin)/admin/auta/[id]/smlouva/page.tsx` — Route page (loads car from Supabase, passes to wizard)
+
+### Knowledge Base (Input)
+
+- `../Input/Kupni-smlouva/kupni_smlouva_auto_knowledge.json` — Legal framework, contract structure, all 8 articles, warnings
+- `../Input/Kupni-smlouva/kupni_smlouva_questions_claude_code.json` — Structured Q&A flow (Q01-Q19), validation rules
+
+### Wizard Steps
+
+1. **Transaction type** — CZ-registered vehicle vs. DE/EU import
+2. **Seller** — Presets (Josef Cipra FO, CarBeat s.r.o.) or custom entry
+3. **Buyer** — FO (individual) / OSVČ (sole proprietor) / PO (company)
+4. **Vehicle** — Pre-filled from Supabase car data (VIN, brand, model, km, etc.)
+5. **Price & payment** — Bank transfer / cash / combined. Cash limit: 270,000 CZK
+6. **Registration** — Who handles re-registration, power of attorney form, penalty
+7. **Signing** — Location, date
+8. **Preview & export** — Live HTML preview, DOCX download, print
+
+### Contract Variants
+
+- **CZ_REG** — Vehicle already registered in Czech Republic. Includes CZ handover protocol items (ORV, Servisní knížka, Protokol STK, Plná moc) as checkboxes.
+- **DE_IMPORT** — Import from Germany. Extra fields: Fahrzeugbrief number, TÜV, import document checklist (COC, Kaufvertrag, etc.). Shows `DE_ONLY_DOCS` set.
+
+### Legal Regime Detection
+
+`detectLegalRegime()` in contractUtils.ts determines consumer protection applicability:
+- **C2C** (FO→FO): No consumer protection, hidden defects 5 years
+- **B2C** (business→FO): Consumer protection applies (§ 2158+ OZ), 2-year warranty
+- **C2B** / **B2B**: No consumer protection
+
+### Key Legal References
+
+- Czech Civil Code (§ 89/2012 Sb.) — purchase contracts, defects, "as is"
+- Cash limit (Zák. č. 254/2004 Sb.) — max 270,000 CZK
+- Vehicle registration (Zák. č. 56/2001 Sb.) — 10-day transfer deadline
+- AML compliance for cash payments
+
+### Contract Articles (8)
+
+1. Smluvní strany (parties)
+2. Předmět koupě (vehicle identification)
+3. Prohlášení prodávajícího (seller declarations — 7 checkboxes, customizable)
+4. Technický stav a vady (condition & defects with 7 categories, replaces blanket "as is")
+5. Kupní cena a platební podmínky (price & payment)
+6. Přechod vlastnictví (ownership transfer + CZ-specific additions: registration costs → buyer, insurance cancellation → seller within 14 days)
+7. Přeregistrace (registration responsibility, deadlines, penalties)
+8. Závěrečná ustanovení (final provisions)
+
+### Handover Protocol
+
+Generated as part of contract. CZ vehicles: checkboxes for ORV, Servisní knížka, Protokol STK, Plná moc (moved from seller step to vehicle/protocol step). When checked, a textarea appears for details. In printed contract, items appear in the handover protocol section.
+
+### Seller Presets (contractUtils.ts)
+
+- **Josef Cipra** — FO preset with personal details
+- **CarBeat s.r.o.** — PO preset with company registration details
+
+### UI Details
+
+- Step indicator is **sticky** with backdrop-blur effect at top
+- Bod 4.3 includes: *"Stav vozidla odpovídá jeho stáří a počtu najetých kilometrů. Prodávající v této souvislosti poskytl kupujícímu pravdivé a podstatné informace."*
+- "Společně na úřadě (doporučujeme)" label for joint registration option
+- OP jednající osoby field is required for PO (company) buyers
+- Dark mode compatible, print-optimized styles
+
 ## Environment Variables
 
 ```
 NEXT_PUBLIC_SUPABASE_URL=...
 NEXT_PUBLIC_SUPABASE_ANON_KEY=...
-SUPABASE_SERVICE_ROLE_KEY=...      # Server-only, never expose to client
+SUPABASE_SERVICE_ROLE_KEY=...          # Server-only, never expose to client
+NEXT_PUBLIC_GA_MEASUREMENT_ID=...      # GA4 measurement ID (G-...)
+NEXT_PUBLIC_META_PIXEL_ID=...          # Meta/Facebook Pixel ID
 ```
 
 ## Key Constraints
