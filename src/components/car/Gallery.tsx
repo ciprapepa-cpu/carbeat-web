@@ -253,7 +253,8 @@ function Lightbox({
                   fill
                   className="object-cover"
                   sizes="80px"
-                  loading={index < 10 ? "eager" : "lazy"}
+                  loading={index < 4 ? "eager" : "lazy"}
+                  unoptimized
                 />
               </button>
             ))}
@@ -322,27 +323,12 @@ export default function Gallery({ photos, alt }: GalleryProps) {
           onClick={() => openLightbox(activeIndex)}
         />
 
-        {/* Prefetch adjacent images for instant switching */}
-        {photos.length > 1 && (
-          <>
-            {[activeIndex - 1, activeIndex + 1, activeIndex + 2].map((i) => {
-              const idx = (i + photos.length) % photos.length;
-              if (idx === activeIndex) return null;
-              return (
-                <Image
-                  key={`prefetch-${idx}`}
-                  src={photos[idx]}
-                  alt=""
-                  fill
-                  className="opacity-0 pointer-events-none absolute"
-                  sizes="(max-width: 768px) 100vw, 720px"
-                  priority={false}
-                  aria-hidden
-                />
-              );
-            })}
-          </>
-        )}
+        {/* Prefetch adjacent images via <link> — no Vercel Image Optimization cost */}
+        {photos.length > 1 && [activeIndex - 1, activeIndex + 1].map((i) => {
+          const idx = (i + photos.length) % photos.length;
+          if (idx === activeIndex) return null;
+          return <link key={`prefetch-${idx}`} rel="prefetch" href={photos[idx]} as="image" />;
+        })}
 
         {/* Zoom button */}
         <button
@@ -411,7 +397,8 @@ export default function Gallery({ photos, alt }: GalleryProps) {
                 fill
                 className="object-cover"
                 sizes="80px"
-                loading={index < 6 ? "eager" : "lazy"}
+                loading={index < 4 ? "eager" : "lazy"}
+                unoptimized
               />
             </button>
           ))}

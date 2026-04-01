@@ -33,6 +33,7 @@ const segments = [
           fill
           className="object-contain opacity-[0.12] scale-[1.08]"
           sizes="200px"
+          unoptimized
         />
       </div>
     ),

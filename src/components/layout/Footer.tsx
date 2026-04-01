@@ -31,6 +31,7 @@ export default function Footer() {
               width={104}
               height={52}
               className="h-[52px] w-auto mb-4 brightness-0 invert"
+              unoptimized
             />
             <p className="text-sm leading-relaxed max-w-[280px]">
               Dovoz a prodej prověřených ojetých vozů z Německa. Absolutní transparentnost — Cebia certifikát ke každému vozu, vady vždy přiznáváme.

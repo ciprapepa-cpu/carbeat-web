@@ -200,6 +200,7 @@ export default function AvilooPage() {
                     fill
                     className="object-contain"
                     sizes="(max-width: 640px) 100vw, 400px"
+                    unoptimized
                   />
                 </div>
                 <div className="p-4 text-center border-t border-border">
@@ -367,6 +368,7 @@ export default function AvilooPage() {
               className="object-contain rounded-[12px]"
               sizes="(max-width: 768px) 100vw, 900px"
               priority
+              unoptimized
             />
           </div>
         </div>
