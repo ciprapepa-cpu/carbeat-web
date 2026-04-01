@@ -194,6 +194,7 @@ function Lightbox({
             className="object-contain"
             sizes="100vw"
             priority
+            unoptimized
           />
         </div>
 
@@ -320,6 +321,7 @@ export default function Gallery({ photos, alt }: GalleryProps) {
           className="object-cover cursor-zoom-in"
           sizes="(max-width: 768px) 100vw, 720px"
           priority
+          unoptimized
           onClick={() => openLightbox(activeIndex)}
         />
 

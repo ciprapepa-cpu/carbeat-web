@@ -66,6 +66,7 @@ export default function CarCard({
           fill
           className={`object-cover ${isClickable ? "transition-transform duration-500 hover:scale-105" : ""}`}
           sizes="(max-width: 900px) 100vw, 50vw"
+          unoptimized
         />
 
         {/* Status badge — top */}
