@@ -30,7 +30,7 @@ const reviews = [
 
 export default function Reviews() {
   return (
-    <section className="py-24 bg-bg">
+    <section className="py-24 bg-surface">
       <div className="max-w-[1200px] mx-auto px-6">
         <div className="text-center mb-12">
           <span className="inline-block text-xs font-bold tracking-[2px] uppercase text-blue mb-3">

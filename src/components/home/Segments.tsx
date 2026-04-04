@@ -81,7 +81,7 @@ const segments = [
 
 export default function Segments() {
   return (
-    <section className="py-24 bg-bg" id="segmenty">
+    <section className="py-24 bg-surface" id="segmenty">
       <div className="max-w-[1200px] mx-auto px-6">
         <div className="mb-12">
           <span className="inline-block text-xs font-bold tracking-[2px] uppercase text-blue mb-3">

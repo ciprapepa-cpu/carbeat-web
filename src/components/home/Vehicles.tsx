@@ -13,7 +13,7 @@ export default async function Vehicles() {
     .slice(0, 4);
 
   return (
-    <section className="py-24 bg-surface">
+    <section className="py-24 bg-bg">
       <div className="max-w-[1200px] mx-auto px-6">
         {/* Header */}
         <div className="flex items-end justify-between mb-12 gap-5 flex-wrap">

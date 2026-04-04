@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function CtaBanner() {
   return (
-    <section className="py-20 bg-surface">
+    <section className="py-20 bg-bg">
       <div className="max-w-[800px] mx-auto px-6 text-center">
         <h2 className="text-[clamp(24px,3.5vw,36px)] font-extrabold leading-[1.2] text-text mb-4">
           Máte zájem o prověřené vozidlo?
